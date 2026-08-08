@@ -2014,7 +2014,10 @@
       ],
       "maxCopies": 2,
       "unlockWeek": 1,
-      "act": ["ha", "kyu"],
+      "act": [
+        "ha",
+        "kyu"
+      ],
       "soloOnly": false,
       "effects": [
         {
@@ -2098,10 +2101,6 @@
       "count": 2
     },
     {
-      "definitionId": "nichijou",
-      "count": 2
-    },
-    {
       "definitionId": "shinchara",
       "count": 1
     },
@@ -2110,12 +2109,19 @@
       "count": 1
     },
     {
-      "definitionId": "sainou_no_henrin",
-      "count": 1
-    },
-    {
       "definitionId": "teki_soshiki",
       "count": 1
     }
-  ]
+  ],
+  "starterPool": [
+    "nichijou",
+    "sainou_no_henrin",
+    "unmei_deai",
+    "surechigai",
+    "hitodasuke",
+    "mikubirareta_otoko",
+    "innen",
+    "yorimichi"
+  ],
+  "starterSlots": 3
 }

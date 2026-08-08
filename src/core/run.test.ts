@@ -7,25 +7,66 @@ const newRun = (seed = 42) => createRun(data, seed, { mangaTitle: 'テスト連�
 
 describe('createInitialDeck（v5.2: 初期キャスト3+控え2）', () => {
   it('初期デッキは15枚。場に3人、控えに2人、展開10枚は抽選プール', () => {
+    // seedを渡さない場合は固定枠だけ（キャラ5 + 展開7）
     const deck = createInitialDeck(data);
-    expect(deck).toHaveLength(15);
+    expect(deck).toHaveLength(12);
     const field = deck.filter((c) => c.zone === 'field');
     expect(field.map((c) => c.definitionId).sort()).toEqual(['hero', 'heroine', 'rival']);
     const bench = deck.filter((c) => c.zone === 'bench');
     expect(bench.map((c) => c.definitionId).sort()).toEqual(['aibou', 'osananajimi']);
     const devs = deck.filter((c) => data.definitions.get(c.definitionId)!.kind === 'development');
-    expect(devs).toHaveLength(10);
+    expect(devs).toHaveLength(7);
     expect(devs.every((c) => c.zone === 'activeDeck')).toBe(true);
   });
 
-  it('初期展開は序盤向けの導入カードで構成される（v5.2c）', () => {
+  it('固定枠は王道（バトル+修行）を安定して作れる構成になっている（v7.13）', () => {
     const deck = createInitialDeck(data);
     const devIds = deck
       .filter((c) => data.definitions.get(c.definitionId)!.kind === 'development')
       .map((c) => c.definitionId);
     expect(new Set(devIds)).toEqual(
-      new Set(['battle', 'shugyou', 'nichijou', 'shinchara', 'nouryoku_kakusei', 'sainou_no_henrin', 'teki_soshiki']),
+      new Set(['battle', 'shugyou', 'shinchara', 'nouryoku_kakusei', 'teki_soshiki']),
     );
+    // チュートリアルの目玉である「王道」を毎回狙えるよう、バトルと修行だけは2枚積み
+    expect(devIds.filter((id) => id === 'battle')).toHaveLength(2);
+    expect(devIds.filter((id) => id === 'shugyou')).toHaveLength(2);
+  });
+
+  /*
+   * v7.13: 初期デッキの可変枠。
+   * 固定枠だけだと毎回まったく同じ出だしになり、序盤が単調だったため、
+   * ランごとにプールから3枚引いて混ぜる
+   */
+  it('seedを渡すと可変枠が加わり、展開カードが10枚になる（v7.13）', () => {
+    const deck = createInitialDeck(data, undefined, undefined, 12345);
+    const devs = deck.filter((c) => data.definitions.get(c.definitionId)!.kind === 'development');
+    expect(devs).toHaveLength(7 + data.starterSlots);
+    expect(devs.every((c) => c.zone === 'activeDeck')).toBe(true);
+    expect(new Set(devs.map((c) => c.instanceId)).size).toBe(devs.length);
+  });
+
+  it('可変枠は同じseedなら同じ、違うseedなら中身が変わる（v7.13）', () => {
+    const devsOf = (seed: number) =>
+      createInitialDeck(data, undefined, undefined, seed)
+        .filter((c) => data.definitions.get(c.definitionId)!.kind === 'development')
+        .map((c) => c.definitionId)
+        .sort()
+        .join(',');
+    expect(devsOf(1)).toBe(devsOf(1));
+    const variants = new Set(Array.from({ length: 30 }, (_, i) => devsOf(i + 1)));
+    expect(variants.size).toBeGreaterThan(1);
+  });
+
+  it('可変枠は重複せず、必ずプール内のカードから選ばれる（v7.13）', () => {
+    const pool = new Set(data.starterPool);
+    for (let seed = 1; seed <= 30; seed++) {
+      const devIds = createInitialDeck(data, undefined, undefined, seed)
+        .filter((c) => data.definitions.get(c.definitionId)!.kind === 'development')
+        .map((c) => c.definitionId);
+      const variable = devIds.filter((id) => pool.has(id));
+      expect(variable).toHaveLength(data.starterSlots);
+      expect(new Set(variable).size).toBe(data.starterSlots);
+    }
   });
 });
 

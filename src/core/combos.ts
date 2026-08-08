@@ -1211,6 +1211,72 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
       return hasEnemy && tense ? [{ boundCharIds: [] }] : [];
     },
   },
+  /*
+   * v7.13: 序盤カードの受け皿（4種）。
+   *
+   * 序盤に引ける展開カードのうち、人助け・見くびられた男・寄り道・因縁は
+   * 「役の定義が無い」または「相方カード／特定キャラが揃うまで成立しない」状態で、
+   * 序盤に来ても何もできない札になっていた（人助けに至っては単体効果も空）。
+   * ここでは初期デッキの固定枠（バトル・修行・新キャラ登場）と必ず組める形にして、
+   * 引いた週にそのまま使い道があるようにする。
+   * いずれも後半の大きな役への布石でもあるので、話数の制限は付けない
+   */
+  {
+    id: 'misugosenai',
+    name: '見過ごせない',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 4,
+    hintText: '困っている人を放っておけない',
+    conditionText: '「人助け」+「バトル」をプレイ',
+    match: (input) => (hasDev(input, 'hitodasuke') && hasDev(input, 'battle') ? [{ boundCharIds: [] }] : []),
+  },
+  {
+    id: 'zassou_damashii',
+    name: '雑草魂',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 4,
+    hintText: '見くびられた者ほど、黙って鍛える',
+    conditionText: '「見くびられた男」+「修行」をプレイ',
+    match: (input) =>
+      hasDev(input, 'mikubirareta_otoko') && hasDev(input, 'shugyou') ? [{ boundCharIds: [] }] : [],
+  },
+  {
+    id: 'innen_no_hidane',
+    name: '因縁の火種',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 4,
+    hintText: 'すべての因縁には始まりがある',
+    conditionText: '「因縁」+「バトル」をプレイ',
+    match: (input) => (hasDev(input, 'innen') && hasDev(input, 'battle') ? [{ boundCharIds: [] }] : []),
+  },
+  {
+    id: 'douchuu_no_deai',
+    name: '道中の出会い',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 4,
+    hintText: '寄り道の先で、誰かと出会う',
+    conditionText: '「寄り道」+「新キャラ登場」か「運命的な出会い」をプレイ',
+    match: (input) =>
+      hasDev(input, 'yorimichi') && (hasDev(input, 'shinchara') || hasDev(input, 'unmei_deai'))
+        ? [{ boundCharIds: [] }]
+        : [],
+  },
   {
     /**
      * v7.13: 惨事系3枚（悲劇・大破壊・大ピンチ）のうち2枚以上で成立する役。

@@ -89,6 +89,13 @@ const cardsFileSchema = z.object({
       start: z.enum(['field', 'bench']).optional(),
     }),
   ),
+  /**
+   * 初期デッキの可変枠（v7.13）。
+   * ランごとにこのプールから starterSlots 枚を重複なしで引き、初期デッキに加える。
+   * 固定枠だけだと毎回まったく同じ出だしになり、序盤が単調になるため
+   */
+  starterPool: z.array(z.string().min(1)).optional(),
+  starterSlots: z.number().int().min(0).optional(),
 });
 
 const quotasFileSchema = z.object({
@@ -122,6 +129,10 @@ export interface GameData {
   definitions: ReadonlyMap<string, CardDefinition>;
   quotas: ReadonlyMap<number, QuotaEntry>;
   initialDeck: readonly { definitionId: string; count: number; start?: 'field' | 'bench' }[];
+  /** 初期デッキの可変枠の候補（v7.13） */
+  starterPool: readonly string[];
+  /** 可変枠から引く枚数（v7.13） */
+  starterSlots: number;
   tutorialHands: ReadonlyMap<number, readonly string[]>;
   totalWeeks: number;
 }
@@ -167,6 +178,28 @@ export function buildGameData(cardsJson: unknown, quotasJson: unknown, tutorialJ
     }
   }
 
+  // 初期デッキの可変枠（v7.13）。序盤に引いて何もできない札が混ざらないよう、条件を厳しめに検査する
+  const starterPool = cards.data.starterPool ?? [];
+  const starterSlots = cards.data.starterSlots ?? 0;
+  if (starterSlots > starterPool.length) {
+    issues.push(`cards.json: starterSlots(${starterSlots}) が starterPool の枚数(${starterPool.length})を超えています`);
+  }
+  if (new Set(starterPool).size !== starterPool.length) {
+    issues.push('cards.json: starterPool に重複があります');
+  }
+  for (const id of starterPool) {
+    const def = definitions.get(id);
+    if (!def) {
+      issues.push(`cards.json: starterPool が未定義カードを参照しています: ${id}`);
+      continue;
+    }
+    if (def.kind !== 'development') issues.push(`cards.json: starterPool にはキャラを入れられません: ${id}`);
+    else if (def.unlockWeek > 1) issues.push(`cards.json: starterPool のカードは第1話から使える必要があります: ${id}`);
+    if (cards.data.initialDeck.some((e) => e.definitionId === id)) {
+      issues.push(`cards.json: starterPool のカードが固定枠にもあります: ${id}`);
+    }
+  }
+
   const quotaMap = new Map<number, QuotaEntry>();
   for (const entry of quotas.data.weeks) {
     if (quotaMap.has(entry.week)) issues.push(`quotas.json: 話数が重複しています: ${entry.week}`);
@@ -200,6 +233,8 @@ export function buildGameData(cardsJson: unknown, quotasJson: unknown, tutorialJ
     definitions,
     quotas: quotaMap,
     initialDeck: cards.data.initialDeck,
+    starterPool,
+    starterSlots,
     tutorialHands,
     totalWeeks,
   };

@@ -8,7 +8,7 @@ import { actOfWeek } from './acts';
 import { ACT3_COMBO_MATERIALS, ACT3_DRAW_WEIGHT, COMBO_REGISTRY, SETUP_COMBO_IDS } from './combos';
 import { completionBonus, endingBuzz, endingById, endingPopularityAdd, FINALE_MAX_PLAY_CARDS } from './finale';
 import { createDemands, updateDemands, DEMAND_REWARD_FEE } from './demands';
-import { drawRng, redrawRng, shuffled, weightedSample } from './rng';
+import { drawRng, hashSeed, mulberry32, redrawRng, shuffled, weightedSample } from './rng';
 import { applyStateChanges, computeScore } from './scoring';
 import type {
   ActiveModifier,
@@ -36,9 +36,23 @@ export function createInitialDeck(
   data: GameData,
   startingCast?: readonly string[],
   startingFactions?: Readonly<Record<string, Faction>>,
+  runSeed?: number,
 ): CardInstance[] {
+  /*
+   * 可変枠（v7.13）。固定枠だけだと初期デッキが10枚7種類しかなく、
+   * 毎週その6〜7割が手札に来るため、何度遊んでも序盤がまったく同じ形になっていた。
+   * ランごとにプールから数枚引いて混ぜ、出だしを変える。
+   * runSeedが無いとき（テスト等）は固定枠だけの従来どおりの構成にする
+   */
+  const variableEntries =
+    runSeed !== undefined && data.starterSlots > 0
+      ? shuffled([...data.starterPool], mulberry32(hashSeed(runSeed, 'starter')))
+          .slice(0, data.starterSlots)
+          .map((definitionId) => ({ definitionId, count: 1, start: undefined }))
+      : [];
+
   const cards: CardInstance[] = [];
-  for (const entry of data.initialDeck) {
+  for (const entry of [...data.initialDeck, ...variableEntries]) {
     const def = data.definitions.get(entry.definitionId);
     if (!def) throw new Error(`初期デッキの定義が見つかりません: ${entry.definitionId}`);
     for (let i = 1; i <= entry.count; i++) {
@@ -89,7 +103,7 @@ export function createRun(data: GameData, runSeed: number, options: RunOptions):
     runSeed,
     mangaTitle: options.mangaTitle,
     week: 1,
-    cards: createInitialDeck(data, options.startingCast, options.startingFactions),
+    cards: createInitialDeck(data, options.startingCast, options.startingFactions, runSeed),
     hand: [],
     redrawsUsed: 0,
     foreshadowTokens: 0,
