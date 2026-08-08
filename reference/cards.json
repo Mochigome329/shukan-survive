@@ -1,0 +1,3406 @@
+{
+ "cards": {
+  "characters": [
+   {
+    "id": "hero",
+    "name": "主人公",
+    "kind": "character",
+    "popularity": 10,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "初期デッキ。役「継承の覚醒」の対象",
+     "hidden": "物語の中心人物。秘めた力があるらしい",
+     "revealed": "物語を動かすあなた自身"
+    }
+   },
+   {
+    "id": "heroine",
+    "name": "ヒロイン",
+    "kind": "character",
+    "popularity": 12,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "初期デッキ",
+     "hidden": "人気の高い相手役",
+     "revealed": "彼女のために頑張れる"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "aibou",
+    "name": "相棒",
+    "kind": "character",
+    "popularity": 8,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "初期デッキ",
+     "hidden": "頼れる仲間",
+     "revealed": "いつだって頼れる仲間"
+    }
+   },
+   {
+    "id": "osananajimi",
+    "name": "幼なじみ",
+    "kind": "character",
+    "popularity": 8,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "初期デッキ",
+     "hidden": "昔からの知り合い",
+     "revealed": "思い出を分かち合う相手"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "rival",
+    "name": "ライバル",
+    "kind": "character",
+    "popularity": 15,
+    "faction": "enemy",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "初期デッキ。単体で強いが役の素材としても優秀",
+     "hidden": "強敵。因縁がありそうだ",
+     "revealed": "時には敵対し時には励みあう好敵手"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "shishou",
+    "name": "師匠",
+    "kind": "character",
+    "popularity": 10,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "ショップ入手。「先駆者との別れ」の素材",
+     "hidden": "導く者。別れの予感がする",
+     "revealed": "前を行き、導くもの"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "mascot",
+    "name": "マスコット",
+    "kind": "character",
+    "popularity": 6,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "descriptions": {
+     "internal": "ショップ入手。安価。役「意外な活躍」「意地を見せる」の対象、「獅子心中の虫」の素材",
+     "hidden": "かわいい枠",
+     "revealed": "ちいさくかよわい生きもの"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "shukuteki",
+    "name": "宿敵",
+    "kind": "character",
+    "popularity": 20,
+    "faction": "enemy",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "rare": true,
+    "descriptions": {
+     "internal": "ショップ入手。高価",
+     "hidden": "最大の敵",
+     "revealed": "物語最強最大の敵"
+    }
+   },
+   {
+    "id": "haha",
+    "name": "母",
+    "kind": "character",
+    "popularity": 9,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "家族の情を描くための軸。「人助け」「自己犠牲」と噛み合う",
+     "hidden": "帰る場所があるほど、戦う理由は重くなる",
+     "revealed": "あなたの変える場所"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "chichi",
+    "name": "父",
+    "kind": "character",
+    "popularity": 11,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "越えるべき壁としての父。役「父を超える」の素材",
+     "hidden": "大きな背中は、いつか越えるために描かれる",
+     "revealed": "越えるべき大きな背中"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "teki_kanbu_power",
+    "name": "敵幹部（パワータイプ）",
+    "kind": "character",
+    "popularity": 16,
+    "faction": "enemy",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "ha",
+    "descriptions": {
+     "internal": "中ボス。宿敵より手軽に出せる強敵枠。腕力型",
+     "hidden": "力任せに道をこじ開けてくる者がいると、物語は厚くなる",
+     "revealed": "ぐわーっはっはっは！"
+    }
+   },
+   {
+    "id": "teki_kanbu_brain",
+    "name": "敵幹部（頭脳タイプ）",
+    "kind": "character",
+    "popularity": 16,
+    "faction": "enemy",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "ha",
+    "descriptions": {
+     "internal": "中ボス。宿敵より手軽に出せる強敵枠。策略型",
+     "hidden": "策を張り巡らせる者がいると、物語は厚くなる",
+     "revealed": "私の策を破れますか？"
+    }
+   },
+   {
+    "id": "sanmaime",
+    "name": "三枚目",
+    "kind": "character",
+    "popularity": 7,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "緩急を作るコメディ担当。役「意外な活躍」の素材",
+     "hidden": "笑わせる役ほど、決めるときに効く",
+     "revealed": "やるときはやるコメディリリーフ"
+    },
+    "flexFaction": true
+   },
+   {
+    "id": "yowamushi",
+    "name": "弱虫",
+    "kind": "character",
+    "popularity": 5,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "成長枠。人気度が低く、役「勇気の発露」で化ける",
+     "hidden": "いちばん弱い者が踏み出す一歩に、読者は弱い",
+     "revealed": "臆病者がドラマをつくる"
+    }
+   },
+   {
+    "id": "ippanjin",
+    "name": "一般人",
+    "kind": "character",
+    "popularity": 4,
+    "faction": "ally",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "jo",
+    "descriptions": {
+     "internal": "巻き込まれる側の視点。人気度は低いが安く出せる",
+     "hidden": "特別でない誰かがいると、特別さが際立つ",
+     "revealed": "守るべき無辜の人たち"
+    }
+   }
+  ],
+  "developments": [
+   {
+    "id": "battle",
+    "name": "バトル",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 4,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "効果なし。初期デッキ×2",
+     "hidden": "戦いの回。話題性が上がる",
+     "revealed": "戦いの回。話題性が上がる"
+    }
+   },
+   {
+    "id": "shugyou",
+    "name": "修行",
+    "kind": "development",
+    "buzz": 1,
+    "target": "onePlayed",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 4,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "grantTrainingFlag",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラに修行済みフラグを1個付与(最大2個)。次にプレイした週にすべて消費し、1個につき人気度+3",
+     "hidden": "鍛えたキャラは、次の登場で成長を見せる",
+     "revealed": "対象キャラに修行済みフラグを付与(最大2個)。次にそのキャラをプレイした週、フラグをすべて消費して1個につき人気度+3"
+    }
+   },
+   {
+    "id": "nichijou",
+    "name": "日常回",
+    "kind": "development",
+    "buzz": 1,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 4,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "効果なし。初期デッキ×3",
+     "hidden": "ゆるやかな一週。話題性は控えめ",
+     "revealed": "ゆるやかな一週。話題性は控えめ"
+    }
+   },
+   {
+    "id": "uragiri",
+    "name": "裏切り",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "flipFactionAtEndWeek"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの陣営を反転(週終了時に適用)",
+     "hidden": "信じていた者が牙をむく",
+     "revealed": "衝撃の展開。対象キャラの陣営を週終了時に反転"
+    }
+   },
+   {
+    "id": "kanashii_kako",
+    "name": "悲しい過去",
+    "kind": "development",
+    "buzz": 4,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "効果なし。役の素材として最重要（陣営は変えない）",
+     "hidden": "そのキャラの過去が明かされると、読者の見る目が変わる",
+     "revealed": "隠された事情。大きな話題を呼ぶ"
+    }
+   },
+   {
+    "id": "kaishin",
+    "name": "改心",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "setFactionAtEndWeek",
+       "faction": "ally"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラを週終了時に仲間陣営にする。役「改心の物語」の素材",
+     "hidden": "敵だった者が、こちら側に立つ回",
+     "revealed": "かつての敵は今日の友。対象キャラを週終了時に仲間陣営にする"
+    }
+   },
+   {
+    "id": "okaeri",
+    "name": "おかえり",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "restoreDebutFaction"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラを週終了時にデビュー時の陣営へ戻す。「記憶喪失」で失ったフラグも取り戻す（v7.4）",
+     "hidden": "戻ってこられる場所があるから、人は帰ってくる",
+     "revealed": "心離れた者の帰還。対象キャラを週終了時に、当初の陣営へ戻す"
+    }
+   },
+   {
+    "id": "yamiochi",
+    "name": "闇堕ち",
+    "kind": "development",
+    "buzz": 5,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "setFactionAtEndWeek",
+       "faction": "enemy"
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラを週終了時に敵陣営にする。緊張+1。役「ダークヒーロー」の素材",
+     "hidden": "光の側にいた者が、闇に堕ちるとき",
+     "revealed": "闇への誘惑。対象キャラを週終了時に敵陣営にする（主人公を除く）。緊張+1"
+    }
+   },
+   {
+    "id": "kakusei",
+    "name": "真の覚醒",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放する。過去に「先駆者との別れ」を成立させていれば主人公対象で役「継承の覚醒」成立",
+     "hidden": "力が目覚める条件が整ったとき、真価を発揮する",
+     "revealed": "溜まった緊張を全解放する。「先駆者との別れ」を経ていれば、主人公を対象にすると「継承の覚醒」（週スコア×3）"
+    }
+   },
+   {
+    "id": "nouryoku_kakusei",
+    "name": "能力覚醒",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 4
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+4（次週以降）。役「秘めた力」の素材",
+     "hidden": "眠っていた力が目を覚ますと、そのキャラは強くなる",
+     "revealed": "眠れる力が目覚める。対象キャラの人気度を恒久+4（次週以降有効）"
+    }
+   },
+   {
+    "id": "igai_na_ichimen",
+    "name": "意外な一面",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+3（次週以降）。役「キャラの掘り下げ」の素材",
+     "hidden": "知らなかった一面が見えると、読者はそのキャラを好きになる",
+     "revealed": "キャラクターに深みを与える。対象キャラの人気度を恒久+3（次週以降有効）"
+    }
+   },
+   {
+    "id": "kyuuen",
+    "name": "心強い救援",
+    "kind": "development",
+    "buzz": 4,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "話題性4。全員の人気度を恒久+1（固い絆より話題は高く、恒久は小さい）",
+     "hidden": "みんなで乗り越えた回は、全員の株が上がる",
+     "revealed": "助けに来たぞ！キャスト全員の人気度が恒久+1。話題性が高い。"
+    }
+   },
+   {
+    "id": "teki_soshiki",
+    "name": "敵組織の襲来",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "役「奪われた日常」の素材",
+     "hidden": "平穏を破る者たちが現れる",
+     "revealed": "日常を壊す襲来。話題性が高い。"
+    }
+   },
+   {
+    "id": "higeki",
+    "name": "悲劇",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "役「奪われた日常」の素材",
+     "hidden": "取り返しのつかない出来事が起こる",
+     "revealed": "取り返しのつかない出来事。話題性が高い。"
+    }
+   },
+   {
+    "id": "unmei_deai",
+    "name": "運命的な出会い",
+    "kind": "development",
+    "buzz": 2,
+    "target": "oneBench",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "selection",
+      "effect": {
+       "type": "debutSelect"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "控えキャラ1枚をデビューさせ、そのキャラの人気度を恒久+3",
+     "hidden": "運命の出会いは、その相手を特別な存在にする",
+     "revealed": "控えキャラ1枚をデビューさせ、そのキャラの人気度を恒久+3（次週以降）"
+    }
+   },
+   {
+    "id": "shibou",
+    "name": "死亡",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "dead"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラを週終了時に死亡済みにする(抽選対象から除外)",
+     "hidden": "重い展開。そのキャラはもう戻らない…はず",
+     "revealed": "永遠の別れ。対象キャラを週終了時に死亡済みにする"
+    }
+   },
+   {
+    "id": "fukkatsu",
+    "name": "復活",
+    "kind": "development",
+    "buzz": 2,
+    "target": "oneDead",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "selection",
+      "effect": {
+       "type": "reviveSelect"
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "死亡済みキャラを場に戻す。緊張を全解放する",
+     "hidden": "失われた者が帰ってくるとき、読者は沸く",
+     "revealed": "ある種禁じ手。死亡済みキャラ1枚を場に戻し、溜まった緊張を全解放する"
+    }
+   },
+   {
+    "id": "ridatsu",
+    "name": "途中離脱",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "waiting"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラを週終了時に再登場待ちへ移動（2週後から再登場可能）。役「かませ犬」「決意の別れ」の素材。v7.4c: 話題性0→3（誰にも買われず役が成立しなかったため）",
+     "hidden": "去っていく者には、再会の予感が残る",
+     "revealed": "訳あって一時の別れ。対象キャラを週終了時に再登場待ちへ移動(2週後から再登場可能)"
+    }
+   },
+   {
+    "id": "fukusen",
+    "name": "伏線",
+    "kind": "development",
+    "buzz": 0,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 4,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "gainToken",
+       "token": "foreshadow",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "伏線トークンを1個得る(累積)",
+     "hidden": "いま仕込んだ謎は、いつか回収される",
+     "revealed": "伏線トークンを1つ得る。回収忘れに注意"
+    }
+   },
+   {
+    "id": "fukusen_kaishu",
+    "name": "伏線回収",
+    "kind": "development",
+    "buzz": 1,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "役「伏線回収」の素材",
+     "hidden": "仕込んだ謎が多いほど、回収は盛り上がる",
+     "revealed": "点と点がつながるとき。伏線トークンを全消費し、消費数に応じて話題性が向上"
+    }
+   },
+   {
+    "id": "tournament",
+    "name": "トーナメント開幕",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "startTimedModifier",
+       "modifierId": "tournament",
+       "duration": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "3週間(当週を含む)毎週話題性+2。期間中は全展開の鮮度低下が2倍",
+     "hidden": "大会が始まると盛り上がるが、長引くと飽きられる",
+     "revealed": "3週間、毎週話題性+2。期間中は全展開の鮮度低下が2倍"
+    }
+   },
+   {
+    "id": "enkai",
+    "name": "宴会",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "soloOnly": true,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "restoreAllFreshness"
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "単独プレイのみ。全展開カードの鮮度を全回復し、緊張を全解放する",
+     "hidden": "騒いで飲み食いする一週。読者の飽きがリセットされる",
+     "revealed": "単独でのみ使用可能。全展開カードの鮮度を全回復し、溜まった緊張を全解放する"
+    },
+    "act": "jo"
+   },
+   {
+    "id": "surechigai",
+    "name": "すれ違い",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "grantLoveFlag"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラに恋愛フラグを付与",
+     "hidden": "想いがすれ違ったキャラには、続きの展開が待っている",
+     "revealed": "想いはすれ違う。対象キャラに恋愛フラグを付与"
+    }
+   },
+   {
+    "id": "kokuhaku",
+    "name": "告白",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "対象が恋愛フラグ所持なら役「両想い」成立",
+     "hidden": "恋愛フラグを持つキャラへの告白には、特別な展開が起こる",
+     "revealed": "大切な思いを伝える。恋愛フラグ所持キャラを対象にすると「両想い」成立"
+    }
+   },
+   {
+    "id": "shinchara",
+    "name": "新キャラ登場",
+    "kind": "development",
+    "buzz": 2,
+    "target": "oneBench",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "selection",
+      "effect": {
+       "type": "debutSelect"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "控えキャラ1枚を選び、今週の話からキャストにデビューさせる",
+     "hidden": "新しい顔ぶれが、連載の景色を変える",
+     "revealed": "大事な新展開。控えキャラ1枚を今週からキャストにデビューさせる"
+    }
+   },
+   {
+    "id": "timeskip",
+    "name": "タイムスキップ",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 9,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "第9話以降のみプレイ可。全キャラの人気度を恒久+2(次週以降有効)",
+     "hidden": "数年後──。全員が成長して帰ってくる",
+     "revealed": "それからしばらくして。第9話以降のみ使用可能。全キャラの人気度を恒久+2(次週以降有効)"
+    }
+   },
+   {
+    "id": "yumeochi",
+    "name": "夢オチ",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "reviveAllDead"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": -2
+      }
+     },
+     {
+      "timing": "nextWeekStart",
+      "effect": {
+       "type": "reduceAllFreshnessNextWeek",
+       "amount": 25
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "死亡済みキャラを全員場に戻す。全キャラの人気度が恒久-2、次週の鮮度-25%",
+     "hidden": "「あれは夢だった」。失ったものは戻るが、読者の信頼は削れる",
+     "revealed": "死亡済みキャラを全員場に戻す。ただし全キャラの人気度が恒久-2、次週の鮮度-25%"
+    }
+   },
+   {
+    "id": "haiboku",
+    "name": "敗北",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張+1（人気度が一時的に下がる）。解放系カードでカタルシスになる",
+     "hidden": "負ける回は人気が落ちる。だが、そこから這い上がる物語こそ燃える",
+     "revealed": "緊張+1。人気度が一時的に下がるが、のちのカタルシスにつながる"
+    }
+   },
+   {
+    "id": "dai_pinch",
+    "name": "大ピンチ",
+    "kind": "development",
+    "buzz": 4,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張+1。解放系カードでカタルシスになる",
+     "hidden": "絶体絶命。引きは強いが、読者は不安になる",
+     "revealed": "緊張+1。人気度が一時的に下がるが、のちのカタルシスにつながる"
+    }
+   },
+   {
+    "id": "dai_shouri",
+    "name": "大勝利",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放し、1つにつき話題性+5（カタルシス）",
+     "hidden": "溜めてきたものが大きいほど、勝利の瞬間は爆発する",
+     "revealed": "カタルシス。溜まった緊張を全解放し、1つにつき話題性+5"
+    }
+   },
+   {
+    "id": "sainou_no_henrin",
+    "name": "才能の片鱗",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+3。役「大器の予感」の素材",
+     "hidden": "まだ荒削りだが、何かを持っている——そう思わせる回",
+     "revealed": "粗削りだが光るもの。対象キャラの人気度を恒久+3（次週以降有効）"
+    }
+   },
+   {
+    "id": "kakusareta_kettou",
+    "name": "隠された血統",
+    "kind": "development",
+    "buzz": 3,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 5,
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 7
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "第5話以降。対象キャラの人気度を恒久+7",
+     "hidden": "その血に秘められた宿命が明かされる",
+     "revealed": "血に秘められた宿命。第5話以降のみ使用可能。対象キャラの人気度を恒久+7（次週以降有効）"
+    }
+   },
+   {
+    "id": "buki_get",
+    "name": "武器ゲット",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 4
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+4。役「新装備」の素材",
+     "hidden": "新しい武器は、そのキャラの見せ場を増やす",
+     "revealed": "戦力増強。対象キャラの人気度を恒久+4（次週以降有効）"
+    }
+   },
+   {
+    "id": "waza_get",
+    "name": "技ゲット",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 4
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+4。役「伝承」「成長の実感」の素材",
+     "hidden": "技を覚えた者は強くなる。誰から受け継いだかも大事だ",
+     "revealed": "戦力増強。対象キャラの人気度を恒久+4（次週以降有効）"
+    }
+   },
+   {
+    "id": "katai_kizuna",
+    "name": "固い絆",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "キャスト全員の人気度を恒久+2",
+     "hidden": "仲間との絆が描かれた回は、全員の株が上がる",
+     "revealed": "仲間との絆。全員の人気度を恒久+2（次週以降有効）"
+    }
+   },
+   {
+    "id": "kaisou",
+    "name": "回想",
+    "kind": "development",
+    "buzz": 1,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "startTimedModifier",
+       "modifierId": "flashback",
+       "duration": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "2週間(当週を含む)すべての展開カードの話題性+1。役「走馬灯」「ミッシングリンク」の素材",
+     "hidden": "過去を描くと、そのあとの謎や別れが効いてくる",
+     "revealed": "過去の物語。2週間、すべての展開カードの話題性+1"
+    }
+   },
+   {
+    "id": "na_serifu",
+    "name": "名ゼリフ",
+    "kind": "development",
+    "buzz": 6,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 3,
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "第3話以降。話題性が高く、対象キャラの人気度を恒久+3",
+     "hidden": "読者が何年も覚えているのは、たった一行のセリフだったりする",
+     "revealed": "心に刻まれるあの言葉。第3話以降のみ使用可能。対象キャラの人気度を恒久+3"
+    }
+   },
+   {
+    "id": "title_kaishu",
+    "name": "タイトル回収",
+    "kind": "development",
+    "buzz": 8,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 10,
+    "act": "kyu",
+    "rare": true,
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "第10話以降。話題性+8の大技",
+     "hidden": "作品タイトルの意味が明かされる、その一回のために連載はある",
+     "revealed": "みんな大好き。第10話以降のみ使用可能。話題性+8"
+    }
+   },
+   {
+    "id": "kyuushutsu",
+    "name": "救出",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放し、1つにつき話題性+5（カタルシス）",
+     "hidden": "危機に陥った仲間を助け出す回。溜めが大きいほど盛り上がる",
+     "revealed": "危機からの救出。溜まった緊張を全解放し、1つにつき話題性+5"
+    }
+   },
+   {
+    "id": "sennou",
+    "name": "洗脳",
+    "kind": "development",
+    "buzz": 4,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "flipFactionAtEndWeek"
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの陣営を反転し、緊張+1",
+     "hidden": "操られた仲間との戦いは、読者に重くのしかかる",
+     "revealed": "操り人形。緊張+1。対象キャラの陣営を週終了時に反転"
+    }
+   },
+   {
+    "id": "souryokusen",
+    "name": "総力戦",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 5,
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "第5話以降。役「総力戦」の素材（キャスト4人以上で話題+6）",
+     "hidden": "全員が戦線に並ぶ回は、キャストが多いほど映える",
+     "revealed": "総力で打ち勝て！第5話以降のみ使用可能。キャラが4人以上いると役に発展"
+    }
+   },
+   {
+    "id": "zenmetsu",
+    "name": "全滅",
+    "kind": "development",
+    "buzz": 10,
+    "target": "allPlayed",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "dead",
+       "faction": "ally"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "仲間陣営を全員、週終了時に死亡済みにする（敵は残る）。v7.5: 話題性6→10。全キャストを失う代償に見合わず選ぶ理由がなかったため",
+     "hidden": "最大級の衝撃。ただし代償も最大級",
+     "revealed": "最大の衝撃。仲間陣営を全員、週終了時に死亡済みにする（敵は残る）"
+    }
+   },
+   {
+    "id": "soushuhen",
+    "name": "総集編",
+    "kind": "development",
+    "buzz": 0,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "soloOnly": true,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "bypassQuota"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "その週のノルマ判定を免除(原稿料なし)。単独プレイのみ。ボス週と最終回では使用不可",
+     "hidden": "今週は一休み。ノルマ判定を免除する",
+     "revealed": "その週のノルマ判定を免除(原稿料なし)。単独でのみ使用可能。ボス週と最終回では使用不可"
+    }
+   },
+   {
+    "id": "kindan_no_chikara",
+    "name": "禁断の力",
+    "kind": "development",
+    "buzz": 4,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 8
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象キャラの人気度を恒久+8。緊張+2",
+     "hidden": "禁じられた力に手を出すと、代償はあとから返ってくる",
+     "revealed": "代償ある力。対象キャラの人気度を恒久+8。ただし緊張+2"
+    }
+   },
+   {
+    "id": "tozasareta_butai",
+    "name": "閉ざされた舞台",
+    "kind": "development",
+    "buzz": 5,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "ha",
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "startTimedModifier",
+       "modifierId": "closed_stage",
+       "duration": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "3週間、全展開の話題性+1。期間中は新キャラのデビュー不可",
+     "hidden": "逃げ場のない舞台に閉じ込められる。新しい顔ぶれは望めない",
+     "revealed": "3週間、すべての展開の話題性+1。ただし期間中は新キャラのデビューができない"
+    }
+   },
+   {
+    "id": "mikubirareta_otoko",
+    "name": "見くびられた男",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityLowest",
+       "amount": 6
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "場で最も人気度が低いキャラの人気度を恒久+6",
+     "hidden": "かませかと思われていた者にも、見せ場は用意されている",
+     "revealed": "誰しもに見せ場。場で最も人気度が低いキャラの人気度を恒久+6（次週以降有効）"
+    }
+   },
+   {
+    "id": "soshiki_no_okite",
+    "name": "組織の掟",
+    "kind": "development",
+    "buzz": 4,
+    "target": "oneEnemy",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 5
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "敵陣営キャラ1人の人気度を恒久+5。緊張+1",
+     "hidden": "組織の掟は絶対だ。逆らう者にも、従う者にも重くのしかかる",
+     "revealed": "悪を縛る秩序。場の敵キャラ1人の人気度を恒久+5。緊張+1"
+    }
+   },
+   {
+    "id": "douki_no_kokuhaku",
+    "name": "動機の告白",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "gainToken",
+       "token": "foreshadow",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "伏線トークンを2個得る",
+     "hidden": "なぜそんなことをしたのか。語られる動機が、次の謎を生む",
+     "revealed": "事情の吐露。伏線トークンを2つ得る"
+    }
+   },
+   {
+    "id": "hitodasuke",
+    "name": "人助け",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [],
+    "descriptions": {
+     "internal": "効果なし。役「勇気の発露」「意外な活躍」の素材",
+     "hidden": "困っている誰かを助ける。それだけで主人公になる",
+     "revealed": "王道漫画の基本。いくつかの役の素材になる"
+    }
+   },
+   {
+    "id": "oogenka",
+    "name": "大喧嘩",
+    "kind": "development",
+    "buzz": 4,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張+1。仲間割れの回",
+     "hidden": "仲間同士がぶつかる回は、そのあとの和解が効く",
+     "revealed": "派手なぶつかりあい。緊張+1。のちのカタルシスにつながる"
+    }
+   },
+   {
+    "id": "innen",
+    "name": "因縁",
+    "kind": "development",
+    "buzz": 2,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象の人気度を恒久+2。役「因縁の決着」の仕込み",
+     "hidden": "因縁は、結ばれた時点では地味に見える",
+     "revealed": "対象の人気度を恒久+2。決着につなげられれば大きな効果"
+    }
+   },
+   {
+    "id": "ichiji_kyuusen",
+    "name": "一時休戦",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放。役「敵の敵は味方」の素材",
+     "hidden": "敵と背中を預ける回は、読者の見たかったものだ",
+     "revealed": "敵に背中を預ける。溜まった緊張をすべて解放"
+    }
+   },
+   {
+    "id": "yorimichi",
+    "name": "寄り道",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "gainToken",
+       "token": "foreshadow",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "伏線トークン+1",
+     "hidden": "本筋から外れた回で拾ったものが、後で効く",
+     "revealed": "サブストーリー。伏線トークンを1つ得る"
+    }
+   },
+   {
+    "id": "jiko_gisei",
+    "name": "自己犠牲",
+    "kind": "development",
+    "buzz": 5,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "dead"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": 3
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象を死亡させ、全員の人気度を恒久+3。緊張+1",
+     "hidden": "誰かが身を挺した回は、残された全員の重みが変わる",
+     "revealed": "身を挺した犠牲。対象を死亡させる。かわりに全員の人気度が恒久+3。緊張+1"
+    }
+   },
+   {
+    "id": "soushitsu",
+    "name": "喪失",
+    "kind": "development",
+    "buzz": 4,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "waiting"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 5
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 1
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象を再登場待ちへ移し、人気度を恒久+5。緊張+1。復帰したとき強くなっている",
+     "hidden": "失って初めて、その存在の大きさが描ける",
+     "revealed": "対象が一時離脱（再登場待ち）。人気度が恒久+5され、復帰時強化。緊張+1"
+    }
+   },
+   {
+    "id": "densetsu",
+    "name": "伝説を聞く",
+    "kind": "development",
+    "buzz": 1,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "gainToken",
+       "token": "foreshadow",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "伏線トークン+2。話題性は低いが仕込みが厚い",
+     "hidden": "語られた伝説は、いつか目の前に現れる",
+     "revealed": "昔語りからヒントを得る。伏線トークンを2つ得る"
+    }
+   },
+   {
+    "id": "ippou_sonokoro",
+    "name": "一方そのころ",
+    "kind": "development",
+    "buzz": 3,
+    "target": "oneWaiting",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "returnSelect"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 3
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "再登場待ちのキャラを即座に場へ戻す(2週待ちの制限を無視)。人気度 恒久+3。週1人の再登場とは別枠",
+     "hidden": "別の場所を映すと、消えた者の現在地が分かる",
+     "revealed": "再登場待ちキャラを1人、待機期間を無視して即座に場へ戻す。そのキャラの人気度が恒久+3"
+    }
+   },
+   {
+    "id": "key_item",
+    "name": "キーアイテム探し",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "startTimedModifier",
+       "modifierId": "quest",
+       "duration": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "2週間、すべての展開の話題性+1",
+     "hidden": "目的がはっきりした連載は、どの回も締まる",
+     "revealed": "物語を動かすアイテムの探求。2週間、すべての展開カードの話題性+1"
+    }
+   },
+   {
+    "id": "daihakai",
+    "name": "大破壊",
+    "kind": "development",
+    "buzz": 6,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "addStress",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張+2。派手だが重い",
+     "hidden": "街が壊れる回は派手だが、失ったものの分だけ重い",
+     "revealed": "甚大な被害の発生。緊張+2。"
+    }
+   },
+   {
+    "id": "hangeki",
+    "name": "反撃開始",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放。役「意外な活躍」の素材",
+     "hidden": "押されっぱなしだった側が前に出る、その一話",
+     "revealed": "ここからが本番だ！溜まった緊張をすべて解放し、1つにつき話題性+5"
+    }
+   },
+   {
+    "id": "kioku_soushitsu",
+    "name": "記憶喪失",
+    "kind": "development",
+    "buzz": 4,
+    "target": "onePlayed",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "clearCharFlags"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityTarget",
+       "amount": 6
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象の仕込み（修行・恋愛フラグ）をすべて失う。かわりに人気度が恒久+6。失ったフラグは「おかえり」で取り戻せる（v7.4）",
+     "hidden": "積み上げたものを失った主人公を、読者は放っておけない",
+     "revealed": "対象のフラグ（修行・恋愛）をすべて喪失。かわりに人気度が恒久+6"
+    }
+   },
+   {
+    "id": "honeyasume",
+    "name": "骨休め",
+    "kind": "development",
+    "buzz": 1,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 3,
+    "unlockWeek": 1,
+    "act": "jo",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "restoreFreshness",
+       "amount": 0.25
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "出さなかった展開の鮮度回復が+25%される（役は無効化しない）",
+     "hidden": "何も起きない回にも、読者の目を休ませる働きがある",
+     "revealed": "ちょっと息抜き。今週出さなかった展開カードの鮮度回復が倍になる"
+    }
+   },
+   {
+    "id": "nakanaori",
+    "name": "仲直り",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityAll",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "緊張を全解放し、全員の人気度を恒久+2。役「雨降って地固まる」の素材",
+     "hidden": "ぶつかった後の和解は、ぶつかる前より強い関係を作る",
+     "revealed": "より強固な絆へ。溜まった緊張をすべて解放し、全員の人気度が恒久+2"
+    }
+   },
+   {
+    "id": "zenin_seikan",
+    "name": "全員生還",
+    "kind": "development",
+    "buzz": 5,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 1,
+    "unlockWeek": 17,
+    "act": "kyu",
+    "rare": true,
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "reviveAllDead"
+      }
+     },
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "releaseStress"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "死亡済みキャラを全員場に戻し、緊張を全解放する。夢オチと違い代償はない",
+     "hidden": "死んだと思われていた全員が、揃って戻ってくる回がある",
+     "revealed": "第17話以降のみ使用可能。死亡済みのキャラを全員、場に戻す。緊張も全解放"
+    }
+   },
+   {
+    "id": "kyoutou",
+    "name": "共闘",
+    "kind": "development",
+    "buzz": 3,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "temporaryPopularityAll",
+       "amount": 5
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "その週だけキャスト全員の人気度+5（恒久ではない）",
+     "hidden": "普段バラバラな面々が背中を合わせる回は、それだけで絵になる",
+     "revealed": "全員の心を一つに。その週だけ、全員の人気度+5"
+    }
+   },
+   {
+    "id": "tomurai_gassen",
+    "name": "弔い合戦",
+    "kind": "development",
+    "buzz": 2,
+    "target": "none",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "preScore",
+      "effect": {
+       "type": "buzzPerDead",
+       "amount": 2
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "死亡済みキャラ1人につき話題性+2",
+     "hidden": "失った者の数だけ、その一戦は重くなる",
+     "revealed": "これはあいつの分だ！死亡済みのキャラ1人につき話題性+2"
+    }
+   },
+   {
+    "id": "gekiha",
+    "name": "撃破",
+    "kind": "development",
+    "buzz": 3,
+    "target": "oneEnemy",
+    "tags": [
+     "battle"
+    ],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "kyu",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "moveZoneAtEndWeek",
+       "zone": "waiting"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "対象の敵を週終了時に再登場待ちへ移す。途中離脱の敵版",
+     "hidden": "倒したはずの敵が、姿を消した",
+     "revealed": "勝利。場の敵キャラ1人を退場させる（再登場待ちへ）"
+    }
+   },
+   {
+    "id": "akuyaku_kaigi",
+    "name": "悪役会議",
+    "kind": "development",
+    "buzz": 2,
+    "target": "oneBenchEnemy",
+    "tags": [],
+    "maxCopies": 2,
+    "unlockWeek": 1,
+    "act": "ha",
+    "soloOnly": false,
+    "effects": [
+     {
+      "timing": "selection",
+      "effect": {
+       "type": "debutSelect",
+       "faction": "enemy"
+      }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "permanentPopularityLowest",
+       "amount": 4,
+       "faction": "enemy"
+      }
+     }
+    ],
+    "descriptions": {
+     "internal": "控えキャラのうち敵になれる者1枚を敵としてデビューさせる。場の敵キャラのうち最も人気度が低い者を恒久+4",
+     "hidden": "闇の中で交わされる密談が、新たな刺客を送り込む",
+     "revealed": "悪の密談。控えから敵になれるキャラ1枚を敵としてデビューさせる。場の敵キャラのうち最も人気度が低い者を恒久+4（次週以降）"
+    }
+   }
+  ],
+  "initialDeck": [
+   {
+    "definitionId": "hero",
+    "count": 1
+   },
+   {
+    "definitionId": "heroine",
+    "count": 1
+   },
+   {
+    "definitionId": "rival",
+    "count": 1
+   },
+   {
+    "definitionId": "aibou",
+    "count": 1,
+    "start": "bench"
+   },
+   {
+    "definitionId": "osananajimi",
+    "count": 1,
+    "start": "bench"
+   },
+   {
+    "definitionId": "battle",
+    "count": 2
+   },
+   {
+    "definitionId": "shugyou",
+    "count": 2
+   },
+   {
+    "definitionId": "nichijou",
+    "count": 2
+   },
+   {
+    "definitionId": "shinchara",
+    "count": 1
+   },
+   {
+    "definitionId": "nouryoku_kakusei",
+    "count": 1
+   },
+   {
+    "definitionId": "sainou_no_henrin",
+    "count": 1
+   },
+   {
+    "definitionId": "teki_soshiki",
+    "count": 1
+   }
+  ]
+ },
+ "combos": [
+  {
+   "id": "hijou_e",
+   "name": "非日常へ",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "heiwa_na_nichijou"
+   ],
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "日常が壊れる瞬間に物語は大きく動く",
+   "conditionText": "第1話に「日常回」と「バトル」を同時にプレイ"
+  },
+  {
+   "id": "kaomise",
+   "name": "顔見せ回",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "新しい顔ぶれを、日常の中で読者に紹介",
+   "conditionText": "第5話までに「新キャラ登場」と「日常回」を同時にプレイ"
+  },
+  {
+   "id": "tabidachi",
+   "name": "旅立ち",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "新しい仲間と困難を乗り越えはじめる",
+   "conditionText": "第5話までに「新キャラ登場」と「敵組織の襲来」か「悲劇」を同時にプレイ"
+  },
+  {
+   "id": "saisho_no_shiren",
+   "name": "最初の試練",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "序盤の敗北はその後の成長の約束",
+   "conditionText": "第5話までに「バトル」と「敗北」を同時にプレイ"
+  },
+  {
+   "id": "shi_tono_deai",
+   "name": "師との出会い",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "導く者との出会い",
+   "conditionText": "第5話までに、師匠が場にいる状態で「修行」をプレイ"
+  },
+  {
+   "id": "boy_meets_girl",
+   "name": "ボーイミーツガール",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "少年と少女の出会いが運命を回し始める",
+   "conditionText": "第5話までに「運命的な出会い」でヒロインをデビューさせる"
+  },
+  {
+   "id": "shukuteki_tono_kaikou",
+   "name": "宿敵との邂逅",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "生涯の敵と初めて刃を交える",
+   "conditionText": "第5話までに、敵キャラをデビューさせた週に「バトル」をプレイ"
+  },
+  {
+   "id": "inou_no_mebae",
+   "name": "異能の芽生え",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "自分でも知らなかった力に触れる",
+   "conditionText": "第5話までに、主人公を対象に「能力覚醒」か「才能の片鱗」をプレイ"
+  },
+  {
+   "id": "unmei_no_deai",
+   "name": "運命の出会い",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "運命の出会いが物語を駆動する",
+   "conditionText": "第5話までに「運命的な出会い」でキャラをデビューさせる"
+  },
+  {
+   "id": "kankyuu",
+   "name": "緩急",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 2,
+   "hintText": "静と動を併せて描く",
+   "conditionText": "第2話以降に「日常回」と「バトル」を同時にプレイ"
+  },
+  {
+   "id": "tokkun_kai",
+   "name": "特訓回",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 2,
+   "hintText": "鍛えて、鍛えて、鍛えまくる",
+   "conditionText": "「修行」を2枚同時にプレイ"
+  },
+  {
+   "id": "heiwa_na_nichijou",
+   "name": "平和な日常",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 2,
+   "hintText": "なにも起こらない週にも価値がある",
+   "conditionText": "「日常回」を2枚以上同時にプレイ"
+  },
+  {
+   "id": "ubawareta_nichijou",
+   "name": "奪われた日常",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "heiwa_na_nichijou"
+   ],
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "平和な日々が壊されるとき",
+   "conditionText": "「日常回」+「悲劇」または「敵組織の襲来」を同時にプレイ"
+  },
+  {
+   "id": "himeta_chikara",
+   "name": "秘めた力",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "戦いの中で力が目を覚ます",
+   "conditionText": "「能力覚醒」+「バトル」を同時にプレイ"
+  },
+  {
+   "id": "kyara_horisage",
+   "name": "キャラの掘り下げ",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "何気ない時に見せるその素顔",
+   "conditionText": "「意外な一面」+「日常回」を同時にプレイ"
+  },
+  {
+   "id": "kyouteki_no_kabe",
+   "name": "強敵の壁",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "強大な敵に挑む",
+   "conditionText": "敵陣営の合計人気が仲間陣営を上回る状態で「バトル」をプレイ"
+  },
+  {
+   "id": "fukusen_kaishu",
+   "name": "伏線回収",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "張った伏線をすべて消費する",
+   "hintText": "張った伏線は回収しましょう",
+   "conditionText": "伏線を張った状態で「伏線回収」をプレイ（話題性 +2×本数 +寝かせた週数）"
+  },
+  {
+   "id": "shougeki_no_uragiri",
+   "name": "衝撃の裏切り",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "信頼している者の裏切り",
+   "conditionText": "仲間キャラを対象に「裏切り」をプレイ"
+  },
+  {
+   "id": "shitto_shin",
+   "name": "嫉妬心",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "shougeki_no_uragiri"
+   ],
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "そのキャラの人気度が恒久+4",
+   "hintText": "近いからこそ、こじれた想い",
+   "conditionText": "仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」をプレイ（人気度 恒久+4）"
+  },
+  {
+   "id": "shishinchuu_no_mushi",
+   "name": "獅子心中の虫",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "shougeki_no_uragiri"
+   ],
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "そのキャラの人気度が恒久+4",
+   "hintText": "無害さは仮面である",
+   "conditionText": "仲間の「マスコット」を対象に「裏切り」をプレイ（人気度 恒久+4）"
+  },
+  {
+   "id": "zetsubou",
+   "name": "絶望",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "shougeki_no_uragiri"
+   ],
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "extraText": "緊張+2",
+   "hintText": "いちばん信じていた相手だからこそ",
+   "conditionText": "仲間の「ヒロイン」を対象に「裏切り」をプレイ（緊張+2）"
+  },
+  {
+   "id": "ano_koro_mitaini",
+   "name": "あの頃みたいに",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "そのキャラの人気度が恒久+4",
+   "hintText": "またお前と同じ側に立てる",
+   "conditionText": "敵の「幼なじみ」か「相棒」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）"
+  },
+  {
+   "id": "anata_to_tomoni",
+   "name": "あなたと共に",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "extraText": "緊張を全解放",
+   "hintText": "離れていた時間の分だけ想いは募る",
+   "conditionText": "敵の「ヒロイン」を対象に「裏切り」をプレイ（仲間へ戻る。緊張を全解放、v6.6）"
+  },
+  {
+   "id": "kanchigai_suruna",
+   "name": "勘違いするな",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "そのキャラの人気度が恒久+4",
+   "hintText": "お前を倒すのはこの俺だ",
+   "conditionText": "敵の「ライバル」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）"
+  },
+  {
+   "id": "kanashiki_akuyaku",
+   "name": "悲しき悪役",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "extraText": "そのキャラの人気度が恒久+5",
+   "hintText": "悪の過去が明かされるとき",
+   "conditionText": "敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5）"
+  },
+  {
+   "id": "kaishin_no_monogatari",
+   "name": "改心の物語",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "過去を乗り越え共に並び立つ",
+   "conditionText": "同じ敵キャラを対象に「悲しい過去」と「改心」をプレイ"
+  },
+  {
+   "id": "dark_hero",
+   "name": "ダークヒーロー",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "闇に落ちたヒーロー",
+   "conditionText": "主人公を対象に「闇堕ち」をプレイ"
+  },
+  {
+   "id": "oudou",
+   "name": "王道",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 10,
+   "buzzAdd": 0,
+   "hintText": "鍛錬＆バトルの王道展開",
+   "conditionText": "主人公が場にいる状態で「バトル」+主人公対象の「修行」"
+  },
+  {
+   "id": "rival_taiketsu",
+   "name": "ライバル対決",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 15,
+   "buzzAdd": 0,
+   "hintText": "宿命の二人が拳を交えるとき",
+   "conditionText": "主人公とライバルが場にいる状態で「バトル」をプレイ"
+  },
+  {
+   "id": "kamase_inu",
+   "name": "かませ犬",
+   "layer": 1,
+   "phase": "preScore",
+   "oncePerCharacter": true,
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "extraText": "敵キャラの人気度が恒久+5",
+   "hintText": "今日出たばかりですぐ退場",
+   "conditionText": "「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」+「バトル」をプレイ（新顔ごとに1回）"
+  },
+  {
+   "id": "hissatsu_hatsuhirou",
+   "name": "必殺技初披露",
+   "layer": 1,
+   "phase": "preScore",
+   "oncePerRun": true,
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 2,
+   "extraText": "以後このラン、バトルの話題性が恒久+1",
+   "hintText": "修行の成果を見せてやる",
+   "conditionText": "「バトル」+「修行」を同じ週にプレイ（ラン1回）"
+  },
+  {
+   "id": "shujinkou_shibou",
+   "name": "主人公死亡",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "名の通りの禁じ手",
+   "conditionText": "主人公を対象に「死亡」をプレイ"
+  },
+  {
+   "id": "omoi_todokazu",
+   "name": "思い届かず",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "緊張+1",
+   "hintText": "心は戻らないままもう戻らない",
+   "conditionText": "裏切り・洗脳・闇堕ちなどで敵になった仲間を対象に「死亡」をプレイ"
+  },
+  {
+   "id": "shitei_no_wakare",
+   "name": "先駆者との別れ",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 2,
+   "extraText": "「継承の覚醒」の前提になる",
+   "hintText": "導く者を失ったとき",
+   "conditionText": "師匠・父・母のいずれかを対象に「死亡」をプレイ"
+  },
+  {
+   "id": "keishou_no_kakusei",
+   "name": "継承の覚醒",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "scoreMultiplier": 3,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "週スコア×3",
+   "hintText": "真の力を解き放つ",
+   "conditionText": "過去に「先駆者との別れ」を成立させた状態で、主人公を対象に「真の覚醒」をプレイ（週スコア×3）"
+  },
+  {
+   "id": "ryouomoi",
+   "name": "両想い",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "scoreMultiplier": 2.5,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "週スコア×2.5。恋愛フラグを消費する",
+   "hintText": "想いが通じ合う瞬間",
+   "conditionText": "恋愛フラグ所持キャラを対象に「告白」をプレイ（週スコア×2.5）"
+  },
+  {
+   "id": "jitsuha_ikiteita",
+   "name": "実は生きていた",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "まさかの帰還",
+   "conditionText": "「復活」で死亡済みキャラを場に戻す（復活したキャラごとに成立）"
+  },
+  {
+   "id": "shukumei_no_saikai",
+   "name": "宿命の再会",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "kanashiki_akuyaku",
+    "shougeki_no_uragiri",
+    "shitto_shin",
+    "shishinchuu_no_mushi",
+    "zetsubou",
+    "ano_koro_mitaini",
+    "anata_to_tomoni",
+    "kanchigai_suruna"
+   ],
+   "isSetupCombo": true,
+   "charMultiplier": 3,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度×3",
+   "hintText": "あいつに一体何があったのか",
+   "conditionText": "当週再登場したキャラを対象に「裏切り」と「悲しい過去」を同時プレイ"
+  },
+  {
+   "id": "toki_wo_koeta_saikai",
+   "name": "時を越えた再会",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "charMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "そのキャラの人気度×2",
+   "hintText": "流れた時の分感動はひとしお",
+   "conditionText": "「タイムスキップ」の翌週に再登場したキャラ（キャラごとに成立）"
+  },
+  {
+   "id": "kuromaku_no_shoutai",
+   "name": "黒幕の正体",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "charMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "その敵キャラの人気度×2",
+   "hintText": "すべての謎がひとりの敵につながる",
+   "conditionText": "伏線トークン3個以上を「伏線回収」で消費し、場に敵キャラがいる"
+  },
+  {
+   "id": "sedai_koutai",
+   "name": "世代交代",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "oncePerCharacter": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "extraText": "そのキャラの人気度が恒久+8",
+   "hintText": "主人公を失った物語は次世代が引き継ぐ",
+   "conditionText": "主人公が死亡済みの状態で、入手から3週以内のキャラが場にいる"
+  },
+  {
+   "id": "innen_no_taiketsu",
+   "name": "因縁の対決",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "長く戦ってきた相手との決着",
+   "conditionText": "3週以上登場した敵キャラを対象に「死亡」か「撃破」+「バトル」をプレイ"
+  },
+  {
+   "id": "seichou_no_jikkan",
+   "name": "成長の実感",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "負けた相手に勝つまでの道のり",
+   "conditionText": "過去に「敗北」した後、「修行」か「技ゲット」を経て「大勝利」をプレイ"
+  },
+  {
+   "id": "giant_killing",
+   "name": "ジャイアントキリング",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "格上を食う大金星",
+   "conditionText": "敵陣営の合計人気が仲間を上回る状態で「大勝利」をプレイ"
+  },
+  {
+   "id": "densho",
+   "name": "意志を継ぐ者",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "まだあなたほどうまくはできませんが…",
+   "conditionText": "師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ"
+  },
+  {
+   "id": "soumatou",
+   "name": "走馬灯",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "最期に流れるあたたかな思い出",
+   "conditionText": "「回想」と「死亡」を同じ週にプレイ"
+  },
+  {
+   "id": "missing_link",
+   "name": "ミッシングリンク",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "過去の断片と明かされる真相",
+   "conditionText": "「回想」と「伏線回収」を同じ週にプレイ"
+  },
+  {
+   "id": "sorekara_toki_ga_tatta",
+   "name": "それから時が経った",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "飛ばした年月を振り返る",
+   "conditionText": "「タイムスキップ」と「回想」を同じ週にプレイ"
+  },
+  {
+   "id": "ano_koro_no_bokutachi",
+   "name": "あの頃の僕たち",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "幼なじみと過ごした日々",
+   "conditionText": "場に「幼なじみ」がいる状態で「回想」をプレイ"
+  },
+  {
+   "id": "iji_wo_miseru",
+   "name": "意地を見せる",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度が恒久+6",
+   "hintText": "弱いやつらが見せた力",
+   "conditionText": "「三枚目」「一般人」「弱虫」「マスコット」のいずれかを対象に「能力覚醒」をプレイし、同じ週に「バトル」"
+  },
+  {
+   "id": "souryokusen_combo",
+   "name": "総力戦",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "みんなで総力戦",
+   "conditionText": "キャストが4人以上の状態で「総力戦」をプレイ"
+  },
+  {
+   "id": "taiki_no_yokan",
+   "name": "大器の予感",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "荒削りな才が戦いの中できらめく",
+   "conditionText": "「才能の片鱗」と「バトル」を同じ週にプレイ"
+  },
+  {
+   "id": "shinsoubi",
+   "name": "新装備",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "手に入れた武器は使ってこそ",
+   "conditionText": "「武器ゲット」と「バトル」を同じ週にプレイ"
+  },
+  {
+   "id": "densetsu_buki",
+   "name": "伝説武器ゲット",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度が恒久+3",
+   "hintText": "伝説通りのあの武器を獲得",
+   "conditionText": "「伝説を聞く」と「武器ゲット」を同じ週にプレイ（人気度 恒久+3）"
+  },
+  {
+   "id": "densetsu_waza",
+   "name": "伝説技ゲット",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度が恒久+3",
+   "hintText": "伝説通りのあの技を獲得",
+   "conditionText": "「伝説を聞く」と「技ゲット」を同じ週にプレイ（人気度 恒久+3）"
+  },
+  {
+   "id": "takara_sagashi",
+   "name": "宝探し",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "語られた伝承の先に宝を探し当てる",
+   "conditionText": "「伝説を聞く」と「キーアイテム探し」を同じ週にプレイ"
+  },
+  {
+   "id": "saishuu_kessen",
+   "name": "最終決戦",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "souryoku_no_kesshuu",
+    "souryokusen_combo"
+   ],
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 10,
+   "hintText": "最後にぶつける総力戦",
+   "conditionText": "第17話以降、「バトル」+「総力戦」をプレイ"
+  },
+  {
+   "id": "anun_tachikomeru",
+   "name": "暗雲立ち込める",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "決戦で追い詰められる",
+   "conditionText": "第17話以降、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ"
+  },
+  {
+   "id": "sekai_no_kiki",
+   "name": "世界の危機",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 9,
+   "hintText": "クライマックスに訪れる危機",
+   "conditionText": "第17話以降、「敵組織の襲来」+「大ピンチ」をプレイ"
+  },
+  {
+   "id": "innen_no_seisan",
+   "name": "因縁の清算",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "innen_no_taiketsu"
+   ],
+   "isSetupCombo": true,
+   "scoreMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "週スコア×2",
+   "hintText": "長く戦い続けた相手との決着",
+   "conditionText": "第17話以降、通算5回以上登場した敵キャラを対象に「死亡」をプレイ"
+  },
+  {
+   "id": "souryoku_no_kesshuu",
+   "name": "総力の結集",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "souryokusen_combo"
+   ],
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "積み上げてきたキャラが力を合わせる",
+   "conditionText": "第17話以降、キャストが5人以上の状態で「総力戦」をプレイ"
+  },
+  {
+   "id": "ketsui_no_wakare",
+   "name": "決意の別れ",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "終盤での悲しき離別",
+   "conditionText": "第17話以降、同じキャラを対象に「途中離脱」と「悲しい過去」をプレイ"
+  },
+  {
+   "id": "saigo_no_shugyou",
+   "name": "最後の修行",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 20,
+   "buzzAdd": 0,
+   "hintText": "命運駆けた戦いの前に最後の鍛錬",
+   "conditionText": "第17話以降、「修行」と「能力覚醒」を同じ週にプレイ"
+  },
+  {
+   "id": "chichi_wo_koeru",
+   "name": "父を超える",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "charMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "主人公の人気度×2",
+   "hintText": "父を追いかけ力を解放する",
+   "conditionText": "場に「父」がいる状態で、主人公を対象に「能力覚醒」か「真の覚醒」"
+  },
+  {
+   "id": "yuuki_no_hatsuro",
+   "name": "勇気の発露",
+   "layer": 1,
+   "phase": "preScore",
+   "charMultiplier": 3,
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度×3",
+   "hintText": "弱者が踏み出す小さな一歩",
+   "conditionText": "「三枚目」「一般人」「弱虫」「マスコット」のいずれかが場にいる状態で「人助け」をプレイ（v6.6でマスコット追加）"
+  },
+  {
+   "id": "igai_no_katsuyaku",
+   "name": "意外な活躍",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "警戒されていないからこその大活躍",
+   "conditionText": "「三枚目」「一般人」「弱虫」「マスコット」のいずれかが場にいる状態で「反撃開始」か「大勝利」（v6.6でマスコット追加）"
+  },
+  {
+   "id": "teki_no_teki",
+   "name": "敵の敵は味方",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "ここは一度拳を収めよう",
+   "conditionText": "場に敵キャラが2人以上いる状態で「一時休戦」"
+  },
+  {
+   "id": "aku_nimo_kizuna",
+   "name": "悪にも絆",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "名もなき誰かと心通わせる悪役",
+   "conditionText": "場に敵キャラと「一般人」がいる状態で「日常回」か「人助け」をプレイ"
+  },
+  {
+   "id": "innen_no_ketchaku",
+   "name": "因縁の決着",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "scoreMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "週スコア×2",
+   "hintText": "結んだ因縁がいたる結末",
+   "conditionText": "過去に「因縁」をプレイした状態で「大勝利」か「死亡」"
+  },
+  {
+   "id": "dondengaeshi",
+   "name": "どんでん返し",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 9,
+   "hintText": "極端から極端へひっくり返る",
+   "conditionText": "意味が正反対の展開を同じ週に2枚プレイ（裏切り↔改心、大勝利↔敗北／大ピンチ、死亡↔復活、闇堕ち↔改心、大喧嘩↔仲直り）"
+  },
+  {
+   "id": "kiseki",
+   "name": "奇跡",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 10,
+   "hintText": "溜めに溜めたストレスの解放",
+   "conditionText": "緊張を3つ以上まとめて解放する"
+  },
+  {
+   "id": "kanippatsu",
+   "name": "間一髪",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "落ちる寸前で掴む手",
+   "conditionText": "同じ週に「大ピンチ」と「救出」を両方プレイ"
+  },
+  {
+   "id": "ofukuro_no_aji",
+   "name": "おふくろの味",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "heiwa_na_nichijou"
+   ],
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "キャスト全員の人気度が恒久+2",
+   "hintText": "帰る場所での休息",
+   "conditionText": "場に「母」がいる状態で「日常回」か「骨休め」をプレイ"
+  },
+  {
+   "id": "haha_wa_tsuyoshi",
+   "name": "母は強し",
+   "layer": 1,
+   "phase": "preScore",
+   "charMultiplier": 3,
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "extraText": "母の人気度×3",
+   "hintText": "守るために前に出る",
+   "conditionText": "場に「母」がいる状態で「大ピンチ」をプレイ"
+  },
+  {
+   "id": "senkusha_no_chikara",
+   "name": "先駆者の力",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "先人の圧倒的な力を見よ",
+   "conditionText": "場に師匠・父・母のいずれかがいる状態で「大勝利」をプレイ"
+  },
+  {
+   "id": "shoushin_to_shukusei",
+   "name": "昇進と粛清",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "上位者に与えられる死",
+   "conditionText": "場に敵幹部（パワータイプ・頭脳タイプどちらでも）と「宿敵」が揃った状態で、敵キャラを対象に「死亡」"
+  },
+  {
+   "id": "muko_no_gisei",
+   "name": "無辜の犠牲",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "ippanjin_no_shiten"
+   ],
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "extraText": "緊張+1",
+   "hintText": "人々に前触れなく訪れる惨事",
+   "conditionText": "場に「一般人」がいる状態で「悲劇」をプレイ"
+  },
+  {
+   "id": "ippanjin_no_shiten",
+   "name": "逃げ惑う人たち",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "巻き込まれる側から描く脅威",
+   "conditionText": "場に「一般人」がいる状態で「大破壊」か「敵組織の襲来」"
+  },
+  {
+   "id": "katakiuchi",
+   "name": "かたき討ち",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "あいつの魂に勝利を捧げる",
+   "conditionText": "死亡済みのキャラがいる状態で「大勝利」か「弔い合戦」"
+  },
+  {
+   "id": "ame_futte_ji_katamaru",
+   "name": "雨降って地固まる",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "hintText": "強くぶつかった後の和解",
+   "conditionText": "過去に「大喧嘩」を描いた状態で「仲直り」をプレイ"
+  },
+  {
+   "id": "fuon_na_nichijou",
+   "name": "不穏な日常",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "heiwa_na_nichijou",
+    "kankyuu"
+   ],
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "決戦を前にした静けさ",
+   "conditionText": "第17話以降に「日常回」をプレイ"
+  },
+  {
+   "id": "kessen_zenya",
+   "name": "決戦前夜",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "hintText": "最後の休息",
+   "conditionText": "第17話以降に「宴会」か「骨休め」をプレイ"
+  },
+  {
+   "id": "haisui_no_jin",
+   "name": "背水の陣",
+   "layer": 1,
+   "phase": "preScore",
+   "charMultiplier": 3,
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "extraText": "そのキャラの人気度×3",
+   "hintText": "ただ一人で挑む",
+   "conditionText": "キャストが自分ひとりの状態で「バトル」をプレイ"
+  },
+  {
+   "id": "kiseki_no_seikan",
+   "name": "奇跡の生還",
+   "layer": 1,
+   "phase": "preScore",
+   "scoreMultiplier": 3,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 6,
+   "extraText": "週スコア×3",
+   "hintText": "惨劇の後の一筋の希望",
+   "conditionText": "3人以上が死亡している状態で「復活」をプレイ"
+  },
+  {
+   "id": "densetsu_no_kanketsu",
+   "name": "伝説の完結",
+   "layer": 1,
+   "phase": "preScore",
+   "scoreMultiplier": 2,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "extraText": "週スコア×2",
+   "hintText": "物語を通じて多くを積み上げる",
+   "conditionText": "最終回に、仕込み役を通算10種類以上成立させた状態で迎える"
+  },
+  {
+   "id": "daidanen",
+   "name": "大団円",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "hintText": "多くの仲間と結末を迎える",
+   "conditionText": "最終回にキャストが5人以上いる"
+  },
+  {
+   "id": "torimodoshita_hibi",
+   "name": "取り戻した日々",
+   "layer": 1,
+   "phase": "preScore",
+   "suppresses": [
+    "fuon_na_nichijou",
+    "heiwa_na_nichijou",
+    "kankyuu"
+   ],
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 9,
+   "hintText": "何でもない日常を取り戻す",
+   "conditionText": "最終回に「日常回」をプレイ"
+  },
+  {
+   "id": "yuushuu_no_bi",
+   "name": "有終の美",
+   "layer": 3,
+   "phase": "postScore",
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "年表に「伝説の最終回」として記録される",
+   "hintText": "記録に残る最終回を迎える",
+   "conditionText": "最終回でノルマを2倍以上超える"
+  },
+  {
+   "id": "zenmetsu_end",
+   "name": "全滅エンド",
+   "layer": 1,
+   "phase": "preScore",
+   "scoreMultiplier": 4,
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "週スコア×4（キャストは全滅する）",
+   "hintText": "全てを失ったあとの悲しい余韻",
+   "conditionText": "「全滅」+ いずれかのキャラを対象とする「悲しい過去」"
+  },
+  {
+   "id": "sankaku_kankei",
+   "name": "三角関係",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "emotion",
+   "popularityAdd": 0,
+   "buzzAdd": 5,
+   "hintText": "想いが多く交錯する",
+   "conditionText": "場にキャラが3人以上いる状態で「すれ違い」をプレイ"
+  },
+  {
+   "id": "doutou_no_tenkai",
+   "name": "怒涛の展開",
+   "layer": 2,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "盛り上がりを3週続ける",
+   "conditionText": "3週連続で（自身以外の）役を成立させる"
+  },
+  {
+   "id": "tame_kara_no_bakuhatsu",
+   "name": "溜めからの爆発",
+   "layer": 2,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 3,
+   "hintText": "静かな週のあとの爆発",
+   "conditionText": "前週は役なし、今週は役ありで成立"
+  },
+  {
+   "id": "daichouhen",
+   "name": "大長編",
+   "layer": 2,
+   "phase": "preScore",
+   "suppresses": [
+    "doutou_no_tenkai"
+   ],
+   "scoreMultiplier": 1.5,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "extraText": "週スコア×1.5",
+   "hintText": "盛り上がりを5週続ける",
+   "conditionText": "5週連続で（自身以外の）役を成立させ続ける"
+  },
+  {
+   "id": "catharsis",
+   "name": "カタルシス",
+   "layer": 1,
+   "phase": "preScore",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "溜めた緊張が大きいほど跳ね返る",
+   "hintText": "重い展開を溜めて解き放つ",
+   "conditionText": "緊張を2つ以上溜めた状態で解放する（話題性 +4×解放数）"
+  },
+  {
+   "id": "kamikai",
+   "name": "神回",
+   "layer": 3,
+   "phase": "postScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 0,
+   "extraText": "次週の原稿料+2",
+   "hintText": "ノルマを大きく超える",
+   "conditionText": "週スコアがノルマの3倍以上"
+  }
+ ],
+ "endings": [
+  {
+   "id": "ishi_wa_uketsugareru",
+   "name": "意志は受け継がれる",
+   "conditionText": "主人公が死亡している",
+   "buzzAdd": 10,
+   "scoreMultiplier": 4,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "主人公は還らない。だが物語は続く。週スコア×4、話題性+10",
+   "epilogue": "お前の意志は俺たちが継いでいく"
+  },
+  {
+   "id": "kekkonshiki",
+   "name": "結婚式",
+   "conditionText": "役「両想い」を成立させ、その相手が生きている",
+   "buzzAdd": 6,
+   "scoreMultiplier": 3,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "積み上げた恋を結ぶ。週スコア×3、話題性+6",
+   "epilogue": "愛するふたりは幸せに暮らしました"
+  },
+  {
+   "id": "subete_no_nazo",
+   "name": "すべての謎の解明",
+   "conditionText": "役「伏線回収」を2回以上成立させた",
+   "buzzAdd": 0,
+   "scoreMultiplier": 2,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "張ってきた謎がすべて繋がる。週スコア×2、回収した伏線1本につき話題性+5",
+   "epilogue": "すべての謎は、たったひとつの真実に繋がっていた。"
+  },
+  {
+   "id": "shinsedai",
+   "name": "新世代の物語",
+   "conditionText": "直近3話以内に「タイムスキップ」をプレイした",
+   "buzzAdd": 4,
+   "scoreMultiplier": 1,
+   "charMultiplier": 2,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "時は流れ、物語は次の世代へ。キャスト全員の人気度×2、話題性+4",
+   "epilogue": "物語は次の世代へ"
+  },
+  {
+   "id": "saishuuketsu",
+   "name": "再集結",
+   "conditionText": "再登場待ちのキャラが2人以上いる（死亡済みは数えない）",
+   "buzzAdd": 4,
+   "scoreMultiplier": 1,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "去った者たちが最後に揃う。話題性+4、再登場待ち1人につきさらに+4",
+   "epilogue": "仲間たちは再び集う"
+  },
+  {
+   "id": "hakamairi",
+   "name": "墓参り",
+   "conditionText": "死亡済みのキャラがいて、役「かたき討ち」を成立させたことがある",
+   "buzzAdd": 6,
+   "scoreMultiplier": 2,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "弔いを済ませ、静かに幕を引く。週スコア×2、話題性+6、死亡済み1人につきさらに+3",
+   "epilogue": "ここにお前もいてくれればな"
+  },
+  {
+   "id": "gojitsudan",
+   "name": "後日談",
+   "conditionText": "無条件（枠が余れば必ず提示される受け皿）",
+   "unconditional": true,
+   "buzzAdd": 3,
+   "scoreMultiplier": 1,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "あのあとの、なんでもない一日。話題性+3、キャスト全員の人気度+10",
+   "epilogue": "その後の日々は、穏やかに続いていった。"
+  },
+  {
+   "id": "nagepanashi",
+   "name": "投げっぱなしエンド",
+   "conditionText": "未回収の伏線が1本以上ある",
+   "unconditional": true,
+   "buzzAdd": 4,
+   "scoreMultiplier": 1,
+   "charMultiplier": 1,
+   "finalScoreDelta": 0,
+   "unresolvedPenaltyMultiplier": 2,
+   "description": "謎を残したまま幕を引く。未回収の伏線1本につき話題性+3。ただし未回収ペナルティが2倍",
+   "epilogue": "多くの謎を残したまま、物語は唐突に幕を下ろした。"
+  },
+  {
+   "id": "yumeochi_end",
+   "name": "夢オチエンド",
+   "conditionText": "連載中に「夢オチ」を1回以上使った",
+   "bad": true,
+   "buzzAdd": 8,
+   "scoreMultiplier": 0.5,
+   "charMultiplier": 1,
+   "finalScoreDelta": -1000,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "すべては夢だった。話題性+8だが週スコア×0.5、最終評価-1000",
+   "epilogue": "——そして目が覚めた。すべては夢だったのだ。"
+  }
+ ]
+}

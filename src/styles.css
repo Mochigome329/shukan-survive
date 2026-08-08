@@ -1,0 +1,3225 @@
+/* 週刊サバイブ — モバイル縦持ち・タップ操作のみ（13節） */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  --ink: #1a1613;
+  --paper: #f7f3ea;
+  --paper-dark: #eae4d5;
+  --accent: #c0392b;
+  --accent-dark: #8e2418;
+  --ok: #1e7d4f;
+  --line: #2b2520;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  background: var(--ink);
+  color: var(--ink);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+  overscroll-behavior: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100dvh;
+  background:
+    radial-gradient(circle at 1px 1px, rgba(26, 22, 19, 0.06) 1px, transparent 0) 0 0 / 8px 8px,
+    var(--paper);
+}
+
+.screen {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ===== タイトル ===== */
+.title-screen {
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 24px;
+  text-align: center;
+}
+
+/* 見た目上はタイトルアート（.title-art）が見出しを兼ねるので、テキストは読み上げ専用に残す */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* v7.8: キービジュアル（キャラ2人＋ロゴ描き文字入りの1枚絵）をタイトル文字の代わりに */
+.title-art {
+  width: min(78vw, 340px);
+  max-width: 100%;
+  border: 4px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--accent);
+  transform: rotate(-1.5deg);
+}
+
+.title-sub {
+  font-size: 14px;
+  color: #4a4238;
+}
+
+.title-start {
+  margin-top: 18px;
+  font-size: 20px;
+  padding: 14px 44px;
+}
+
+/* v6.8: 中断した連載の再開ボタン */
+.title-resume {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.title-resume-meta {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: 0.85;
+}
+
+/* 「続きから」がある画面では新連載ボタンを控えめに見せる */
+.title-start.small-btn {
+  margin-top: 10px;
+  font-size: 13px;
+  padding: 8px 20px;
+}
+
+.title-confirm {
+  margin-top: 10px;
+  max-width: 280px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.title-confirm-text {
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--accent);
+}
+
+.title-confirm-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.title-note {
+  font-size: 11px;
+  color: #8a7f70;
+  margin-top: 22px;
+}
+
+.primary-btn {
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 17px;
+  padding: 12px 28px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.primary-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* ===== 週プレイ ===== */
+.play-screen {
+  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
+  gap: 8px;
+}
+
+/*
+ * v7.6: 縦積み4行（作品タイトル行・話数行・タイムライン・緊張表示）用の1つの定義に統合。
+ * 以前は行の追加ごとに別ブロックで上書きしており（v5.2追加分は下の方に残っていた）、
+ * flex-direction が2箇所に分散していた
+ */
+.play-header {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 8px;
+}
+
+.week-badge {
+  background: var(--ink);
+  color: var(--paper);
+  font-weight: 900;
+  font-size: 16px;
+  padding: 4px 12px;
+  transform: skewX(-8deg);
+}
+
+.quota {
+  font-size: 11px;
+  font-weight: 700;
+  color: #5c5347;
+  border: 2px solid var(--ink);
+  padding: 3px 10px;
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.quota strong {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.boss-label {
+  margin-left: 6px;
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.notice {
+  background: var(--accent);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 4px;
+}
+
+.notice-target {
+  background: #2c5f8a;
+}
+
+/* ===== v6.2: デビュー時の陣営選択 ===== */
+.faction-choice-notice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.faction-choice-buttons {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.faction-choice-buttons .small-btn {
+  flex: 1;
+  color: var(--ink);
+  background: #fff;
+}
+
+.faction-choice-ally {
+  border: 2px solid var(--ok);
+  color: var(--ok) !important;
+}
+
+.faction-choice-enemy {
+  border: 2px solid var(--accent);
+  color: var(--accent) !important;
+}
+
+/* 場 */
+/*
+ * v7.6: 「今週の話」の作業台。太枠＋ハード影で第1階層（触るもの）に格上げ。
+ * 影をぼかさないのは既存のカットイン・説明箱と同じ語彙（box-shadow: Npx Npx 0）
+ */
+.field {
+  min-height: 118px;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--paper);
+}
+
+.field-empty {
+  color: #8a7f70;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+}
+
+.field-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+
+/* プレビュー */
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.preview-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 13px;
+  min-height: 22px;
+  font-weight: 700;
+}
+
+/*
+ * 予想スコアは画面でいちばん読ませたい数字。反転ブロック（黒地に紙色）にして主役にする。
+ * 達成/未達でハード影の色だけを変え、状態を伝える（.preview-hint は対象外＝素のテキストのまま）
+ */
+.preview-line:not(.preview-hint) {
+  background: var(--ink);
+  color: var(--paper);
+  border: 3px solid var(--ink);
+  padding: 10px 12px;
+}
+
+.preview-line strong {
+  font-size: 24px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.preview-line small {
+  font-weight: 400;
+  color: #6b6152;
+  margin-left: 4px;
+}
+
+.preview-line:not(.preview-hint) small {
+  color: rgba(247, 243, 234, 0.7);
+}
+
+.preview-line > span:last-child {
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.preview-ok {
+  box-shadow: 4px 4px 0 var(--ok);
+}
+
+.preview-ok > span:last-child {
+  background: var(--ok);
+  color: #fff;
+  padding: 3px 8px;
+}
+
+.preview-ng {
+  box-shadow: 4px 4px 0 var(--accent);
+}
+
+.preview-ng > span:last-child {
+  background: var(--accent);
+  color: #fff;
+  padding: 3px 8px;
+}
+
+.preview-hint {
+  color: #8a7f70;
+  font-weight: 400;
+}
+
+.confirm-btn {
+  background: var(--accent);
+  color: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 0;
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  padding: 13px;
+  width: 100%;
+}
+
+.confirm-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.confirm-btn:disabled {
+  opacity: 0.35;
+  box-shadow: none;
+}
+
+/* 手札 */
+.hand {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.hand-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.hand-label {
+  font-weight: 900;
+  font-size: 14px;
+  border-left: 5px solid var(--accent);
+  padding-left: 6px;
+}
+
+.small-btn {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+}
+
+/*
+ * v7.7: 効果音のオン/オフ。画面を問わず鳴る音（結果画面の音階・歓声も含む）なので、
+ * 特定の画面のヘッダーに置かず、常時ビューポートの角に重ねて表示する（App.tsxから描画）
+ */
+.sound-toggle {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 40;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.sound-toggle-off {
+  background: var(--paper-dark);
+  opacity: 0.75;
+}
+
+/* v7.9c: 話づくり画面のヘッダー内で、他のボタンと同じ並びに出す版 */
+.sound-toggle-btn {
+  padding: 4px 9px;
+}
+
+.sound-toggle-btn-off {
+  opacity: 0.55;
+}
+
+.small-btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+}
+
+.small-btn:disabled {
+  opacity: 0.35;
+}
+
+.redraw-controls {
+  display: flex;
+  gap: 6px;
+}
+
+.redraw-hint {
+  font-size: 11px;
+  color: #6b6152;
+}
+
+.hand-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.hand-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: #8a7f70;
+  font-size: 12px;
+  padding: 12px 0;
+}
+
+/* カード */
+/*
+ * v7.6b: 縦が長くなってきたのでカードを詰めた。
+ * 情報は減らさず（名前・数値・陣営はそのまま）、数値と陣営を1行にまとめ
+ * アスペクト比を 3/4.2 → 3/3.4 に。手札2段で約45px節約できる
+ */
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  aspect-ratio: 3 / 3.4;
+  border: 2px solid var(--line);
+  border-radius: 0;
+  background: #fff;
+  box-shadow: 2px 2px 0 rgba(26, 22, 19, 0.35);
+  font-size: 12px;
+  padding: 4px 3px;
+}
+
+.card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/*
+ * 陣営は「仲間/敵」の文字ラベルに加えて、左端の色帯でも示す（v7.6）。
+ * 色だけに頼らない（色覚特性があっても文字ラベルで判別できる）ようにしつつ、
+ * カード一覧をぱっと見たときの判別を速くする。:has()はモバイルブラウザの現行版で対応済み
+ */
+.card:has(.faction-ally) {
+  border-left-width: 6px;
+  border-left-color: var(--ok);
+}
+
+.card:has(.faction-enemy) {
+  border-left-width: 6px;
+  border-left-color: var(--accent);
+}
+
+.card-compact {
+  aspect-ratio: auto;
+  width: 76px;
+  min-height: 72px;
+}
+
+.card-char {
+  background: linear-gradient(180deg, #fff 70%, #f6e3c8 100%);
+}
+
+.card-dev {
+  background: linear-gradient(180deg, #fff 70%, #d9e4ea 100%);
+}
+
+.card-name {
+  font-weight: 900;
+  font-size: 13px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+.card-value {
+  font-size: 11px;
+  font-weight: 700;
+  color: #4a4238;
+}
+
+.card-faction {
+  font-size: 9px;
+  font-weight: 700;
+  padding: 0 5px;
+  border-radius: 3px;
+}
+
+.faction-ally {
+  color: var(--ok);
+  border: 1px solid var(--ok);
+}
+
+.faction-enemy {
+  color: var(--accent);
+  border: 1px solid var(--accent);
+}
+
+.card-flags {
+  font-size: 9px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+.card-target {
+  font-size: 9px;
+  color: #2c5f8a;
+  font-weight: 700;
+}
+
+.card-selected {
+  border-color: var(--accent);
+  border-width: 2.5px;
+}
+
+.card-picked {
+  outline: 3px solid #2c5f8a;
+  outline-offset: -1px;
+  opacity: 0.75;
+}
+
+.card-target-highlight {
+  animation: pulse 0.9s infinite alternate;
+  border-color: #2c5f8a;
+  border-width: 3px;
+}
+
+@keyframes pulse {
+  from {
+    box-shadow: 0 0 0 0 rgba(44, 95, 138, 0.6);
+  }
+  to {
+    box-shadow: 0 0 0 6px rgba(44, 95, 138, 0);
+  }
+}
+
+/* ===== 説明オーバーレイ ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(26, 22, 19, 0.82);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 20px;
+}
+
+.explain-box {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 5px 5px 0 var(--accent);
+  padding: 24px 20px;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+}
+
+.explain-box h2 {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.explain-formula {
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.explain-formula strong {
+  color: var(--accent);
+}
+
+/*
+ * ===== 初回チュートリアル（v7.5 / ハイライトはv7.5b） =====
+ *
+ * 説明している部位だけをオーバーレイの上に浮かせて光らせる。
+ * .overlay が z-index:10 なので、対象には position:relative と
+ * それより大きい z-index を与えて前面に出す（祖先が重ね合わせ文脈を
+ * 作っていないことが前提。play-screen 直下の section/header なので問題ない）。
+ */
+.play-screen[data-tutorial-target] .play-header,
+.play-screen[data-tutorial-target] .cast,
+.play-screen[data-tutorial-target] .hand,
+.play-screen[data-tutorial-target] .preview,
+.play-screen[data-tutorial-target] .codex-btn,
+.play-screen[data-tutorial-target] .status-row {
+  position: relative;
+}
+
+.shop-screen[data-tutorial-target] .play-header,
+.shop-screen[data-tutorial-target] .shop-group {
+  position: relative;
+}
+
+.play-screen[data-tutorial-target='header'] .play-header,
+.play-screen[data-tutorial-target='cast'] .cast,
+.play-screen[data-tutorial-target='hand'] .hand,
+.play-screen[data-tutorial-target='preview'] .preview,
+.play-screen[data-tutorial-target='codex'] .codex-btn,
+.play-screen[data-tutorial-target='status'] .status-row,
+.shop-screen[data-tutorial-target='funds'] .play-header,
+.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
+.shop-screen[data-tutorial-target='service'] .shop-group-service {
+  z-index: 11;
+  background: var(--paper);
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+  animation: tutorial-glow 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes tutorial-glow {
+  from {
+    outline-color: var(--accent);
+  }
+  to {
+    outline-color: #f0a08f;
+  }
+}
+
+/*
+ * ハイライト対象（z-index:11）は「.overlay の暗幕（z-index:10）より前へ」出す目的で
+ * 数値を決めていたが、.tutorial-box 側の z-index:12 は .tutorial-overlay 自身が作る
+ * 重ね合わせ文脈の中でしか意味を持たない。.tutorial-overlay 自体のルート側の重なり順は
+ * 既定の .overlay と同じ10のままだったため、対象(11)が箱ごとオーバーレイを飛び越えて
+ * 前面に出てしまい、箱がハイライト部の下に隠れる不具合になっていた。
+ * オーバーレイ自体の重なり順を対象より上げて解決する
+ */
+.tutorial-overlay {
+  z-index: 15;
+}
+
+/* ハイライト部を隠さないよう、説明の箱を上下へ寄せる */
+.tutorial-overlay.tutorial-box-top {
+  align-items: flex-start;
+}
+
+.tutorial-overlay.tutorial-box-bottom {
+  align-items: flex-end;
+}
+
+/* 束ねただけの器なので、通常時は見た目に影響させない */
+.shop-group {
+  display: contents;
+}
+
+/* ハイライト時だけは器として振る舞う必要がある（display:contents だと枠を描けない） */
+.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
+.shop-screen[data-tutorial-target='service'] .shop-group-service {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/*
+ * 説明の箱はハイライト（z-index:11）よりさらに前面に置く。
+ * オーバーレイの暗幕（.overlay の既定）は常に出したままにする——
+ * これで対象の部位（不透明な背景を持つ）と説明の箱の両方が暗幕の上に浮いて見え、
+ * どちらも「今フォーカスされている」ことが一目で分かる（v7.5c）。
+ * 箱にもハイライトと同じ縁取りを与えて、対になる要素だと分かるようにする
+ */
+.tutorial-overlay .explain-box {
+  position: relative;
+  z-index: 12;
+  outline: 3px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tutorial-box {
+  max-height: 78vh;
+  overflow-y: auto;
+  text-align: left;
+}
+
+.tutorial-box h2 {
+  text-align: center;
+}
+
+.tutorial-step-count {
+  align-self: center;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: #8a7f70;
+}
+
+.tutorial-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.tutorial-actions .primary-btn {
+  flex: 1;
+}
+
+/* ボス週ブリーフィングの「備えておくこと」 */
+.explain-prepare {
+  background: var(--paper-dark);
+  border-left: 4px solid var(--accent);
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.prepare-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+/* ===== 連載中の役図鑑オーバーレイ（v7.5） ===== */
+.codex-overlay {
+  align-items: stretch;
+  justify-content: stretch;
+  padding: 12px;
+}
+
+.codex-overlay-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  padding: 14px 12px;
+}
+
+.codex-btn {
+  font-size: 11px;
+  padding: 4px 10px;
+}
+
+/* v7.9c: 「タイトルへ」「音量」「役図鑑」をまとめて右へ寄せる箱 */
+.header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.explain-tap {
+  font-size: 12px;
+  color: #8a7f70;
+  animation: pulse 1s infinite alternate;
+}
+
+/* ===== v5.2: ヘッダー・キャスト・警告 ===== */
+.header-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.manga-title {
+  /* ボタンが3つに増えたので、長いタイトルはここで確実に省略させる */
+  flex: 1 1 auto;
+  min-width: 0;
+  font-weight: 900;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.genre-badge {
+  font-size: 10px;
+  font-weight: 700;
+  border: 1.5px solid var(--ink);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.header-main-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.header-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/*
+ * 緊張メーター（v7.6bで配色を見直し）。
+ * 以前は紫（#6a3d8f / #efe4f7）で、紙＋墨＋朱の基調から浮いていた。
+ * ノルマ表示（.quota）と同じ「2px枠の状態表示ボックス」に揃え、
+ * 溜まっている量だけを朱色のドットで示す（＝人気度が下がっている警告なので朱が妥当）
+ */
+.stress-meter {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink);
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 2px 8px;
+}
+
+.stress-dots {
+  color: var(--accent);
+  letter-spacing: 0.12em;
+}
+
+.stress-meter small {
+  font-weight: 700;
+  font-size: 11px;
+  color: #5c5347;
+}
+
+.card-inspect {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: #6b6152;
+  border-radius: 50%;
+  z-index: 1;
+}
+
+.card-detail {
+  gap: 10px;
+}
+
+.card-detail-value {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+
+.card-detail-text {
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.card-detail-note {
+  font-size: 11px;
+  color: #6b6152;
+}
+
+.warning-meter {
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: #b3a894;
+}
+
+.warning-meter.warning-active {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.cast {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cast-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.cast-total {
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a4238;
+}
+
+.cast-cards {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.cast-cards .card {
+  flex: 0 0 auto;
+}
+
+.bench-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.bench-label {
+  font-size: 10px;
+  font-weight: 800;
+  color: #8a7f70;
+  border: 1px dashed #8a7f70;
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+.bench-chip {
+  background: #eae4d5;
+  border: 1.5px dashed #8a7f70;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5c5347;
+  padding: 4px 8px;
+}
+
+.bench-chip-highlight {
+  animation: pulse 0.9s infinite alternate;
+  border-color: #2c5f8a;
+  border-style: solid;
+  color: #2c5f8a;
+}
+
+.bench-chip-targeted {
+  background: #fff;
+  border-style: solid;
+  border-color: #2c5f8a;
+  color: #2c5f8a;
+}
+
+.dead-label {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.bench-chip-dead {
+  background: #2a2320;
+  border-color: #5c5347;
+  color: #b3a894;
+  text-decoration: line-through;
+}
+
+/* v7.6b: .memo / .memo-toggle / .memo-count / .memo-caret は
+   アイコンチップ+ポップアップ化（.status-chip / .popup）で不要になったため削除 */
+.memo-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0 8px 8px;
+  border-top: 1px dashed #b3a894;
+}
+
+.memo-row {
+  display: flex;
+  gap: 6px;
+  font-size: 10px;
+  line-height: 1.5;
+  padding-top: 3px;
+}
+
+.memo-row-label {
+  flex: 0 0 62px;
+  font-weight: 800;
+  color: #6b6152;
+}
+
+.memo-row-value {
+  flex: 1;
+}
+
+.memo-empty {
+  font-size: 10px;
+  color: #8a7f70;
+  padding-top: 4px;
+}
+
+.memo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: 6px;
+}
+
+/* v7.6b: 連載メモ・編集部はアイコンチップの横並び。中身はポップアップで出す */
+.status-row {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+}
+
+.status-chip {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  padding: 5px 9px;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--ink);
+  text-align: left;
+}
+
+.status-chip-icon {
+  font-size: 13px;
+  line-height: 1;
+}
+
+.status-chip-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status-chip-count {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 900;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+
+/* 押せば何か起きる状態（再登場できる相手がいる） */
+.status-chip-action {
+  border-color: var(--ok);
+}
+
+.status-chip-action .status-chip-count {
+  background: var(--ok);
+}
+
+/* 今週が期限の要求がある */
+.status-chip-urgent {
+  border-color: var(--accent);
+}
+
+.status-chip-urgent .status-chip-count {
+  background: var(--accent);
+}
+
+/* 盤面を押し下げずに読ませるためのポップアップ（v7.6b） */
+.popup {
+  background: var(--paper);
+  border: 3px solid var(--ink);
+  box-shadow: 6px 6px 0 var(--accent);
+  padding: 16px 16px 14px;
+  width: min(340px, 88vw);
+  max-height: 78vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.popup-title {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 3px 10px;
+  align-self: flex-start;
+  transform: skewX(-8deg);
+}
+
+/* v7.6b: .demand-panel / .demand-remain もチップ+ポップアップ化で不要になった */
+.demand-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: #fffdf5;
+  border: 1.5px solid var(--ink);
+  border-top: none;
+  padding: 6px 8px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.demand-list-row {
+  display: flex;
+  gap: 6px;
+}
+
+.demand-list-mark {
+  flex: 0 0 40px;
+  font-weight: 800;
+  color: #6b6152;
+}
+
+.demand-done {
+  color: var(--ok);
+}
+
+.demand-done .demand-list-mark {
+  color: var(--ok);
+}
+
+.demand-lost {
+  color: #8a7f70;
+  text-decoration: line-through;
+}
+
+.demand-result {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.demand-achieved,
+.demand-failed {
+  font-size: 12px;
+  font-weight: 800;
+  padding: 5px 10px;
+  border: 2px solid var(--ink);
+}
+
+.demand-achieved {
+  background: #dff3e6;
+  color: var(--ok);
+}
+
+.demand-failed {
+  background: #ffe0da;
+  color: var(--accent-dark);
+}
+
+.shop-item-note {
+  font-size: 10px;
+  color: #b0682a;
+  font-weight: 700;
+}
+
+.shop-item-service {
+  border-left: 6px solid var(--ok);
+}
+
+.shop-upgrade-target {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.card-stocked {
+  border-color: var(--ok);
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 var(--ok);
+}
+
+.card-stock-badge {
+  font-size: 8px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--ok);
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+
+/* ===== v5.2: 読者の声・スタンプ・図鑑 ===== */
+.voices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  max-width: 340px;
+}
+
+.voice-bubble {
+  position: relative;
+  background: #fff;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  box-shadow: 2px 2px 0 rgba(26, 22, 19, 0.3);
+  animation: chip-in 0.3s ease-out;
+}
+
+.voice-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: 16px;
+  border: 6px solid transparent;
+  border-top-color: var(--ink);
+  border-bottom: 0;
+}
+
+.stamp-warn {
+  color: #b56a00;
+  border-color: #b56a00;
+}
+
+.warning-note {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.new-discovery {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: var(--accent);
+  border-radius: 3px;
+  padding: 1px 5px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.cutin-codex {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  background: var(--accent);
+  padding: 2px 10px;
+  border-radius: 3px;
+}
+
+.breakdown-details {
+  width: 100%;
+  max-width: 340px;
+}
+
+.breakdown-details summary {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b6152;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px 0;
+}
+
+/* ===== v5.2: セットアップ画面 ===== */
+.setup-screen {
+  padding: 28px 20px calc(28px + env(safe-area-inset-bottom));
+  gap: 12px;
+}
+
+.setup-heading {
+  font-size: 22px;
+  font-weight: 900;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 6px;
+}
+
+.setup-label {
+  font-size: 13px;
+  font-weight: 800;
+  border-left: 5px solid var(--accent);
+  padding-left: 6px;
+  margin-top: 8px;
+}
+
+.setup-title-row {
+  display: flex;
+  gap: 8px;
+}
+
+.setup-title-input {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 700;
+  font-family: inherit;
+  padding: 10px 12px;
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  background: #fff;
+  min-width: 0;
+}
+
+.genre-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.genre-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  background: #fff;
+  border: 2px solid #b3a894;
+  border-radius: 4px;
+  padding: 10px 12px;
+  text-align: left;
+}
+
+.genre-item-selected {
+  border-color: var(--accent);
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.genre-name {
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.genre-note {
+  font-size: 11px;
+  color: #6b6152;
+}
+
+.setup-start {
+  margin-top: auto;
+  width: 100%;
+}
+
+.setup-start:disabled {
+  opacity: 0.4;
+}
+
+.setup-hint {
+  font-size: 11px;
+  color: #6b6152;
+  line-height: 1.5;
+}
+
+.cast-choice-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.cast-choice {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: #fff;
+  border: 2px solid #b3a894;
+  border-radius: 4px;
+  padding: 8px 10px;
+  text-align: left;
+}
+
+.cast-choice-fixed {
+  border-color: var(--ink);
+  background: var(--paper-dark);
+  opacity: 0.9;
+}
+
+.cast-choice-selected {
+  border-color: var(--accent);
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.cast-choice-name {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.cast-choice-meta {
+  font-size: 10px;
+  color: #6b6152;
+}
+
+/* v6.7: 開始時の陣営選択（flexFactionの共演者のみ） */
+.cast-choice-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cast-choice-wrap .cast-choice {
+  width: 100%;
+}
+
+.cast-choice-faction {
+  display: flex;
+  gap: 4px;
+}
+
+.cast-choice-faction .small-btn {
+  flex: 1;
+  font-size: 10px;
+  padding: 4px 6px;
+  color: var(--ink);
+  background: #fff;
+}
+
+/* ===== v5.2: 役図鑑 ===== */
+.codex-screen {
+  padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
+  gap: 10px;
+}
+
+.codex-list {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.codex-item {
+  background: #fff;
+  border: 2px solid var(--ink);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.codex-item-hidden {
+  background: #eae4d5;
+  border-style: dashed;
+  border-color: #8a7f70;
+  color: #5c5347;
+}
+
+.codex-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.codex-item-name {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.codex-item-effect {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-dark);
+  white-space: nowrap;
+}
+
+.codex-item-desc {
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.codex-item-extra {
+  font-size: 10px;
+  color: #6b6152;
+}
+
+.end-title {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+/* ===== 役プレビュー・鮮度 ===== */
+.combo-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.combo-chip {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1.5px solid var(--ink);
+  background: #fff3c4;
+  box-shadow: 1px 1px 0 var(--ink);
+  animation: chip-in 0.25s ease-out;
+}
+
+.combo-chip-shock {
+  background: #ffd8d2;
+}
+
+.combo-chip-emotion {
+  background: #fbd8ec;
+}
+
+.combo-chip-suppressed {
+  background: #ddd6c8;
+  color: #8a7f70;
+  text-decoration: line-through;
+  box-shadow: none;
+}
+
+@keyframes chip-in {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.card-freshness {
+  font-size: 8px;
+  font-weight: 700;
+  color: #fff;
+  background: #6b6152;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+
+/*
+ * ボス週・最終回の警告帯（v7.6b で統合）。
+ * 以前は `.boss-calendar`（薄い文字色）と `.boss-calendar-now`（赤地に白）が
+ * 別々に定義され、しかも後者のほうがCSS上で先に来ていたため、
+ * 同じ詳細度で color が上書きされ「赤地に茶色の文字」で潰れて読めなかった。
+ * 予告バナー廃止（v7.6）で `-now` としか使われなくなったので1つにまとめる
+ */
+.boss-calendar,
+.boss-calendar-now {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+  background: var(--accent);
+  color: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 7px 10px;
+}
+
+/* ===== カットイン（13.3節） ===== */
+.cutin-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    repeating-linear-gradient(-60deg, transparent 0 14px, rgba(255, 255, 255, 0.05) 14px 16px),
+    rgba(20, 16, 14, 0.86);
+  animation: cutin-bg 0.15s ease-out;
+}
+
+/*
+ * 漫画の描き文字（v7.6c）。パネルの後ろに大きく置き、コマの効果音として読ませる。
+ * パネル（.cutin-panel）は不透明なので、重なっても文字は読みづらくならない。
+ * 白フチ（-webkit-text-stroke）＋ハード影で、集中線の上でも沈まないようにする
+ */
+/*
+ * v7.6d: 位置を中央からずらした。
+ * 以前は left/top 50% + translate(-50%,-50%) でパネルとぴったり同じ中心に置いていたため、
+ * 不透明なパネルの真後ろに完全に隠れて、まったく見えていなかった。
+ * 漫画のコマと同じく「パネルの外側にはみ出して見える」位置へ動かす
+ */
+/*
+ * v7.6e: フォントの太字から、手描き描き文字のSVGパスに差し替えた（SfxMark.tsx）。
+ * ゴシック体を太らせただけでは「効果音のレタリング」に見えず、
+ * 漫画のコマに書き込まれた文字の歪みや筆の勢いが出なかったため。
+ * viewBoxはインク範囲で詰めてあるので、幅を決めれば高さは字形どおりに決まる
+ */
+.cutin-sfx {
+  position: absolute;
+  left: 6%;
+  top: 9%;
+  /*
+   * 高さと幅の両方に上限を置き、字形の縦横比を保ったまま枠に収める。
+   * 高さだけで揃えると「じ〜〜ん」（3.2:1）のような横長の語が画面幅を超え、
+   * 幅だけで揃えると「ゴゴゴゴ」（1:1）のような角ばった語が縦に伸びる。
+   * width/height を auto にしたうえで max-* を効かせると、
+   * 置換要素の min/max 解決規則が比率を保ったまま両方に収めてくれる
+   */
+  width: auto;
+  height: auto;
+  max-width: 84vw;
+  max-height: clamp(100px, 26vh, 170px);
+  overflow: visible;
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.55));
+  transform: rotate(-12deg) scale(1);
+  animation: cutin-sfx-pop 0.34s cubic-bezier(0.2, 1.7, 0.4, 1);
+  pointer-events: none;
+  user-select: none;
+}
+
+/*
+ * v7.6f: 出現ごとに上下どちらかへランダムに振る（SfxMark.tsx）。
+ * 種別を問わず top は常に9%だったので、bottom側も同じ9%で鏡写しにするだけでよい。
+ * 単一クラスで足りるのは、各種別の上書き（.cutin-shock 等）が left・max-幅高さ・transform しか
+ * 触っておらず top を再定義していないため
+ */
+.cutin-sfx-bottom {
+  top: auto;
+  bottom: 9%;
+}
+
+.cutin-sfx path {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+
+@keyframes cutin-sfx-pop {
+  0% {
+    transform: rotate(-12deg) scale(0.3);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-12deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 衝撃系は大きく荒々しく、パネルからはみ出す位置に */
+.cutin-shock .cutin-sfx {
+  /* 傾きが強いぶん外接矩形が左へ張り出すので、左端も少し内側に寄せる */
+  left: 9%;
+  max-width: 76vw;
+  max-height: clamp(120px, 30vh, 200px);
+  transform: rotate(-18deg);
+  animation-name: cutin-sfx-shock;
+}
+
+.cutin-shock .cutin-sfx path {
+  fill: #ff5a44;
+}
+
+@keyframes cutin-sfx-shock {
+  0% {
+    transform: rotate(-18deg) scale(0.3);
+    opacity: 0;
+  }
+  70% {
+    transform: rotate(-18deg) scale(1.12);
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(-18deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* 情感系は小さく、そっと添える */
+.cutin-emotion .cutin-sfx {
+  /*
+   * 情感系は「ポロポロ…」のように縦に流れる字があるので、高さの上限は緩めに取る。
+   * 横長の語（じ〜〜ん・ホロリ）は max-width 側で止まるため、これで大きくなりすぎない
+   */
+  max-height: clamp(110px, 26vh, 200px);
+  transform: rotate(-7deg);
+  animation-name: cutin-sfx-soft;
+}
+
+.cutin-emotion .cutin-sfx path {
+  fill: #fdf1f7;
+  stroke-width: 3px;
+}
+
+@keyframes cutin-sfx-soft {
+  0% {
+    transform: rotate(-7deg) scale(0.85);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-7deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.cutin-bonus .cutin-sfx path {
+  fill: #ffe89a;
+}
+
+/*
+ * 丸ペン系の描き文字（わいわい・じ〜〜ん等）。
+ * 衝撃音と同じ太いフチと硬い影を付けると、せっかくの丸い筆致が潰れて
+ * 角ばった字と見分けがつかなくなるので、輪郭と影を軽くする
+ */
+.cutin-sfx.sfx-round {
+  filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.4));
+}
+
+.cutin-sfx.sfx-round path {
+  stroke-width: 3px;
+}
+
+/* 端末側で動きを抑えている場合はポップさせない */
+@media (prefers-reduced-motion: reduce) {
+  .cutin-sfx {
+    animation: none;
+  }
+}
+
+@keyframes cutin-bg {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.cutin-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 26px 34px;
+  background: var(--paper);
+  border: 4px solid var(--ink);
+  transform: rotate(-3deg) skewX(-3deg);
+  box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
+  animation: cutin-slam 0.28s cubic-bezier(0.2, 1.6, 0.4, 1);
+  max-width: 84vw;
+  text-align: center;
+}
+
+@keyframes cutin-slam {
+  0% {
+    transform: rotate(-3deg) skewX(-3deg) scale(2.2);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(-3deg) skewX(-3deg) scale(1);
+    opacity: 1;
+  }
+}
+
+.cutin-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.4em;
+  color: #fff;
+  background: var(--ink);
+  padding: 2px 10px;
+}
+
+.cutin-name {
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+}
+
+.cutin-effect {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--accent-dark);
+}
+
+.cutin-extra {
+  font-size: 11px;
+  color: #6b6152;
+}
+
+/*
+ * v7.3: 衝撃系はトゲトゲ、情感系はモクモクの枠。
+ * v7.1では clip-path / mask をパネル全体にかけていたが、パネルは横長なので
+ * 円状に置いたトゲが横に引き伸ばされ、さらに内側へ食い込んだ部分が文字を切っていた。
+ * v7.3では枠を border-image の9スライスに変えた:
+ * - 角は1回だけ、辺のトゲ／コブは repeat:round でタイル状に繰り返される
+ *   → パネルの縦横比が変わってもトゲの形は歪まない
+ * - 装飾はボーダー領域に描かれるので、内容領域は素直な長方形のまま＝文字が絶対に切れない
+ * 影は box-shadow（長方形）ではなく drop-shadow（実際の形に沿う）を使う
+ */
+.cutin-shock .cutin-panel {
+  color: #fff;
+  background: transparent;
+  border: 26px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2090%2090%22%3E%3Cpath%20d%3D%22M12%2C12%20L30%2C12%20L45%2C0%20L60%2C12%20L78%2C12%20L78%2C30%20L90%2C45%20L78%2C60%20L78%2C78%20L60%2C78%20L45%2C90%20L30%2C78%20L12%2C78%20L12%2C60%20L0%2C45%20L12%2C30%20Z%22%20fill%3D%22%232a1512%22%20stroke%3D%22%23ff5a44%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") 30 / 26px round;
+  padding: 6px 16px;
+  box-shadow: none;
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.45));
+}
+
+.cutin-shock .cutin-name {
+  color: #ff5a44;
+  text-shadow: 2px 2px 0 #000;
+}
+
+.cutin-shock .cutin-effect {
+  color: #ffb3a8;
+}
+
+.cutin-emotion .cutin-panel {
+  background: transparent;
+  border: 24px solid transparent;
+  border-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2090%2090%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220.6%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fdf1f7%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f3e3f5%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M12%2C12%20L30%2C12%20A15%2C15%200%200%201%2060%2C12%20L78%2C12%20L78%2C30%20A15%2C15%200%200%201%2078%2C60%20L78%2C78%20L60%2C78%20A15%2C15%200%200%201%2030%2C78%20L12%2C78%20L12%2C60%20A15%2C15%200%200%201%2012%2C30%20Z%22%20fill%3D%22url(%23g)%22%20stroke%3D%22%23a94b7c%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") 30 / 24px round;
+  padding: 8px 18px;
+  box-shadow: none;
+  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+}
+
+.cutin-emotion .cutin-name {
+  color: #a94b7c;
+}
+
+/* ===== v6.3: 最終回の完結ボーナス積み上げカットイン ===== */
+.cutin-bonus .cutin-panel {
+  background: linear-gradient(160deg, #fdf3d4, #ffe89a);
+  border-color: #a87b12;
+}
+
+.cutin-bonus .cutin-label {
+  background: #a87b12;
+}
+
+.cutin-bonus .cutin-name {
+  color: #6b4a06;
+}
+
+.cutin-bonus-total {
+  font-size: 26px;
+  font-weight: 900;
+  color: #8e6300;
+  text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* ===== リザルトの役バナーとスコア ===== */
+.combo-banner-list {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 4px;
+}
+
+.combo-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  border: 2px solid var(--ink);
+  background: #fff3c4;
+  padding: 6px 10px;
+  font-weight: 800;
+  font-size: 13px;
+  transform: skewX(-4deg);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.combo-shock {
+  background: #ffd8d2;
+}
+
+.combo-emotion {
+  background: #fbd8ec;
+}
+
+.combo-suppressed {
+  background: #ddd6c8;
+  color: #8a7f70;
+  box-shadow: none;
+}
+
+.combo-suppressed .combo-banner-name {
+  text-decoration: line-through;
+}
+
+.combo-banner-effect {
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.score-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.score-formula {
+  font-size: 13px;
+  color: #6b6152;
+  font-weight: 700;
+}
+
+.score-line .final-score {
+  font-size: 52px;
+  font-weight: 900;
+  color: var(--accent);
+  line-height: 1.1;
+  text-shadow: 2px 2px 0 rgba(26, 22, 19, 0.15);
+}
+
+.score-multiplier {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.score-quota {
+  font-size: 12px;
+  color: #6b6152;
+}
+
+.freshness-note {
+  color: #8a7f70;
+  font-weight: 400;
+}
+
+.breakdown-combo {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+.breakdown-stress {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+/* ===== 編集会議（ショップ） ===== */
+.shop-screen {
+  padding: 10px 12px calc(16px + env(safe-area-inset-bottom));
+  gap: 10px;
+}
+
+.shop-lead {
+  font-size: 12px;
+  color: #6b6152;
+  line-height: 1.6;
+}
+
+.notice-shop {
+  background: var(--ok);
+}
+
+.shop-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.shop-item {
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: 2px 2px 0 rgba(26, 22, 19, 0.35);
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shop-item-char {
+  border-left: 6px solid #b0682a;
+}
+
+.shop-item-dev {
+  border-left: 6px solid #3a6b8a;
+}
+
+.shop-item-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.shop-item-name {
+  font-weight: 900;
+  font-size: 15px;
+}
+
+.shop-item-value {
+  margin-left: auto;
+  font-size: 12px;
+  font-weight: 700;
+  color: #4a4238;
+}
+
+.shop-item-desc {
+  font-size: 11px;
+  color: #6b6152;
+  line-height: 1.5;
+}
+
+.shop-item .small-btn {
+  align-self: flex-end;
+}
+
+.shop-empty {
+  text-align: center;
+  color: #8a7f70;
+  font-size: 12px;
+  padding: 20px 0;
+}
+
+.shop-leave {
+  width: 100%;
+}
+
+/* ===== リザルト・終了 ===== */
+.result-screen,
+.end-screen {
+  padding: 26px 18px calc(26px + env(safe-area-inset-bottom));
+  align-items: center;
+  gap: 18px;
+  justify-content: center;
+}
+
+.result-week {
+  font-size: 22px;
+  font-weight: 900;
+  border-bottom: 3px solid var(--ink);
+  padding-bottom: 4px;
+}
+
+.breakdown {
+  width: 100%;
+  max-width: 340px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.breakdown-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.breakdown-subtotal {
+  font-weight: 800;
+  border-top: 1px dashed #b3a894;
+  padding-top: 6px;
+}
+
+.breakdown-total {
+  font-weight: 900;
+  font-size: 16px;
+  border-top: 2px solid var(--ink);
+  padding-top: 8px;
+}
+
+.final-score {
+  font-size: 26px;
+  color: var(--accent);
+}
+
+.training-bonus {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 700;
+}
+
+.stamp {
+  font-size: 34px;
+  font-weight: 900;
+  padding: 8px 26px;
+  border: 4px solid;
+  border-radius: 6px;
+  transform: rotate(-4deg);
+  letter-spacing: 0.1em;
+}
+
+.stamp-ok {
+  color: var(--ok);
+  border-color: var(--ok);
+}
+
+.stamp-ng {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.end-stamp {
+  font-size: 42px;
+}
+
+.end-message {
+  font-size: 14px;
+  text-align: center;
+  line-height: 1.7;
+  max-width: 300px;
+}
+
+.end-total {
+  width: 100%;
+  max-width: 320px;
+  background: #fff;
+  border: 2px solid var(--ink);
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.end-total-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.end-total-penalty {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.end-total-final {
+  border-top: 2px solid var(--ink);
+  padding-top: 5px;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+/* ===== v6.8: 連載年表 ===== */
+.chronicle-heading {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 3px;
+  width: 100%;
+  max-width: 340px;
+}
+
+.chronicle-type {
+  width: 100%;
+  max-width: 340px;
+  background: var(--paper-dark);
+  border: 2px solid var(--ink);
+  border-radius: 4px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.chronicle-type-label {
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+}
+
+/* v7.0: 年表のシェア */
+.end-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.share-btn {
+  font-size: 14px;
+  padding: 10px 22px;
+}
+
+.share-note {
+  font-size: 11px;
+  color: var(--ok);
+  line-height: 1.6;
+}
+
+/* v7.3: 保存したファイル名を改行して添える（どこへ保存されたか分かるように） */
+.share-note-file {
+  display: block;
+  font-size: 10px;
+  opacity: 0.75;
+  word-break: break-all;
+}
+
+.share-note-failed {
+  color: var(--accent);
+}
+
+.chronicle-type-cancelled {
+  background: #f2ece2;
+  border-color: #8a7f70;
+}
+
+.chronicle-type-cancelled .chronicle-type-label {
+  color: #6b6152;
+}
+
+.chronicle-type-headline {
+  font-size: 12px;
+  line-height: 1.5;
+  color: #4a4335;
+}
+
+.chronicle {
+  width: 100%;
+  max-width: 340px;
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+}
+
+/*
+ * ===== v7.11: 年表の作り直し =====
+ * 以前は全25話が同じ枠・同じ文字サイズで平らに並んでいて、
+ * ボス週もキャラが死んだ週も何もない週も見分けがつかなかった。
+ * 情報を足すのではなく、強弱をつける方向で作り直している。
+ */
+
+/* --- 連載の成績表 --- */
+.stat-grid {
+  width: 100%;
+  max-width: 340px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+
+.stat {
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 6px 4px 5px;
+  text-align: center;
+}
+
+.stat-num {
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-num small {
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  color: #6b6152;
+}
+
+.stat-hi {
+  background: #fdf3d4;
+  border-color: #a87b12;
+}
+
+.stat-hi .stat-num {
+  color: #6b4a06;
+}
+
+.stat-warn {
+  background: #f7e0e0;
+  border-color: var(--accent);
+}
+
+.stat-warn .stat-num {
+  color: var(--accent);
+}
+
+/* --- 連載の起伏グラフ --- */
+.graph-box {
+  width: 100%;
+  max-width: 340px;
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  box-shadow: 4px 4px 0 var(--ink);
+  padding: 10px 8px 6px;
+}
+
+.graph-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+
+.graph-title em {
+  font-style: normal;
+  font-weight: 700;
+  color: #6b6152;
+  font-size: 9px;
+  letter-spacing: 0;
+}
+
+.graph {
+  position: relative;
+  height: 108px;
+  display: flex;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+/* ノルマ＝達成度1.0の位置。ここを基準に、上に伸びていれば超過、下なら未達 */
+.quota-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 2px dashed var(--accent);
+  pointer-events: none;
+}
+
+.bar {
+  flex: 1;
+  min-width: 0;
+  background: var(--ink);
+  position: relative;
+}
+
+.bar-fail {
+  background: var(--accent);
+}
+
+.bar-boss {
+  background: #a87b12;
+}
+
+.bar-final {
+  background: var(--ok);
+}
+
+/* 幕の切り替わり位置に縦の点線を落とす */
+.act-mark {
+  position: absolute;
+  top: -108px;
+  bottom: 0;
+  left: -1px;
+  border-left: 1.5px dotted #8a7f70;
+}
+
+.graph-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 9px;
+  margin-top: 6px;
+  color: #6b6152;
+}
+
+.graph-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.swatch {
+  width: 9px;
+  height: 9px;
+  border: 1px solid var(--ink);
+  display: inline-block;
+}
+
+.swatch-normal {
+  background: var(--ink);
+}
+
+.swatch-boss {
+  background: #a87b12;
+}
+
+.swatch-fail {
+  background: var(--accent);
+}
+
+.swatch-final {
+  background: var(--ok);
+}
+
+/* --- 幕の見出し --- */
+.act-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 14px 0 7px;
+}
+
+.act-num {
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  background: var(--ink);
+  color: var(--paper);
+  padding: 2px 8px;
+  transform: skewX(-8deg);
+  white-space: nowrap;
+}
+
+.act-title {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.act-rule {
+  flex: 1;
+  border-top: 2px solid var(--ink);
+}
+
+/* --- 平凡な週は1行に畳む --- */
+.w-quiet {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 11px;
+  color: #6b6152;
+  padding: 3px 8px;
+  border-left: 3px solid #cfc6b4;
+  font-variant-numeric: tabular-nums;
+}
+
+.w-quiet b {
+  color: var(--ink);
+  flex: 0 0 44px;
+}
+
+.w-quiet-score {
+  flex: 0 0 auto;
+}
+
+.w-quiet-combo {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.w-quiet-ratio {
+  margin-left: auto;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+/* --- 出来事のあった週はカードで立てる --- */
+.w-card {
+  background: #fff;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 rgba(26, 22, 19, 0.22);
+  padding: 7px 9px;
+  margin: 5px 0;
+}
+
+.w-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.w-no {
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.w-score {
+  font-size: 11px;
+  color: #6b6152;
+  font-variant-numeric: tabular-nums;
+}
+
+.w-ratio {
+  margin-left: auto;
+  font-size: 13px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 達成度バー。赤い印がノルマの位置 */
+.w-bar {
+  height: 5px;
+  background: var(--paper-dark);
+  border: 1px solid #b3a894;
+  margin: 5px 0 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.w-bar i {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: var(--ink);
+}
+
+.w-bar .mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  background: var(--accent);
+}
+
+.w-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.w-card .tag {
+  font-size: 10px;
+  line-height: 1.5;
+  padding: 1px 6px;
+  border: 1px solid #b3a894;
+  background: var(--paper-dark);
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.w-card .tag-combo {
+  background: #fdf3d4;
+  border-color: #a87b12;
+  color: #6b4a06;
+}
+
+/* 出来事は役より格上げして、事件として目立たせる */
+.ev {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 8px;
+  border: 2px solid;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.ev-bad {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--ink);
+}
+
+.ev-good {
+  background: #dff0e3;
+  color: #14532d;
+  border-color: var(--ok);
+}
+
+.ev-turn {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.w-boss {
+  border-width: 3px;
+  border-color: #a87b12;
+  box-shadow: 3px 3px 0 #a87b12;
+}
+
+.w-boss-flag {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  background: #a87b12;
+  color: #fff;
+  padding: 1px 7px;
+  display: inline-block;
+  margin-bottom: 4px;
+  transform: skewX(-8deg);
+}
+
+.w-fail {
+  border-color: var(--accent);
+  box-shadow: 3px 3px 0 rgba(192, 57, 43, 0.35);
+}
+
+.w-fail .w-ratio {
+  color: var(--accent);
+}
+
+.w-fail .w-bar i {
+  background: var(--accent);
+}
+
+.w-fail-flag {
+  font-size: 9px;
+  font-weight: 900;
+  color: var(--accent);
+  display: block;
+  margin-bottom: 3px;
+}
+
+/* 結末カードは黒地で締める */
+.w-final-card {
+  border-width: 3px;
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 4px 4px 0 var(--accent);
+  padding: 10px;
+  margin-top: 8px;
+}
+
+.w-final-ending {
+  font-size: 15px;
+  font-weight: 900;
+  margin-top: 4px;
+}
+
+.w-final-epi {
+  font-size: 11px;
+  line-height: 1.55;
+  color: #cdc4b4;
+  margin-top: 3px;
+}
+
+/* --- キャスト名鑑 --- */
+.cast-box {
+  width: 100%;
+  max-width: 340px;
+  border-top: 3px solid var(--ink);
+  padding-top: 10px;
+}
+
+.cast-title {
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  margin-bottom: 7px;
+}
+
+.cast-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-bottom: 6px;
+}
+
+.cast-key {
+  flex: 0 0 46px;
+  font-size: 10px;
+  font-weight: 900;
+  padding: 2px 0;
+  text-align: center;
+  border: 2px solid var(--ink);
+}
+
+.cast-key-alive {
+  background: #dff0e3;
+}
+
+.cast-key-dead {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.cast-key-left {
+  background: var(--paper-dark);
+  color: #6b6152;
+}
+
+.cast-names {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding-top: 1px;
+}
+
+.cast-name {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 1px 7px;
+  border: 1.5px solid var(--ink);
+  background: #fff;
+}
+
+.cast-name-dead {
+  background: var(--paper-dark);
+  color: #6b6152;
+  text-decoration: line-through;
+  border-color: #b3a894;
+}
+
+/* ===== v5.7: 連載タイムライン ===== */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.timeline-track {
+  display: flex;
+  gap: 1px;
+  align-items: flex-end;
+  height: 12px;
+}
+
+.timeline-tick {
+  flex: 1;
+  border-radius: 1px;
+  background: #d8d0be;
+  height: 5px;
+  transition: height 0.15s;
+}
+
+.timeline-past {
+  background: #8a7f70;
+}
+
+.timeline-now {
+  background: var(--ink);
+  height: 12px;
+}
+
+.timeline-boss {
+  background: #e6b3ab;
+  height: 9px;
+}
+
+.timeline-boss.timeline-past {
+  background: #b5766c;
+}
+
+.timeline-boss.timeline-now {
+  background: var(--accent);
+  height: 12px;
+}
+
+.timeline-legend {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 10px;
+  color: #6b6152;
+}
+
+.timeline-legend strong {
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--ink);
+}
+
+.timeline-boss-note {
+  color: var(--accent-dark);
+  font-weight: 700;
+}
+
+/* ===== v5.7: ボス週は画面を黒フレームで囲む ===== */
+.play-screen-boss {
+  background:
+    linear-gradient(var(--paper), var(--paper)) padding-box,
+    repeating-linear-gradient(-45deg, #1a1613 0 10px, #3a3128 10px 20px) border-box;
+  border: 7px solid transparent;
+}
+
+.play-screen-boss .play-header {
+  border-bottom-color: var(--accent);
+}
+
+/* ===== v5.7: レアカード ===== */
+.card-rare {
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  z-index: 1;
+  color: #4a3000;
+  background: linear-gradient(135deg, #ffe89a, #d9a520);
+  border: 1px solid #a87b12;
+  border-radius: 3px;
+  padding: 0 4px;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+.card-rare-frame {
+  border-color: #a87b12;
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 rgba(168, 123, 18, 0.45);
+}
+
+/* ショップ行と詳細見出しでは通常フローに置く */
+.shop-item-head .card-rare,
+.card-rare-inline {
+  position: static;
+  margin-left: 6px;
+  font-size: 10px;
+}
+
+.shop-item-rare {
+  border-color: #a87b12;
+  box-shadow: 2px 2px 0 rgba(168, 123, 18, 0.45);
+}
+
+/* ===== v5.9: 幕のシーンチェンジ ===== */
+.act-intro {
+  position: fixed;
+  inset: 0;
+  /* 第1話では「ルール説明」より手前に出し、閉じると説明が現れる */
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: var(--paper);
+  background: var(--ink);
+  animation: act-fade 0.35s ease-out;
+}
+
+@keyframes act-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.act-intro-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  max-width: 340px;
+  animation: act-rise 0.5s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes act-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.act-intro-week {
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: #b3a894;
+}
+
+.act-intro-label {
+  border: 2px solid currentColor;
+  padding: 3px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.34em;
+  text-indent: 0.34em;
+}
+
+.act-intro-title {
+  margin: 4px 0 0;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-wrap: balance;
+}
+
+.act-intro-lead {
+  font-size: 13px;
+  line-height: 1.8;
+  color: #cfc5b4;
+}
+
+.act-intro-tap {
+  margin-top: 18px;
+  font-size: 11px;
+  color: #8a7f70;
+  animation: pulse 1s infinite alternate;
+}
+
+/* 幕ごとに差し色を変える（序=藍 / 破=橙 / 急=朱） */
+.act-intro-jo .act-intro-label,
+.act-intro-jo .act-intro-title {
+  color: #7fb4d8;
+}
+
+.act-intro-ha .act-intro-label,
+.act-intro-ha .act-intro-title {
+  color: #e0a35c;
+}
+
+.act-intro-kyu .act-intro-label,
+.act-intro-kyu .act-intro-title {
+  color: #ff6a55;
+}
+
+.act-intro-kyu .act-intro-title {
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
+}
+
+/* ===== v6.0: 今週の出演（ハイライト） ===== */
+.highlight-count {
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.highlight-hint {
+  font-size: 10px;
+  color: #8a7f70;
+  line-height: 1.4;
+}
+
+/* 今週出ていない在籍キャラ。連載にはいるが、この回には登場していない */
+.card-offstage {
+  filter: grayscale(1);
+  opacity: 0.45;
+  border-style: dashed;
+  box-shadow: none;
+}
+
+/* ===== v5.9: 最終回の結末カード ===== */
+.ending-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 3px solid var(--ink);
+  background: #fffdf5;
+  padding: 8px;
+  box-shadow: 3px 3px 0 var(--accent);
+}
+
+.ending-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ending-bonus {
+  font-size: 11px;
+  color: #6b6152;
+}
+
+.ending-bonus strong {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--accent);
+}
+
+.ending-bonus small {
+  margin-left: 4px;
+  font-size: 10px;
+}
+
+.ending-warning {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--accent-dark);
+}
+
+.ending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ending-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  border: 2px solid #b3a894;
+  border-radius: 4px;
+  background: #fff;
+  padding: 7px 10px;
+}
+
+.ending-picked {
+  border-color: var(--accent);
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.ending-bad {
+  background: #f2ecec;
+  border-color: #8a7f70;
+}
+
+.ending-name {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.ending-bad-tag,
+.ending-picked-tag {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 3px;
+  font-size: 9px;
+  font-weight: 900;
+  font-style: normal;
+}
+
+.ending-bad-tag {
+  color: #fff;
+  background: #6b6152;
+}
+
+.ending-picked-tag {
+  color: #fff;
+  background: var(--accent);
+}
+
+.ending-desc {
+  font-size: 11px;
+  line-height: 1.5;
+  color: #4a4238;
+}
+
+/* ===== v5.9: 終了画面の結末表示 ===== */
+.end-ending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  max-width: 320px;
+  border: 3px solid var(--ink);
+  background: #fffdf5;
+  padding: 10px 14px;
+  box-shadow: 3px 3px 0 var(--accent);
+}
+
+.end-ending-bad {
+  background: #f2ecec;
+  box-shadow: 3px 3px 0 #6b6152;
+}
+
+.end-ending-label {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: #6b6152;
+}
+
+.end-ending-name {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.end-ending-epilogue {
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+  color: #4a4238;
+}
+
+/* ===== v5.9: キャラ登場のカットイン ===== */
+.cutin-debut .cutin-panel {
+  background: linear-gradient(160deg, #fff6e6, #f6e3c8);
+  border-color: #b0682a;
+}
+
+.cutin-debut .cutin-name {
+  color: #8a4a12;
+}
+
+.cutin-debut .cutin-effect {
+  color: #6b4318;
+}
+
+/* ===== デバッグパネル（開発ビルドのみ。v6.4） ===== */
+.debug-panel {
+  position: fixed;
+  right: 8px;
+  bottom: 8px;
+  z-index: 999;
+  font-size: 12px;
+}
+
+.debug-toggle {
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 6px 10px;
+  opacity: 0.75;
+}
+
+.debug-body {
+  margin-top: 6px;
+  background: #1c1c1c;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 10px;
+  width: 240px;
+  max-height: 60vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.debug-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.debug-row input {
+  flex: 1;
+  min-width: 0;
+  background: #333;
+  color: #eee;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.debug-row button {
+  background: #444;
+  color: #eee;
+  border: 1px solid #666;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.debug-candidates {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 30vh;
+  overflow-y: auto;
+}
+
+.debug-candidates button {
+  text-align: left;
+  background: #333;
+  color: #eee;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 4px 6px;
+}

@@ -1,0 +1,36 @@
+{
+  "name": "uchikiri-survivor",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "『週刊サバイブ』— 週刊連載テーマのデッキ構築型スコアアタック",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/verify-dist.mjs",
+    "build:fast": "vite build && node scripts/verify-dist.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "sim": "tsx scripts/sim-cli.ts",
+    "cards": "tsx scripts/card-reference-dump.ts reference/cards.json && node scripts/card-reference-render.mjs reference/cards.json reference/cards.html",
+    "preview": "vite preview",
+    "cards:apply": "node scripts/apply-text-edits.mjs"
+  },
+  "dependencies": {
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "zod": "^4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.1.0",
+    "potrace": "^2.1.8",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0",
+    "vite": "^8.1.0",
+    "vite-plugin-singlefile": "^2.3.0",
+    "vitest": "^4.0.0"
+  }
+}

@@ -1,0 +1,1986 @@
+<title>週刊サバイブ カード・役 一覧</title>
+<style>
+:root {
+  --paper: #f7f3ea;
+  --panel: #ffffff;
+  --ink: #1a1613;
+  --ink-soft: #5c5347;
+  --ink-faint: #8a7f70;
+  --rule: #d8d0be;
+  --accent: #c0392b;
+  --accent-soft: #fbe6e2;
+  --gold: #a87b12;
+  --gold-soft: #fdf3d4;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #17130f;
+    --panel: #201b16;
+    --ink: #f0e9dc;
+    --ink-soft: #b9ae9c;
+    --ink-faint: #8b8172;
+    --rule: #3a3128;
+    --accent: #ef7060;
+    --accent-soft: #3a201c;
+    --gold: #e0b346;
+    --gold-soft: #362b13;
+  }
+}
+:root[data-theme='dark'] {
+  --paper: #17130f;
+  --panel: #201b16;
+  --ink: #f0e9dc;
+  --ink-soft: #b9ae9c;
+  --ink-faint: #8b8172;
+  --rule: #3a3128;
+  --accent: #ef7060;
+  --accent-soft: #3a201c;
+  --gold: #e0b346;
+  --gold-soft: #362b13;
+}
+:root[data-theme='light'] {
+  --paper: #f7f3ea;
+  --panel: #ffffff;
+  --ink: #1a1613;
+  --ink-soft: #5c5347;
+  --ink-faint: #8a7f70;
+  --rule: #d8d0be;
+  --accent: #c0392b;
+  --accent-soft: #fbe6e2;
+  --gold: #a87b12;
+  --gold-soft: #fdf3d4;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.wrap { max-width: 900px; margin: 0 auto; padding: 28px 16px 72px; display: flex; flex-direction: column; gap: 26px; }
+
+header { display: flex; flex-direction: column; gap: 10px; border-bottom: 3px solid var(--ink); padding-bottom: 14px; }
+.masthead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.badge {
+  font-size: 11px; font-weight: 700; letter-spacing: .3em;
+  border: 2px solid var(--ink); padding: 2px 8px;
+}
+h1 {
+  margin: 0;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: clamp(24px, 6vw, 36px); font-weight: 900; letter-spacing: .02em;
+  text-wrap: balance;
+}
+.lede { margin: 0; color: var(--ink-soft); font-size: 13px; }
+.tally { display: flex; gap: 14px; flex-wrap: wrap; font-size: 12px; color: var(--ink-soft); }
+.tally b { font-size: 19px; font-weight: 900; color: var(--ink); font-variant-numeric: tabular-nums; margin-right: 3px; }
+
+.tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; position: sticky; top: 0; background: var(--paper); padding: 10px 0; z-index: 5; border-bottom: 1px solid var(--rule); }
+#q {
+  flex: 1; min-width: 180px; padding: 9px 12px; font: inherit; font-size: 14px;
+  border: 2px solid var(--ink); border-radius: 4px; background: var(--panel); color: var(--ink);
+}
+#q:focus-visible { outline: 3px solid var(--accent); outline-offset: 1px; }
+.hits { font-size: 12px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+
+section { display: flex; flex-direction: column; gap: 14px; }
+h2 {
+  margin: 0;
+  font-family: 'Hiragino Mincho ProN', 'Yu Mincho', 'Noto Serif JP', serif;
+  font-size: 21px; font-weight: 900;
+  border-left: 6px solid var(--accent); padding-left: 10px;
+}
+.act-block { display: flex; flex-direction: column; gap: 6px; }
+.act-head {
+  margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+  font-size: 13px; font-weight: 700; color: var(--ink-soft);
+}
+.act-head em { font-style: normal; color: var(--ink-faint); font-size: 11px; font-variant-numeric: tabular-nums; }
+.act-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 26px; height: 22px; padding: 0 6px;
+  background: var(--ink); color: var(--paper);
+  font-weight: 900; font-size: 12px; border-radius: 3px;
+}
+.act-jo { background: #3a6b8a; color: #fff; }
+.act-ha { background: #b0682a; color: #fff; }
+.act-kyu { background: var(--accent); color: #fff; }
+.act-none, .act-combo { background: var(--ink-soft); color: var(--paper); }
+
+.tablewrap { overflow-x: auto; }
+table.grid { width: 100%; border-collapse: collapse; background: var(--panel); border: 2px solid var(--ink); }
+.grid th {
+  text-align: left; font-size: 11px; letter-spacing: .06em; font-weight: 700;
+  color: var(--paper); background: var(--ink); padding: 5px 9px; white-space: nowrap;
+}
+.grid td { padding: 8px 9px; border-top: 1px solid var(--rule); vertical-align: top; font-size: 13px; }
+.grid tr.is-rare { background: var(--gold-soft); }
+.c-name { font-weight: 800; white-space: nowrap; }
+.c-num { font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--accent); }
+.c-target, .c-eff { white-space: nowrap; font-size: 12px; color: var(--ink-soft); }
+.c-eff { font-weight: 700; color: var(--accent); }
+.c-desc { line-height: 1.6; }
+.meta { display: block; margin-top: 4px; }
+.chip {
+  display: inline-block; margin: 2px 4px 0 0; padding: 0 6px;
+  font-size: 10px; font-weight: 700; color: var(--ink-soft);
+  border: 1px solid var(--rule); border-radius: 10px; background: var(--paper);
+}
+.rare {
+  margin-left: 5px; padding: 0 5px; border-radius: 3px;
+  font-size: 9px; font-weight: 900; letter-spacing: .08em;
+  color: #4a3000; background: linear-gradient(135deg, #ffe89a, #d9a520); border: 1px solid var(--gold);
+}
+.faction { font-size: 11px; font-weight: 700; padding: 1px 6px; border-radius: 3px; white-space: nowrap; }
+.f-ally { color: #1e7d4f; border: 1px solid #1e7d4f; }
+.f-enemy { color: var(--accent); border: 1px solid var(--accent); }
+
+.notes { background: var(--accent-soft); border: 2px solid var(--accent); padding: 14px 16px; }
+.notes h2 { border: 0; padding: 0; font-size: 18px; }
+.notes ul { margin: 10px 0 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; }
+.notes li { font-size: 13px; line-height: 1.65; }
+.notes b { color: var(--accent); }
+.empty { display: none; color: var(--ink-faint); font-size: 13px; padding: 8px 0; }
+tr[hidden], .act-block[hidden] { display: none; }
+.act-ending { background: var(--gold); color: var(--paper); }
+.rare.bad { background: var(--ink-soft); }
+tr.is-bad .c-name { color: var(--ink-faint); }
+
+/* ===== フレーバーテキストの編集（v7.3） =====
+   .alt は .frow より後に置くこと。どちらも単一クラス＝同じ詳細度なので、
+   先に書くと .frow の display:block に打ち消されて編集中でなくても出てしまう */
+.frow { display: block; font-size: 12px; color: var(--ink-soft); }
+.alt { display: none; }
+body.editing .alt { display: block; margin-top: 5px; }
+.flabel {
+  display: inline-block; min-width: 4.5em; margin-right: 6px;
+  font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faint);
+}
+body.editing .f {
+  display: inline-block; min-width: 4em;
+  border-bottom: 1px dashed var(--rule); padding: 1px 2px; border-radius: 3px;
+}
+body.editing .f:focus { outline: 2px solid var(--accent); background: var(--panel); }
+.f.dirty { background: var(--gold-soft); border-bottom-color: var(--gold); }
+.editbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.editbar button {
+  font: inherit; font-size: 12px; padding: 6px 12px; cursor: pointer;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px;
+}
+.editbar button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.editbar .dirtycount { font-size: 12px; color: var(--ink-faint); }
+.exportbox {
+  display: flex; flex-direction: column; gap: 8px;
+  background: var(--panel); border: 2px solid var(--rule); border-radius: 8px; padding: 12px 14px;
+}
+.exportbox[hidden] { display: none; }
+.exportnote { margin: 0; font-size: 12px; color: var(--ink-soft); line-height: 1.6; }
+.exportbox textarea {
+  width: 100%; box-sizing: border-box; font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: var(--paper); color: var(--ink); border: 1px solid var(--rule); border-radius: 6px;
+  padding: 8px; resize: vertical;
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="masthead"><span class="badge">週刊</span><h1>週刊サバイブ 全カード・全役</h1></div>
+    <p class="lede">v5.9 時点の実装（第1〜25話・最終回まで）。<code>cards.json</code> と <code>combos.ts</code> から自動生成。</p>
+    <div class="tally">
+      <span><b>15</b>キャラ</span>
+      <span><b>68</b>展開</span>
+      <span><b>95</b>役</span>
+      <span><b>8</b>レア</span>
+    </div>
+  </header>
+
+  <div class="tools">
+    <input id="q" type="search" placeholder="カード名・効果・条件で絞り込む" aria-label="絞り込み">
+    <span class="hits" id="hits"></span>
+  </div>
+
+  <div class="tools editbar">
+    <button type="button" id="editToggle">フレーバーを編集</button>
+    <button type="button" id="exportBtn">変更をJSONで書き出す</button>
+    <button type="button" id="resetBtn">編集を破棄</button>
+    <span class="dirtycount" id="dirtyCount"></span>
+  </div>
+
+  <div class="exportbox" id="exportBox" hidden>
+    <p class="exportnote">
+      このJSONを <code>card-text-edits.json</code> として保存し、
+      <code>npm run cards:apply card-text-edits.json</code> でソースへ書き戻す。
+    </p>
+    <textarea id="exportText" readonly rows="10" spellcheck="false"></textarea>
+    <div class="editbar">
+      <button type="button" id="copyBtn">コピー</button>
+      <button type="button" id="downloadBtn">ファイルで保存</button>
+      <button type="button" id="closeExport">閉じる</button>
+      <span class="dirtycount" id="copyState"></span>
+    </div>
+  </div>
+
+  <section>
+    <h2>キャラ</h2>
+    <div class="act-block">
+      <div class="tablewrap">
+        <table class="grid">
+          <thead><tr><th>カード</th><th>人気</th><th>陣営</th><th>効果・説明</th></tr></thead>
+          <tbody><tr>
+    <td class="c-name">主人公</td>
+    <td class="c-num">10</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:hero:revealed">物語を動かすあなた自身</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:hero:hidden">物語の中心人物。秘めた力があるらしい</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:hero:internal">初期デッキ。役「継承の覚醒」の対象</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">ヒロイン</td>
+    <td class="c-num">12</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:heroine:revealed">彼女のために頑張れる</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:heroine:hidden">人気の高い相手役</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:heroine:internal">初期デッキ</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">相棒</td>
+    <td class="c-num">8</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:aibou:revealed">いつだって頼れる仲間</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:aibou:hidden">頼れる仲間</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:aibou:internal">初期デッキ</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">幼なじみ</td>
+    <td class="c-num">8</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:osananajimi:revealed">思い出を分かち合う相手</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:osananajimi:hidden">昔からの知り合い</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:osananajimi:internal">初期デッキ</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">ライバル</td>
+    <td class="c-num">15</td>
+    <td><span class="faction f-enemy">敵</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:rival:revealed">時には敵対し時には励みあう好敵手</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:rival:hidden">強敵。因縁がありそうだ</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:rival:internal">初期デッキ。単体で強いが役の素材としても優秀</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">師匠</td>
+    <td class="c-num">10</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:shishou:revealed">前を行き、導くもの</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:shishou:hidden">導く者。別れの予感がする</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:shishou:internal">ショップ入手。「先駆者との別れ」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">マスコット</td>
+    <td class="c-num">6</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:mascot:revealed">ちいさくかよわい生きもの</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:mascot:hidden">かわいい枠</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:mascot:internal">ショップ入手。安価。役「意外な活躍」「意地を見せる」の対象、「獅子心中の虫」の素材</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">宿敵<span class="rare">レア</span></td>
+    <td class="c-num">20</td>
+    <td><span class="faction f-enemy">敵</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:shukuteki:revealed">物語最強最大の敵</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:shukuteki:hidden">最大の敵</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:shukuteki:internal">ショップ入手。高価</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">母</td>
+    <td class="c-num">9</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:haha:revealed">あなたの変える場所</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:haha:hidden">帰る場所があるほど、戦う理由は重くなる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:haha:internal">家族の情を描くための軸。「人助け」「自己犠牲」と噛み合う</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">父</td>
+    <td class="c-num">11</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:chichi:revealed">越えるべき大きな背中</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:chichi:hidden">大きな背中は、いつか越えるために描かれる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:chichi:internal">越えるべき壁としての父。役「父を超える」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">敵幹部（パワータイプ）</td>
+    <td class="c-num">16</td>
+    <td><span class="faction f-enemy">敵</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:teki_kanbu_power:revealed">ぐわーっはっはっは！</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:teki_kanbu_power:hidden">力任せに道をこじ開けてくる者がいると、物語は厚くなる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:teki_kanbu_power:internal">中ボス。宿敵より手軽に出せる強敵枠。腕力型</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">敵幹部（頭脳タイプ）</td>
+    <td class="c-num">16</td>
+    <td><span class="faction f-enemy">敵</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:teki_kanbu_brain:revealed">私の策を破れますか？</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:teki_kanbu_brain:hidden">策を張り巡らせる者がいると、物語は厚くなる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:teki_kanbu_brain:internal">中ボス。宿敵より手軽に出せる強敵枠。策略型</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">三枚目</td>
+    <td class="c-num">7</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:sanmaime:revealed">やるときはやるコメディリリーフ</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:sanmaime:hidden">笑わせる役ほど、決めるときに効く</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:sanmaime:internal">緩急を作るコメディ担当。役「意外な活躍」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">弱虫</td>
+    <td class="c-num">5</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:yowamushi:revealed">臆病者がドラマをつくる</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:yowamushi:hidden">いちばん弱い者が踏み出す一歩に、読者は弱い</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:yowamushi:internal">成長枠。人気度が低く、役「勇気の発露」で化ける</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">一般人</td>
+    <td class="c-num">4</td>
+    <td><span class="faction f-ally">仲間</span></td>
+    <td class="c-desc"><span class="f" data-edit="char:ippanjin:revealed">守るべき無辜の人たち</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="char:ippanjin:hidden">特別でない誰かがいると、特別さが際立つ</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="char:ippanjin:internal">巻き込まれる側の視点。人気度は低いが安く出せる</span></span>
+  </td>
+  </tr></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>展開カード</h2>
+    <p class="lede">幕タグ（序／破／急）は編集会議での提示重みに使う。同じ幕は3倍、隣は1倍、遠い幕は0.3倍。</p>
+    <div class="act-block" data-act="jo">
+      <h3 class="act-head"><span class="act-mark act-jo">序</span>第1〜5話。出会いと世界の提示<em>13枚</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>カード</th><th>話題</th><th>対象</th><th>効果</th></tr></thead>
+        <tbody><tr>
+    <td class="c-name">日常回</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:nichijou:revealed">ゆるやかな一週。話題性は控えめ</span>
+    <span class="meta"><span class="chip">最大4枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:nichijou:hidden">ゆるやかな一週。話題性は控えめ</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:nichijou:internal">効果なし。初期デッキ×3</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">敵組織の襲来</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:teki_soshiki:revealed">日常を壊す襲来。話題性が高い。</span>
+    <span class="meta"><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:teki_soshiki:hidden">平穏を破る者たちが現れる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:teki_soshiki:internal">役「奪われた日常」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">運命的な出会い</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">控え1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:unmei_deai:revealed">控えキャラ1枚をデビューさせ、そのキャラの人気度を恒久+3（次週以降）</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:unmei_deai:hidden">運命の出会いは、その相手を特別な存在にする</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:unmei_deai:internal">控えキャラ1枚をデビューさせ、そのキャラの人気度を恒久+3</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">宴会</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:enkai:revealed">単独でのみ使用可能。全展開カードの鮮度を全回復し、溜まった緊張を全解放する</span>
+    <span class="meta"><span class="chip">単独プレイのみ</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:enkai:hidden">騒いで飲み食いする一週。読者の飽きがリセットされる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:enkai:internal">単独プレイのみ。全展開カードの鮮度を全回復し、緊張を全解放する</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">すれ違い</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:surechigai:revealed">想いはすれ違う。対象キャラに恋愛フラグを付与</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:surechigai:hidden">想いがすれ違ったキャラには、続きの展開が待っている</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:surechigai:internal">対象キャラに恋愛フラグを付与</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">新キャラ登場</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">控え1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:shinchara:revealed">大事な新展開。控えキャラ1枚を今週からキャストにデビューさせる</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:shinchara:hidden">新しい顔ぶれが、連載の景色を変える</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:shinchara:internal">控えキャラ1枚を選び、今週の話からキャストにデビューさせる</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">才能の片鱗</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:sainou_no_henrin:revealed">粗削りだが光るもの。対象キャラの人気度を恒久+3（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:sainou_no_henrin:hidden">まだ荒削りだが、何かを持っている——そう思わせる回</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:sainou_no_henrin:internal">対象キャラの人気度を恒久+3。役「大器の予感」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">見くびられた男</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:mikubirareta_otoko:revealed">誰しもに見せ場。場で最も人気度が低いキャラの人気度を恒久+6（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:mikubirareta_otoko:hidden">かませかと思われていた者にも、見せ場は用意されている</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:mikubirareta_otoko:internal">場で最も人気度が低いキャラの人気度を恒久+6</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">人助け</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:hitodasuke:revealed">王道漫画の基本。いくつかの役の素材になる</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:hitodasuke:hidden">困っている誰かを助ける。それだけで主人公になる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:hitodasuke:internal">効果なし。役「勇気の発露」「意外な活躍」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">因縁</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:innen:revealed">対象の人気度を恒久+2。決着につなげられれば大きな効果</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:innen:hidden">因縁は、結ばれた時点では地味に見える</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:innen:internal">対象の人気度を恒久+2。役「因縁の決着」の仕込み</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">寄り道</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:yorimichi:revealed">サブストーリー。伏線トークンを1つ得る</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:yorimichi:hidden">本筋から外れた回で拾ったものが、後で効く</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:yorimichi:internal">伏線トークン+1</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">伝説を聞く</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:densetsu:revealed">昔語りからヒントを得る。伏線トークンを2つ得る</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:densetsu:hidden">語られた伝説は、いつか目の前に現れる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:densetsu:internal">伏線トークン+2。話題性は低いが仕込みが厚い</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">骨休め</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:honeyasume:revealed">ちょっと息抜き。今週出さなかった展開カードの鮮度回復が倍になる</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:honeyasume:hidden">何も起きない回にも、読者の目を休ませる働きがある</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:honeyasume:internal">出さなかった展開の鮮度回復が+25%される（役は無効化しない）</span></span>
+  </td>
+  </tr></tbody>
+      </table></div>
+    </div><div class="act-block" data-act="ha">
+      <h3 class="act-head"><span class="act-mark act-ha">破</span>第6〜16話。試練と裏切り、仕込み<em>26枚</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>カード</th><th>話題</th><th>対象</th><th>効果</th></tr></thead>
+        <tbody><tr>
+    <td class="c-name">修行</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:shugyou:revealed">対象キャラに修行済みフラグを付与(最大2個)。次にそのキャラをプレイした週、フラグをすべて消費して1個につき人気度+3</span>
+    <span class="meta"><span class="chip">最大4枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:shugyou:hidden">鍛えたキャラは、次の登場で成長を見せる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:shugyou:internal">対象キャラに修行済みフラグを1個付与(最大2個)。次にプレイした週にすべて消費し、1個につき人気度+3</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">裏切り</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:uragiri:revealed">衝撃の展開。対象キャラの陣営を週終了時に反転</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:uragiri:hidden">信じていた者が牙をむく</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:uragiri:internal">対象キャラの陣営を反転(週終了時に適用)</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">悲しい過去</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kanashii_kako:revealed">隠された事情。大きな話題を呼ぶ</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kanashii_kako:hidden">そのキャラの過去が明かされると、読者の見る目が変わる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kanashii_kako:internal">効果なし。役の素材として最重要（陣営は変えない）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">能力覚醒</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:nouryoku_kakusei:revealed">眠れる力が目覚める。対象キャラの人気度を恒久+4（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大3枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:nouryoku_kakusei:hidden">眠っていた力が目を覚ますと、そのキャラは強くなる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:nouryoku_kakusei:internal">対象キャラの人気度を恒久+4（次週以降）。役「秘めた力」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">途中離脱</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:ridatsu:revealed">訳あって一時の別れ。対象キャラを週終了時に再登場待ちへ移動(2週後から再登場可能)</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:ridatsu:hidden">去っていく者には、再会の予感が残る</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:ridatsu:internal">対象キャラを週終了時に再登場待ちへ移動（2週後から再登場可能）。役「かませ犬」「決意の別れ」の素材。v7.4c: 話題性0→3（誰にも買われず役が成立しなかったため）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">伏線</td>
+    <td class="c-num">+0</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:fukusen:revealed">伏線トークンを1つ得る。回収忘れに注意</span>
+    <span class="meta"><span class="chip">最大4枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:fukusen:hidden">いま仕込んだ謎は、いつか回収される</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:fukusen:internal">伏線トークンを1個得る(累積)</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">敗北</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:haiboku:revealed">緊張+1。人気度が一時的に下がるが、のちのカタルシスにつながる</span>
+    <span class="meta"><span class="chip">最大3枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:haiboku:hidden">負ける回は人気が落ちる。だが、そこから這い上がる物語こそ燃える</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:haiboku:internal">緊張+1（人気度が一時的に下がる）。解放系カードでカタルシスになる</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">大ピンチ</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:dai_pinch:revealed">緊張+1。人気度が一時的に下がるが、のちのカタルシスにつながる</span>
+    <span class="meta"><span class="chip">最大3枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:dai_pinch:hidden">絶体絶命。引きは強いが、読者は不安になる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:dai_pinch:internal">緊張+1。解放系カードでカタルシスになる</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">武器ゲット</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:buki_get:revealed">戦力増強。対象キャラの人気度を恒久+4（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:buki_get:hidden">新しい武器は、そのキャラの見せ場を増やす</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:buki_get:internal">対象キャラの人気度を恒久+4。役「新装備」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">技ゲット</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:waza_get:revealed">戦力増強。対象キャラの人気度を恒久+4（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:waza_get:hidden">技を覚えた者は強くなる。誰から受け継いだかも大事だ</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:waza_get:internal">対象キャラの人気度を恒久+4。役「伝承」「成長の実感」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">回想</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kaisou:revealed">過去の物語。2週間、すべての展開カードの話題性+1</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kaisou:hidden">過去を描くと、そのあとの謎や別れが効いてくる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kaisou:internal">2週間(当週を含む)すべての展開カードの話題性+1。役「走馬灯」「ミッシングリンク」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">洗脳</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:sennou:revealed">操り人形。緊張+1。対象キャラの陣営を週終了時に反転</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:sennou:hidden">操られた仲間との戦いは、読者に重くのしかかる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:sennou:internal">対象キャラの陣営を反転し、緊張+1</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">禁断の力<span class="rare">レア</span></td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kindan_no_chikara:revealed">代償ある力。対象キャラの人気度を恒久+8。ただし緊張+2</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kindan_no_chikara:hidden">禁じられた力に手を出すと、代償はあとから返ってくる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kindan_no_chikara:internal">対象キャラの人気度を恒久+8。緊張+2</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">閉ざされた舞台<span class="rare">レア</span></td>
+    <td class="c-num">+5</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:tozasareta_butai:revealed">3週間、すべての展開の話題性+1。ただし期間中は新キャラのデビューができない</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:tozasareta_butai:hidden">逃げ場のない舞台に閉じ込められる。新しい顔ぶれは望めない</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:tozasareta_butai:internal">3週間、全展開の話題性+1。期間中は新キャラのデビュー不可</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">組織の掟</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場の敵キャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:soshiki_no_okite:revealed">悪を縛る秩序。場の敵キャラ1人の人気度を恒久+5。緊張+1</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:soshiki_no_okite:hidden">組織の掟は絶対だ。逆らう者にも、従う者にも重くのしかかる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:soshiki_no_okite:internal">敵陣営キャラ1人の人気度を恒久+5。緊張+1</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">動機の告白</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:douki_no_kokuhaku:revealed">事情の吐露。伏線トークンを2つ得る</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:douki_no_kokuhaku:hidden">なぜそんなことをしたのか。語られる動機が、次の謎を生む</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:douki_no_kokuhaku:internal">伏線トークンを2個得る</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">大喧嘩</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:oogenka:revealed">派手なぶつかりあい。緊張+1。のちのカタルシスにつながる</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:oogenka:hidden">仲間同士がぶつかる回は、そのあとの和解が効く</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:oogenka:internal">緊張+1。仲間割れの回</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">一時休戦</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:ichiji_kyuusen:revealed">敵に背中を預ける。溜まった緊張をすべて解放</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:ichiji_kyuusen:hidden">敵と背中を預ける回は、読者の見たかったものだ</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:ichiji_kyuusen:internal">緊張を全解放。役「敵の敵は味方」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">喪失</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:soushitsu:revealed">対象が一時離脱（再登場待ち）。人気度が恒久+5され、復帰時強化。緊張+1</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:soushitsu:hidden">失って初めて、その存在の大きさが描ける</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:soushitsu:internal">対象を再登場待ちへ移し、人気度を恒久+5。緊張+1。復帰したとき強くなっている</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">一方そのころ</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">再登場待ち1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:ippou_sonokoro:revealed">再登場待ちキャラを1人、待機期間を無視して即座に場へ戻す。そのキャラの人気度が恒久+3</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:ippou_sonokoro:hidden">別の場所を映すと、消えた者の現在地が分かる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:ippou_sonokoro:internal">再登場待ちのキャラを即座に場へ戻す(2週待ちの制限を無視)。人気度 恒久+3。週1人の再登場とは別枠</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">キーアイテム探し</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:key_item:revealed">物語を動かすアイテムの探求。2週間、すべての展開カードの話題性+1</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:key_item:hidden">目的がはっきりした連載は、どの回も締まる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:key_item:internal">2週間、すべての展開の話題性+1</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">大破壊</td>
+    <td class="c-num">+6</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:daihakai:revealed">甚大な被害の発生。緊張+2。</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:daihakai:hidden">街が壊れる回は派手だが、失ったものの分だけ重い</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:daihakai:internal">緊張+2。派手だが重い</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">記憶喪失</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kioku_soushitsu:revealed">対象のフラグ（修行・恋愛）をすべて喪失。かわりに人気度が恒久+6</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kioku_soushitsu:hidden">積み上げたものを失った主人公を、読者は放っておけない</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kioku_soushitsu:internal">対象の仕込み（修行・恋愛フラグ）をすべて失う。かわりに人気度が恒久+6。失ったフラグは「おかえり」で取り戻せる（v7.4）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">仲直り</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:nakanaori:revealed">より強固な絆へ。溜まった緊張をすべて解放し、全員の人気度が恒久+2</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:nakanaori:hidden">ぶつかった後の和解は、ぶつかる前より強い関係を作る</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:nakanaori:internal">緊張を全解放し、全員の人気度を恒久+2。役「雨降って地固まる」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">共闘</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kyoutou:revealed">全員の心を一つに。その週だけ、全員の人気度+5</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kyoutou:hidden">普段バラバラな面々が背中を合わせる回は、それだけで絵になる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kyoutou:internal">その週だけキャスト全員の人気度+5（恒久ではない）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">悪役会議</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">oneBenchEnemy</td>
+    <td class="c-desc"><span class="f" data-edit="dev:akuyaku_kaigi:revealed">悪の密談。控えから敵になれるキャラ1枚を敵としてデビューさせる。場の敵キャラのうち最も人気度が低い者を恒久+4（次週以降）</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:akuyaku_kaigi:hidden">闇の中で交わされる密談が、新たな刺客を送り込む</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:akuyaku_kaigi:internal">控えキャラのうち敵になれる者1枚を敵としてデビューさせる。場の敵キャラのうち最も人気度が低い者を恒久+4</span></span>
+  </td>
+  </tr></tbody>
+      </table></div>
+    </div><div class="act-block" data-act="kyu">
+      <h3 class="act-head"><span class="act-mark act-kyu">急</span>第17〜24話。決着と回収<em>14枚</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>カード</th><th>話題</th><th>対象</th><th>効果</th></tr></thead>
+        <tbody><tr>
+    <td class="c-name">真の覚醒</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kakusei:revealed">溜まった緊張を全解放する。「先駆者との別れ」を経ていれば、主人公を対象にすると「継承の覚醒」（週スコア×3）</span>
+    <span class="meta"><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kakusei:hidden">力が目覚める条件が整ったとき、真価を発揮する</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kakusei:internal">緊張を全解放する。過去に「先駆者との別れ」を成立させていれば主人公対象で役「継承の覚醒」成立</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">死亡</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:shibou:revealed">永遠の別れ。対象キャラを週終了時に死亡済みにする</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:shibou:hidden">重い展開。そのキャラはもう戻らない…はず</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:shibou:internal">対象キャラを週終了時に死亡済みにする(抽選対象から除外)</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">伏線回収</td>
+    <td class="c-num">+1</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:fukusen_kaishu:revealed">点と点がつながるとき。伏線トークンを全消費し、消費数に応じて話題性が向上</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:fukusen_kaishu:hidden">仕込んだ謎が多いほど、回収は盛り上がる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:fukusen_kaishu:internal">役「伏線回収」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">告白</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kokuhaku:revealed">大切な思いを伝える。恋愛フラグ所持キャラを対象にすると「両想い」成立</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kokuhaku:hidden">恋愛フラグを持つキャラへの告白には、特別な展開が起こる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kokuhaku:internal">対象が恋愛フラグ所持なら役「両想い」成立</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">タイムスキップ</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:timeskip:revealed">それからしばらくして。第9話以降のみ使用可能。全キャラの人気度を恒久+2(次週以降有効)</span>
+    <span class="meta"><span class="chip">第9話〜</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:timeskip:hidden">数年後──。全員が成長して帰ってくる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:timeskip:internal">第9話以降のみプレイ可。全キャラの人気度を恒久+2(次週以降有効)</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">大勝利</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:dai_shouri:revealed">カタルシス。溜まった緊張を全解放し、1つにつき話題性+5</span>
+    <span class="meta"><span class="chip">最大3枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:dai_shouri:hidden">溜めてきたものが大きいほど、勝利の瞬間は爆発する</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:dai_shouri:internal">緊張を全解放し、1つにつき話題性+5（カタルシス）</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">タイトル回収<span class="rare">レア</span></td>
+    <td class="c-num">+8</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:title_kaishu:revealed">みんな大好き。第10話以降のみ使用可能。話題性+8</span>
+    <span class="meta"><span class="chip">第10話〜</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:title_kaishu:hidden">作品タイトルの意味が明かされる、その一回のために連載はある</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:title_kaishu:internal">第10話以降。話題性+8の大技</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">救出</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kyuushutsu:revealed">危機からの救出。溜まった緊張を全解放し、1つにつき話題性+5</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kyuushutsu:hidden">危機に陥った仲間を助け出す回。溜めが大きいほど盛り上がる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kyuushutsu:internal">緊張を全解放し、1つにつき話題性+5（カタルシス）</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">全滅<span class="rare">レア</span></td>
+    <td class="c-num">+10</td>
+    <td class="c-target">場のキャラ全員</td>
+    <td class="c-desc"><span class="f" data-edit="dev:zenmetsu:revealed">最大の衝撃。仲間陣営を全員、週終了時に死亡済みにする（敵は残る）</span>
+    
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:zenmetsu:hidden">最大級の衝撃。ただし代償も最大級</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:zenmetsu:internal">仲間陣営を全員、週終了時に死亡済みにする（敵は残る）。v7.5: 話題性6→10。全キャストを失う代償に見合わず選ぶ理由がなかったため</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">自己犠牲</td>
+    <td class="c-num">+5</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:jiko_gisei:revealed">身を挺した犠牲。対象を死亡させる。かわりに全員の人気度が恒久+3。緊張+1</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:jiko_gisei:hidden">誰かが身を挺した回は、残された全員の重みが変わる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:jiko_gisei:internal">対象を死亡させ、全員の人気度を恒久+3。緊張+1</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">反撃開始</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:hangeki:revealed">ここからが本番だ！溜まった緊張をすべて解放し、1つにつき話題性+5</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:hangeki:hidden">押されっぱなしだった側が前に出る、その一話</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:hangeki:internal">緊張を全解放。役「意外な活躍」の素材</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">全員生還<span class="rare">レア</span></td>
+    <td class="c-num">+5</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:zenin_seikan:revealed">第17話以降のみ使用可能。死亡済みのキャラを全員、場に戻す。緊張も全解放</span>
+    <span class="meta"><span class="chip">第17話〜</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:zenin_seikan:hidden">死んだと思われていた全員が、揃って戻ってくる回がある</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:zenin_seikan:internal">死亡済みキャラを全員場に戻し、緊張を全解放する。夢オチと違い代償はない</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">弔い合戦</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:tomurai_gassen:revealed">これはあいつの分だ！死亡済みのキャラ1人につき話題性+2</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:tomurai_gassen:hidden">失った者の数だけ、その一戦は重くなる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:tomurai_gassen:internal">死亡済みキャラ1人につき話題性+2</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">撃破</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場の敵キャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:gekiha:revealed">勝利。場の敵キャラ1人を退場させる（再登場待ちへ）</span>
+    <span class="meta"><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:gekiha:hidden">倒したはずの敵が、姿を消した</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:gekiha:internal">対象の敵を週終了時に再登場待ちへ移す。途中離脱の敵版</span></span>
+  </td>
+  </tr></tbody>
+      </table></div>
+    </div><div class="act-block" data-act="none">
+      <h3 class="act-head"><span class="act-mark act-none">汎用</span>幕タグなし。どの話数帯でも同じ重みで出る<em>15枚</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>カード</th><th>話題</th><th>対象</th><th>効果</th></tr></thead>
+        <tbody><tr>
+    <td class="c-name">バトル</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:battle:revealed">戦いの回。話題性が上がる</span>
+    <span class="meta"><span class="chip">最大4枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:battle:hidden">戦いの回。話題性が上がる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:battle:internal">効果なし。初期デッキ×2</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">改心</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kaishin:revealed">かつての敵は今日の友。対象キャラを週終了時に仲間陣営にする</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kaishin:hidden">敵だった者が、こちら側に立つ回</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kaishin:internal">対象キャラを週終了時に仲間陣営にする。役「改心の物語」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">おかえり</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:okaeri:revealed">心離れた者の帰還。対象キャラを週終了時に、当初の陣営へ戻す</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:okaeri:hidden">戻ってこられる場所があるから、人は帰ってくる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:okaeri:internal">対象キャラを週終了時にデビュー時の陣営へ戻す。「記憶喪失」で失ったフラグも取り戻す（v7.4）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">闇堕ち</td>
+    <td class="c-num">+5</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:yamiochi:revealed">闇への誘惑。対象キャラを週終了時に敵陣営にする（主人公を除く）。緊張+1</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:yamiochi:hidden">光の側にいた者が、闇に堕ちるとき</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:yamiochi:internal">対象キャラを週終了時に敵陣営にする。緊張+1。役「ダークヒーロー」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">意外な一面</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:igai_na_ichimen:revealed">キャラクターに深みを与える。対象キャラの人気度を恒久+3（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大3枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:igai_na_ichimen:hidden">知らなかった一面が見えると、読者はそのキャラを好きになる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:igai_na_ichimen:internal">対象キャラの人気度を恒久+3（次週以降）。役「キャラの掘り下げ」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">心強い救援</td>
+    <td class="c-num">+4</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kyuuen:revealed">助けに来たぞ！キャスト全員の人気度が恒久+1。話題性が高い。</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kyuuen:hidden">みんなで乗り越えた回は、全員の株が上がる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kyuuen:internal">話題性4。全員の人気度を恒久+1（固い絆より話題は高く、恒久は小さい）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">悲劇</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:higeki:revealed">取り返しのつかない出来事。話題性が高い。</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:higeki:hidden">取り返しのつかない出来事が起こる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:higeki:internal">役「奪われた日常」の素材</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">復活</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">死亡済み1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:fukkatsu:revealed">ある種禁じ手。死亡済みキャラ1枚を場に戻し、溜まった緊張を全解放する</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:fukkatsu:hidden">失われた者が帰ってくるとき、読者は沸く</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:fukkatsu:internal">死亡済みキャラを場に戻す。緊張を全解放する</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">トーナメント開幕</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:tournament:revealed">3週間、毎週話題性+2。期間中は全展開の鮮度低下が2倍</span>
+    <span class="meta"><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:tournament:hidden">大会が始まると盛り上がるが、長引くと飽きられる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:tournament:internal">3週間(当週を含む)毎週話題性+2。期間中は全展開の鮮度低下が2倍</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">夢オチ</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:yumeochi:revealed">死亡済みキャラを全員場に戻す。ただし全キャラの人気度が恒久-2、次週の鮮度-25%</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:yumeochi:hidden">「あれは夢だった」。失ったものは戻るが、読者の信頼は削れる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:yumeochi:internal">死亡済みキャラを全員場に戻す。全キャラの人気度が恒久-2、次週の鮮度-25%</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">隠された血統<span class="rare">レア</span></td>
+    <td class="c-num">+3</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:kakusareta_kettou:revealed">血に秘められた宿命。第5話以降のみ使用可能。対象キャラの人気度を恒久+7（次週以降有効）</span>
+    <span class="meta"><span class="chip">第5話〜</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kakusareta_kettou:hidden">その血に秘められた宿命が明かされる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kakusareta_kettou:internal">第5話以降。対象キャラの人気度を恒久+7</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">固い絆</td>
+    <td class="c-num">+2</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:katai_kizuna:revealed">仲間との絆。全員の人気度を恒久+2（次週以降有効）</span>
+    <span class="meta"><span class="chip">最大2枚</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:katai_kizuna:hidden">仲間との絆が描かれた回は、全員の株が上がる</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:katai_kizuna:internal">キャスト全員の人気度を恒久+2</span></span>
+  </td>
+  </tr><tr class="is-rare">
+    <td class="c-name">名ゼリフ<span class="rare">レア</span></td>
+    <td class="c-num">+6</td>
+    <td class="c-target">場のキャラ1人</td>
+    <td class="c-desc"><span class="f" data-edit="dev:na_serifu:revealed">心に刻まれるあの言葉。第3話以降のみ使用可能。対象キャラの人気度を恒久+3</span>
+    <span class="meta"><span class="chip">第3話〜</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:na_serifu:hidden">読者が何年も覚えているのは、たった一行のセリフだったりする</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:na_serifu:internal">第3話以降。話題性が高く、対象キャラの人気度を恒久+3</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">総力戦</td>
+    <td class="c-num">+3</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:souryokusen:revealed">総力で打ち勝て！第5話以降のみ使用可能。キャラが4人以上いると役に発展</span>
+    <span class="meta"><span class="chip">第5話〜</span><span class="chip">最大2枚</span><span class="chip">バトル</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:souryokusen:hidden">全員が戦線に並ぶ回は、キャストが多いほど映える</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:souryokusen:internal">第5話以降。役「総力戦」の素材（キャスト4人以上で話題+6）</span></span>
+  </td>
+  </tr><tr>
+    <td class="c-name">総集編</td>
+    <td class="c-num">+0</td>
+    <td class="c-target">対象なし</td>
+    <td class="c-desc"><span class="f" data-edit="dev:soushuhen:revealed">その週のノルマ判定を免除(原稿料なし)。単独でのみ使用可能。ボス週と最終回では使用不可</span>
+    <span class="meta"><span class="chip">単独プレイのみ</span></span>
+    <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:soushuhen:hidden">今週は一休み。ノルマ判定を免除する</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:soushuhen:internal">その週のノルマ判定を免除(原稿料なし)。単独プレイのみ。ボス週と最終回では使用不可</span></span>
+  </td>
+  </tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>役</h2>
+    <p class="lede">成立条件は <code>combos.ts</code> のレジストリが唯一の正。上位役は下位役を抑制し、週スコア乗算は最高倍率1つだけが適用される。</p>
+    <div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>話数限定・導入役<em>16種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">非日常へ</td>
+              <td class="c-desc">第1話に「日常回」と「バトル」を同時にプレイ
+                <span class="meta"><span class="chip">平和な日常を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:hijou_e:hintText">日常が壊れる瞬間に物語は大きく動く</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">顔見せ回</td>
+              <td class="c-desc">第5話までに「新キャラ登場」と「日常回」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kaomise:hintText">新しい顔ぶれを、日常の中で読者に紹介</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">旅立ち</td>
+              <td class="c-desc">第5話までに「新キャラ登場」と「敵組織の襲来」か「悲劇」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:tabidachi:hintText">新しい仲間と困難を乗り越えはじめる</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">最初の試練</td>
+              <td class="c-desc">第5話までに「バトル」と「敗北」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:saisho_no_shiren:hintText">序盤の敗北はその後の成長の約束</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">師との出会い</td>
+              <td class="c-desc">第5話までに、師匠が場にいる状態で「修行」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shi_tono_deai:hintText">導く者との出会い</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">ボーイミーツガール</td>
+              <td class="c-desc">第5話までに「運命的な出会い」でヒロインをデビューさせる
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:boy_meets_girl:hintText">少年と少女の出会いが運命を回し始める</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">宿敵との邂逅</td>
+              <td class="c-desc">第5話までに、敵キャラをデビューさせた週に「バトル」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shukuteki_tono_kaikou:hintText">生涯の敵と初めて刃を交える</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">異能の芽生え</td>
+              <td class="c-desc">第5話までに、主人公を対象に「能力覚醒」か「才能の片鱗」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:inou_no_mebae:hintText">自分でも知らなかった力に触れる</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">運命の出会い</td>
+              <td class="c-desc">第5話までに「運命的な出会い」でキャラをデビューさせる
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:unmei_no_deai:hintText">運命の出会いが物語を駆動する</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">緩急</td>
+              <td class="c-desc">第2話以降に「日常回」と「バトル」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kankyuu:hintText">静と動を併せて描く</span></span>
+              </td>
+              <td class="c-eff">話題+2</td>
+            </tr><tr>
+              <td class="c-name">特訓回</td>
+              <td class="c-desc">「修行」を2枚同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:tokkun_kai:hintText">鍛えて、鍛えて、鍛えまくる</span></span>
+              </td>
+              <td class="c-eff">話題+2</td>
+            </tr><tr>
+              <td class="c-name">平和な日常</td>
+              <td class="c-desc">「日常回」を2枚以上同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:heiwa_na_nichijou:hintText">なにも起こらない週にも価値がある</span></span>
+              </td>
+              <td class="c-eff">話題+2</td>
+            </tr><tr>
+              <td class="c-name">奪われた日常</td>
+              <td class="c-desc">「日常回」+「悲劇」または「敵組織の襲来」を同時にプレイ
+                <span class="meta"><span class="chip">平和な日常を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ubawareta_nichijou:hintText">平和な日々が壊されるとき</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">秘めた力</td>
+              <td class="c-desc">「能力覚醒」+「バトル」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:himeta_chikara:hintText">戦いの中で力が目を覚ます</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">キャラの掘り下げ</td>
+              <td class="c-desc">「意外な一面」+「日常回」を同時にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kyara_horisage:hintText">何気ない時に見せるその素顔</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">強敵の壁</td>
+              <td class="c-desc">敵陣営の合計人気が仲間陣営を上回る状態で「バトル」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kyouteki_no_kabe:hintText">強大な敵に挑む</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>基本役<em>17種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">伏線回収</td>
+              <td class="c-desc">伏線を張った状態で「伏線回収」をプレイ（話題性 +2×本数 +寝かせた週数）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:fukusen_kaishu:hintText">張った伏線は回収しましょう</span></span>
+              </td>
+              <td class="c-eff">効果は動的</td>
+            </tr><tr>
+              <td class="c-name">衝撃の裏切り</td>
+              <td class="c-desc">仲間キャラを対象に「裏切り」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shougeki_no_uragiri:hintText">信頼している者の裏切り</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">嫉妬心</td>
+              <td class="c-desc">仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」をプレイ（人気度 恒久+4）
+                <span class="meta"><span class="chip">衝撃の裏切りを抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shitto_shin:hintText">近いからこそ、こじれた想い</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">獅子心中の虫</td>
+              <td class="c-desc">仲間の「マスコット」を対象に「裏切り」をプレイ（人気度 恒久+4）
+                <span class="meta"><span class="chip">衝撃の裏切りを抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shishinchuu_no_mushi:hintText">無害さは仮面である</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">絶望</td>
+              <td class="c-desc">仲間の「ヒロイン」を対象に「裏切り」をプレイ（緊張+2）
+                <span class="meta"><span class="chip">衝撃の裏切りを抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zetsubou:hintText">いちばん信じていた相手だからこそ</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">あの頃みたいに</td>
+              <td class="c-desc">敵の「幼なじみ」か「相棒」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ano_koro_mitaini:hintText">またお前と同じ側に立てる</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">あなたと共に</td>
+              <td class="c-desc">敵の「ヒロイン」を対象に「裏切り」をプレイ（仲間へ戻る。緊張を全解放、v6.6）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:anata_to_tomoni:hintText">離れていた時間の分だけ想いは募る</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">勘違いするな</td>
+              <td class="c-desc">敵の「ライバル」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kanchigai_suruna:hintText">お前を倒すのはこの俺だ</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">悲しき悪役</td>
+              <td class="c-desc">敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kanashiki_akuyaku:hintText">悪の過去が明かされるとき</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">改心の物語</td>
+              <td class="c-desc">同じ敵キャラを対象に「悲しい過去」と「改心」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kaishin_no_monogatari:hintText">過去を乗り越え共に並び立つ</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">ダークヒーロー</td>
+              <td class="c-desc">主人公を対象に「闇堕ち」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:dark_hero:hintText">闇に落ちたヒーロー</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">王道</td>
+              <td class="c-desc">主人公が場にいる状態で「バトル」+主人公対象の「修行」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:oudou:hintText">鍛錬＆バトルの王道展開</span></span>
+              </td>
+              <td class="c-eff">人気+10</td>
+            </tr><tr>
+              <td class="c-name">ライバル対決</td>
+              <td class="c-desc">主人公とライバルが場にいる状態で「バトル」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:rival_taiketsu:hintText">宿命の二人が拳を交えるとき</span></span>
+              </td>
+              <td class="c-eff">人気+15</td>
+            </tr><tr>
+              <td class="c-name">かませ犬</td>
+              <td class="c-desc">「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」+「バトル」をプレイ（新顔ごとに1回）
+                <span class="meta"><span class="chip">1キャラ1回</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kamase_inu:hintText">今日出たばかりですぐ退場</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">必殺技初披露</td>
+              <td class="c-desc">「バトル」+「修行」を同じ週にプレイ（ラン1回）
+                <span class="meta"><span class="chip">1ラン1回</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:hissatsu_hatsuhirou:hintText">修行の成果を見せてやる</span></span>
+              </td>
+              <td class="c-eff">話題+2</td>
+            </tr><tr>
+              <td class="c-name">主人公死亡</td>
+              <td class="c-desc">主人公を対象に「死亡」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shujinkou_shibou:hintText">名の通りの禁じ手</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">思い届かず</td>
+              <td class="c-desc">裏切り・洗脳・闇堕ちなどで敵になった仲間を対象に「死亡」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:omoi_todokazu:hintText">心は戻らないままもう戻らない</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>仕込み役<em>9種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">先駆者との別れ</td>
+              <td class="c-desc">師匠・父・母のいずれかを対象に「死亡」をプレイ
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shitei_no_wakare:hintText">導く者を失ったとき</span></span>
+              </td>
+              <td class="c-eff">話題+2</td>
+            </tr><tr>
+              <td class="c-name">継承の覚醒</td>
+              <td class="c-desc">過去に「先駆者との別れ」を成立させた状態で、主人公を対象に「真の覚醒」をプレイ（週スコア×3）
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:keishou_no_kakusei:hintText">真の力を解き放つ</span></span>
+              </td>
+              <td class="c-eff">週スコア×3</td>
+            </tr><tr>
+              <td class="c-name">両想い</td>
+              <td class="c-desc">恋愛フラグ所持キャラを対象に「告白」をプレイ（週スコア×2.5）
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ryouomoi:hintText">想いが通じ合う瞬間</span></span>
+              </td>
+              <td class="c-eff">週スコア×2.5</td>
+            </tr><tr>
+              <td class="c-name">実は生きていた</td>
+              <td class="c-desc">「復活」で死亡済みキャラを場に戻す（復活したキャラごとに成立）
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:jitsuha_ikiteita:hintText">まさかの帰還</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">宿命の再会</td>
+              <td class="c-desc">当週再登場したキャラを対象に「裏切り」と「悲しい過去」を同時プレイ
+                <span class="meta"><span class="chip">仕込み</span><span class="chip">悲しき悪役・衝撃の裏切り・嫉妬心・獅子心中の虫・絶望・あの頃みたいに・あなたと共に・勘違いするなを抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shukumei_no_saikai:hintText">あいつに一体何があったのか</span></span>
+              </td>
+              <td class="c-eff">話題+5 / 人気×3</td>
+            </tr><tr>
+              <td class="c-name">時を越えた再会</td>
+              <td class="c-desc">「タイムスキップ」の翌週に再登場したキャラ（キャラごとに成立）
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:toki_wo_koeta_saikai:hintText">流れた時の分感動はひとしお</span></span>
+              </td>
+              <td class="c-eff">人気×2</td>
+            </tr><tr>
+              <td class="c-name">黒幕の正体</td>
+              <td class="c-desc">伏線トークン3個以上を「伏線回収」で消費し、場に敵キャラがいる
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kuromaku_no_shoutai:hintText">すべての謎がひとりの敵につながる</span></span>
+              </td>
+              <td class="c-eff">人気×2</td>
+            </tr><tr>
+              <td class="c-name">世代交代</td>
+              <td class="c-desc">主人公が死亡済みの状態で、入手から3週以内のキャラが場にいる
+                <span class="meta"><span class="chip">仕込み</span><span class="chip">1キャラ1回</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sedai_koutai:hintText">主人公を失った物語は次世代が引き継ぐ</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">因縁の対決</td>
+              <td class="c-desc">3週以上登場した敵キャラを対象に「死亡」か「撃破」+「バトル」をプレイ
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:innen_no_taiketsu:hintText">長く戦ってきた相手との決着</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>カタルシス系・展開役<em>14種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">成長の実感</td>
+              <td class="c-desc">過去に「敗北」した後、「修行」か「技ゲット」を経て「大勝利」をプレイ
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:seichou_no_jikkan:hintText">負けた相手に勝つまでの道のり</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">ジャイアントキリング</td>
+              <td class="c-desc">敵陣営の合計人気が仲間を上回る状態で「大勝利」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:giant_killing:hintText">格上を食う大金星</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">意志を継ぐ者</td>
+              <td class="c-desc">師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:densho:hintText">まだあなたほどうまくはできませんが…</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">走馬灯</td>
+              <td class="c-desc">「回想」と「死亡」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:soumatou:hintText">最期に流れるあたたかな思い出</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">ミッシングリンク</td>
+              <td class="c-desc">「回想」と「伏線回収」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:missing_link:hintText">過去の断片と明かされる真相</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">それから時が経った</td>
+              <td class="c-desc">「タイムスキップ」と「回想」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sorekara_toki_ga_tatta:hintText">飛ばした年月を振り返る</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">あの頃の僕たち</td>
+              <td class="c-desc">場に「幼なじみ」がいる状態で「回想」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ano_koro_no_bokutachi:hintText">幼なじみと過ごした日々</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">意地を見せる</td>
+              <td class="c-desc">「三枚目」「一般人」「弱虫」「マスコット」のいずれかを対象に「能力覚醒」をプレイし、同じ週に「バトル」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:iji_wo_miseru:hintText">弱いやつらが見せた力</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">総力戦</td>
+              <td class="c-desc">キャストが4人以上の状態で「総力戦」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:souryokusen_combo:hintText">みんなで総力戦</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">大器の予感</td>
+              <td class="c-desc">「才能の片鱗」と「バトル」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:taiki_no_yokan:hintText">荒削りな才が戦いの中できらめく</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">新装備</td>
+              <td class="c-desc">「武器ゲット」と「バトル」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shinsoubi:hintText">手に入れた武器は使ってこそ</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">伝説武器ゲット</td>
+              <td class="c-desc">「伝説を聞く」と「武器ゲット」を同じ週にプレイ（人気度 恒久+3）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:densetsu_buki:hintText">伝説通りのあの武器を獲得</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">伝説技ゲット</td>
+              <td class="c-desc">「伝説を聞く」と「技ゲット」を同じ週にプレイ（人気度 恒久+3）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:densetsu_waza:hintText">伝説通りのあの技を獲得</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">宝探し</td>
+              <td class="c-desc">「伝説を聞く」と「キーアイテム探し」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:takara_sagashi:hintText">語られた伝承の先に宝を探し当てる</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>第3部専用役<em>7種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">最終決戦</td>
+              <td class="c-desc">第17話以降、「バトル」+「総力戦」をプレイ
+                <span class="meta"><span class="chip">総力の結集・総力戦を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:saishuu_kessen:hintText">最後にぶつける総力戦</span></span>
+              </td>
+              <td class="c-eff">話題+10</td>
+            </tr><tr>
+              <td class="c-name">暗雲立ち込める</td>
+              <td class="c-desc">第17話以降、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:anun_tachikomeru:hintText">決戦で追い詰められる</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">世界の危機</td>
+              <td class="c-desc">第17話以降、「敵組織の襲来」+「大ピンチ」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sekai_no_kiki:hintText">クライマックスに訪れる危機</span></span>
+              </td>
+              <td class="c-eff">話題+9</td>
+            </tr><tr>
+              <td class="c-name">因縁の清算</td>
+              <td class="c-desc">第17話以降、通算5回以上登場した敵キャラを対象に「死亡」をプレイ
+                <span class="meta"><span class="chip">仕込み</span><span class="chip">因縁の対決を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:innen_no_seisan:hintText">長く戦い続けた相手との決着</span></span>
+              </td>
+              <td class="c-eff">週スコア×2</td>
+            </tr><tr>
+              <td class="c-name">総力の結集</td>
+              <td class="c-desc">第17話以降、キャストが5人以上の状態で「総力戦」をプレイ
+                <span class="meta"><span class="chip">総力戦を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:souryoku_no_kesshuu:hintText">積み上げてきたキャラが力を合わせる</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">決意の別れ</td>
+              <td class="c-desc">第17話以降、同じキャラを対象に「途中離脱」と「悲しい過去」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ketsui_no_wakare:hintText">終盤での悲しき離別</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">最後の修行</td>
+              <td class="c-desc">第17話以降、「修行」と「能力覚醒」を同じ週にプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:saigo_no_shugyou:hintText">命運駆けた戦いの前に最後の鍛錬</span></span>
+              </td>
+              <td class="c-eff">人気+20</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>関係と成長の役<em>9種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">父を超える</td>
+              <td class="c-desc">場に「父」がいる状態で、主人公を対象に「能力覚醒」か「真の覚醒」
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:chichi_wo_koeru:hintText">父を追いかけ力を解放する</span></span>
+              </td>
+              <td class="c-eff">話題+6 / 人気×2</td>
+            </tr><tr>
+              <td class="c-name">勇気の発露</td>
+              <td class="c-desc">「三枚目」「一般人」「弱虫」「マスコット」のいずれかが場にいる状態で「人助け」をプレイ（v6.6でマスコット追加）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:yuuki_no_hatsuro:hintText">弱者が踏み出す小さな一歩</span></span>
+              </td>
+              <td class="c-eff">話題+5 / 人気×3</td>
+            </tr><tr>
+              <td class="c-name">意外な活躍</td>
+              <td class="c-desc">「三枚目」「一般人」「弱虫」「マスコット」のいずれかが場にいる状態で「反撃開始」か「大勝利」（v6.6でマスコット追加）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:igai_no_katsuyaku:hintText">警戒されていないからこその大活躍</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">敵の敵は味方</td>
+              <td class="c-desc">場に敵キャラが2人以上いる状態で「一時休戦」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:teki_no_teki:hintText">ここは一度拳を収めよう</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">悪にも絆</td>
+              <td class="c-desc">場に敵キャラと「一般人」がいる状態で「日常回」か「人助け」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:aku_nimo_kizuna:hintText">名もなき誰かと心通わせる悪役</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">因縁の決着</td>
+              <td class="c-desc">過去に「因縁」をプレイした状態で「大勝利」か「死亡」
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:innen_no_ketchaku:hintText">結んだ因縁がいたる結末</span></span>
+              </td>
+              <td class="c-eff">話題+5 / 週スコア×2</td>
+            </tr><tr>
+              <td class="c-name">どんでん返し</td>
+              <td class="c-desc">意味が正反対の展開を同じ週に2枚プレイ（裏切り↔改心、大勝利↔敗北／大ピンチ、死亡↔復活、闇堕ち↔改心、大喧嘩↔仲直り）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:dondengaeshi:hintText">極端から極端へひっくり返る</span></span>
+              </td>
+              <td class="c-eff">話題+9</td>
+            </tr><tr>
+              <td class="c-name">奇跡</td>
+              <td class="c-desc">緊張を3つ以上まとめて解放する
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kiseki:hintText">溜めに溜めたストレスの解放</span></span>
+              </td>
+              <td class="c-eff">話題+10</td>
+            </tr><tr>
+              <td class="c-name">間一髪</td>
+              <td class="c-desc">同じ週に「大ピンチ」と「救出」を両方プレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kanippatsu:hintText">落ちる寸前で掴む手</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>家族と組織の役<em>8種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">おふくろの味</td>
+              <td class="c-desc">場に「母」がいる状態で「日常回」か「骨休め」をプレイ
+                <span class="meta"><span class="chip">平和な日常を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ofukuro_no_aji:hintText">帰る場所での休息</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">母は強し</td>
+              <td class="c-desc">場に「母」がいる状態で「大ピンチ」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:haha_wa_tsuyoshi:hintText">守るために前に出る</span></span>
+              </td>
+              <td class="c-eff">話題+5 / 人気×3</td>
+            </tr><tr>
+              <td class="c-name">先駆者の力</td>
+              <td class="c-desc">場に師匠・父・母のいずれかがいる状態で「大勝利」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:senkusha_no_chikara:hintText">先人の圧倒的な力を見よ</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">昇進と粛清</td>
+              <td class="c-desc">場に敵幹部（パワータイプ・頭脳タイプどちらでも）と「宿敵」が揃った状態で、敵キャラを対象に「死亡」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shoushin_to_shukusei:hintText">上位者に与えられる死</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">無辜の犠牲</td>
+              <td class="c-desc">場に「一般人」がいる状態で「悲劇」をプレイ
+                <span class="meta"><span class="chip">逃げ惑う人たちを抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:muko_no_gisei:hintText">人々に前触れなく訪れる惨事</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">逃げ惑う人たち</td>
+              <td class="c-desc">場に「一般人」がいる状態で「大破壊」か「敵組織の襲来」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ippanjin_no_shiten:hintText">巻き込まれる側から描く脅威</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr><tr>
+              <td class="c-name">かたき討ち</td>
+              <td class="c-desc">死亡済みのキャラがいる状態で「大勝利」か「弔い合戦」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:katakiuchi:hintText">あいつの魂に勝利を捧げる</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr><tr>
+              <td class="c-name">雨降って地固まる</td>
+              <td class="c-desc">過去に「大喧嘩」を描いた状態で「仲直り」をプレイ
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ame_futte_ji_katamaru:hintText">強くぶつかった後の和解</span></span>
+              </td>
+              <td class="c-eff">話題+7</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>終盤の静けさ<em>2種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">不穏な日常</td>
+              <td class="c-desc">第17話以降に「日常回」をプレイ
+                <span class="meta"><span class="chip">平和な日常・緩急を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:fuon_na_nichijou:hintText">決戦を前にした静けさ</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr><tr>
+              <td class="c-name">決戦前夜</td>
+              <td class="c-desc">第17話以降に「宴会」か「骨休め」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kessen_zenya:hintText">最後の休息</span></span>
+              </td>
+              <td class="c-eff">話題+6</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>立て直し役<em>2種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">背水の陣</td>
+              <td class="c-desc">キャストが自分ひとりの状態で「バトル」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:haisui_no_jin:hintText">ただ一人で挑む</span></span>
+              </td>
+              <td class="c-eff">話題+4 / 人気×3</td>
+            </tr><tr>
+              <td class="c-name">奇跡の生還</td>
+              <td class="c-desc">3人以上が死亡している状態で「復活」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kiseki_no_seikan:hintText">惨劇の後の一筋の希望</span></span>
+              </td>
+              <td class="c-eff">話題+6 / 週スコア×3</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>最終回専用役<em>4種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">伝説の完結</td>
+              <td class="c-desc">最終回に、仕込み役を通算10種類以上成立させた状態で迎える
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:densetsu_no_kanketsu:hintText">物語を通じて多くを積み上げる</span></span>
+              </td>
+              <td class="c-eff">話題+8 / 週スコア×2</td>
+            </tr><tr>
+              <td class="c-name">大団円</td>
+              <td class="c-desc">最終回にキャストが5人以上いる
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:daidanen:hintText">多くの仲間と結末を迎える</span></span>
+              </td>
+              <td class="c-eff">話題+8</td>
+            </tr><tr>
+              <td class="c-name">取り戻した日々</td>
+              <td class="c-desc">最終回に「日常回」をプレイ
+                <span class="meta"><span class="chip">不穏な日常・平和な日常・緩急を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:torimodoshita_hibi:hintText">何でもない日常を取り戻す</span></span>
+              </td>
+              <td class="c-eff">話題+9</td>
+            </tr><tr>
+              <td class="c-name">有終の美</td>
+              <td class="c-desc">最終回でノルマを2倍以上超える
+                <span class="meta"><span class="chip">第3層</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:yuushuu_no_bi:hintText">記録に残る最終回を迎える</span></span>
+              </td>
+              <td class="c-eff">効果は動的</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>リスク役<em>2種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">全滅エンド</td>
+              <td class="c-desc">「全滅」+ いずれかのキャラを対象とする「悲しい過去」
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zenmetsu_end:hintText">全てを失ったあとの悲しい余韻</span></span>
+              </td>
+              <td class="c-eff">週スコア×4</td>
+            </tr><tr>
+              <td class="c-name">三角関係</td>
+              <td class="c-desc">場にキャラが3人以上いる状態で「すれ違い」をプレイ
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sankaku_kankei:hintText">想いが多く交錯する</span></span>
+              </td>
+              <td class="c-eff">話題+5</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>第2層: 連続週役<em>3種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">怒涛の展開</td>
+              <td class="c-desc">3週連続で（自身以外の）役を成立させる
+                <span class="meta"><span class="chip">第2層</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:doutou_no_tenkai:hintText">盛り上がりを3週続ける</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">溜めからの爆発</td>
+              <td class="c-desc">前週は役なし、今週は役ありで成立
+                <span class="meta"><span class="chip">第2層</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:tame_kara_no_bakuhatsu:hintText">静かな週のあとの爆発</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">大長編</td>
+              <td class="c-desc">5週連続で（自身以外の）役を成立させ続ける
+                <span class="meta"><span class="chip">第2層</span><span class="chip">怒涛の展開を抑制</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:daichouhen:hintText">盛り上がりを5週続ける</span></span>
+              </td>
+              <td class="c-eff">話題+4 / 週スコア×1.5</td>
+            </tr></tbody>
+      </table></div>
+    </div><div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>第3層: 事後役<em>2種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">カタルシス</td>
+              <td class="c-desc">緊張を2つ以上溜めた状態で解放する（話題性 +4×解放数）
+                <span class="meta"><span class="chip">仕込み</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:catharsis:hintText">重い展開を溜めて解き放つ</span></span>
+              </td>
+              <td class="c-eff">効果は動的</td>
+            </tr><tr>
+              <td class="c-name">神回</td>
+              <td class="c-desc">週スコアがノルマの3倍以上
+                <span class="meta"><span class="chip">第3層</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kamikai:hintText">ノルマを大きく超える</span></span>
+              </td>
+              <td class="c-eff">効果は動的</td>
+            </tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>結末カード（最終回）</h2>
+    <p class="lede">第25話でだけ提示される。連載でやってきたことによって<b>選べる結末が変わり</b>、最大3枠のうち1枚を選ぶ。定義は <code>finale.ts</code>。</p>
+    <div class="act-block">
+      <h3 class="act-head"><span class="act-mark act-ending">結</span>結末の選択肢<em>9種</em></h3>
+      <div class="tablewrap"><table class="grid">
+        <thead><tr><th>結末</th><th>提示条件</th><th>効果</th></tr></thead>
+        <tbody><tr>
+              <td class="c-name">意志は受け継がれる</td>
+              <td class="c-desc">主人公が死亡している
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:ishi_wa_uketsugareru:epilogue">お前の意志は俺たちが継いでいく</span></span>
+              </td>
+              <td class="c-eff">話題+10 / 週スコア×4</td>
+            </tr><tr>
+              <td class="c-name">結婚式</td>
+              <td class="c-desc">役「両想い」を成立させ、その相手が生きている
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:kekkonshiki:epilogue">愛するふたりは幸せに暮らしました</span></span>
+              </td>
+              <td class="c-eff">話題+6 / 週スコア×3</td>
+            </tr><tr>
+              <td class="c-name">すべての謎の解明</td>
+              <td class="c-desc">役「伏線回収」を2回以上成立させた
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:subete_no_nazo:epilogue">すべての謎は、たったひとつの真実に繋がっていた。</span></span>
+              </td>
+              <td class="c-eff">週スコア×2</td>
+            </tr><tr>
+              <td class="c-name">新世代の物語</td>
+              <td class="c-desc">直近3話以内に「タイムスキップ」をプレイした
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:shinsedai:epilogue">物語は次の世代へ</span></span>
+              </td>
+              <td class="c-eff">話題+4 / 人気×2</td>
+            </tr><tr>
+              <td class="c-name">再集結</td>
+              <td class="c-desc">再登場待ちのキャラが2人以上いる（死亡済みは数えない）
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:saishuuketsu:epilogue">仲間たちは再び集う</span></span>
+              </td>
+              <td class="c-eff">話題+4</td>
+            </tr><tr>
+              <td class="c-name">墓参り</td>
+              <td class="c-desc">死亡済みのキャラがいて、役「かたき討ち」を成立させたことがある
+                
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:hakamairi:epilogue">ここにお前もいてくれればな</span></span>
+              </td>
+              <td class="c-eff">話題+6 / 週スコア×2</td>
+            </tr><tr>
+              <td class="c-name">後日談</td>
+              <td class="c-desc">無条件（枠が余れば必ず提示される受け皿）
+                <span class="meta"><span class="chip">受け皿枠</span></span>
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:gojitsudan:epilogue">その後の日々は、穏やかに続いていった。</span></span>
+              </td>
+              <td class="c-eff">話題+3</td>
+            </tr><tr>
+              <td class="c-name">投げっぱなしエンド</td>
+              <td class="c-desc">未回収の伏線が1本以上ある
+                <span class="meta"><span class="chip">受け皿枠</span></span>
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:nagepanashi:epilogue">多くの謎を残したまま、物語は唐突に幕を下ろした。</span></span>
+              </td>
+              <td class="c-eff">話題+4 / 未回収ペナルティ×2</td>
+            </tr><tr class="is-bad">
+              <td class="c-name">夢オチエンド<span class="rare bad">バッド</span></td>
+              <td class="c-desc">連載中に「夢オチ」を1回以上使った
+                <span class="meta"><span class="chip">バッドエンド</span></span>
+                <span class="frow alt"><span class="flabel">締めの一行</span><span class="f" data-edit="ending:yumeochi_end:epilogue">——そして目が覚めた。すべては夢だったのだ。</span></span>
+              </td>
+              <td class="c-eff">話題+8 / 週スコア×0.5 / 最終評価-1000</td>
+            </tr></tbody>
+      </table></div>
+    </div>
+  </section>
+
+  <p class="empty" id="empty">該当なし</p>
+
+</div>
+
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var hits = document.getElementById('hits');
+  var empty = document.getElementById('empty');
+  var rows = Array.prototype.slice.call(document.querySelectorAll('.grid tbody tr'));
+  var blocks = Array.prototype.slice.call(document.querySelectorAll('.act-block'));
+  rows.forEach(function (r) { r.dataset.t = r.textContent.toLowerCase(); });
+
+  function run() {
+    var term = q.value.trim().toLowerCase();
+    var n = 0;
+    rows.forEach(function (r) {
+      var show = !term || r.dataset.t.indexOf(term) !== -1;
+      r.hidden = !show;
+      if (show) n++;
+    });
+    blocks.forEach(function (b) {
+      b.hidden = b.querySelectorAll('.grid tbody tr:not([hidden])').length === 0;
+    });
+    hits.textContent = term ? n + '件' : '';
+    empty.style.display = term && n === 0 ? 'block' : 'none';
+  }
+  q.addEventListener('input', run);
+
+  /* ===== フレーバーテキストの編集（v7.3） =====
+     効果に関わる数値は触らせない。編集はlocalStorageに残り、
+     「変更をJSONで書き出す」で出したファイルを npm run cards:apply で
+     cards.json / combos.ts / finale.ts へ書き戻す。 */
+  var KEY = 'uchikiri-card-text-edits';
+  var fields = Array.prototype.slice.call(document.querySelectorAll('.f[data-edit]'));
+  var original = {};
+  fields.forEach(function (el) { original[el.dataset.edit] = el.textContent; });
+
+  var edits = {};
+  try { edits = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { edits = {}; }
+
+  var editToggle = document.getElementById('editToggle');
+  var exportBtn = document.getElementById('exportBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var dirtyCount = document.getElementById('dirtyCount');
+
+  function paint() {
+    fields.forEach(function (el) {
+      var k = el.dataset.edit;
+      if (Object.prototype.hasOwnProperty.call(edits, k)) {
+        if (el.textContent !== edits[k]) el.textContent = edits[k];
+      }
+      el.classList.toggle('dirty', Object.prototype.hasOwnProperty.call(edits, k));
+    });
+    var n = Object.keys(edits).length;
+    dirtyCount.textContent = n ? n + '件の変更あり（未書き出し）' : '';
+    exportBtn.disabled = n === 0;
+    resetBtn.disabled = n === 0;
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(edits)); } catch (e) { /* 保存できなくても編集は続けられる */ }
+  }
+
+  fields.forEach(function (el) {
+    el.addEventListener('input', function () {
+      var k = el.dataset.edit;
+      var text = el.textContent.replace(/\s+/g, ' ').trim();
+      if (text === original[k] || text === '') delete edits[k];
+      else edits[k] = text;
+      el.classList.toggle('dirty', Object.prototype.hasOwnProperty.call(edits, k));
+      var n = Object.keys(edits).length;
+      dirtyCount.textContent = n ? n + '件の変更あり（未書き出し）' : '';
+      exportBtn.disabled = n === 0;
+      resetBtn.disabled = n === 0;
+      save();
+    });
+    /* 改行を入れさせない（1行のフレーバーとして扱う） */
+    el.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+  });
+
+  editToggle.addEventListener('click', function () {
+    var on = document.body.classList.toggle('editing');
+    editToggle.classList.toggle('on', on);
+    editToggle.textContent = on ? '編集をやめる' : 'フレーバーを編集';
+    fields.forEach(function (el) { el.contentEditable = on ? 'true' : 'false'; });
+  });
+
+  /* Artifactは sandbox 付きiframeで表示されるためダウンロードが黙って落ちる。
+     常に本文を画面に出し、コピー／保存は「できたら使う」補助にする */
+  var exportBox = document.getElementById('exportBox');
+  var exportText = document.getElementById('exportText');
+  var copyBtn = document.getElementById('copyBtn');
+  var downloadBtn = document.getElementById('downloadBtn');
+  var closeExport = document.getElementById('closeExport');
+  var copyState = document.getElementById('copyState');
+
+  exportBtn.addEventListener('click', function () {
+    exportText.value = JSON.stringify(edits, null, 2);
+    exportBox.hidden = false;
+    copyState.textContent = '';
+    exportText.focus();
+    exportText.select();
+  });
+
+  closeExport.addEventListener('click', function () { exportBox.hidden = true; });
+
+  copyBtn.addEventListener('click', function () {
+    exportText.focus();
+    exportText.select();
+    function ok() { copyState.textContent = 'コピーしました'; }
+    function ng() { copyState.textContent = '自動コピー不可。上のテキストを選んでコピーしてください'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(exportText.value).then(ok, function () {
+        try { document.execCommand('copy') ? ok() : ng(); } catch (e) { ng(); }
+      });
+    } else {
+      try { document.execCommand('copy') ? ok() : ng(); } catch (e) { ng(); }
+    }
+  });
+
+  downloadBtn.addEventListener('click', function () {
+    try {
+      var blob = new Blob([exportText.value], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'card-text-edits.json';
+      /* 切り離したままだとクリックが無視される環境があるので、DOMに入れてから押す */
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      copyState.textContent = '保存を試みた（ブロックされる環境ではコピーを使ってください）';
+    } catch (e) {
+      copyState.textContent = '保存できない環境です。コピーを使ってください';
+    }
+  });
+
+  resetBtn.addEventListener('click', function () {
+    edits = {};
+    save();
+    fields.forEach(function (el) { el.textContent = original[el.dataset.edit]; });
+    paint();
+  });
+
+  paint();
+})();
+</script>

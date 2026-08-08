@@ -1,0 +1,108 @@
+{
+  "weeks": [
+    {
+      "week": 1,
+      "quota": 300
+    },
+    {
+      "week": 2,
+      "quota": 400
+    },
+    {
+      "week": 3,
+      "quota": 500
+    },
+    {
+      "week": 4,
+      "quota": 600
+    },
+    {
+      "week": 5,
+      "quota": 700
+    },
+    {
+      "week": 6,
+      "quota": 780
+    },
+    {
+      "week": 7,
+      "quota": 860
+    },
+    {
+      "week": 8,
+      "quota": 900,
+      "boss": "合併号"
+    },
+    {
+      "week": 9,
+      "quota": 1000
+    },
+    {
+      "week": 10,
+      "quota": 1100
+    },
+    {
+      "week": 11,
+      "quota": 1200
+    },
+    {
+      "week": 12,
+      "quota": 1320
+    },
+    {
+      "week": 13,
+      "quota": 1450
+    },
+    {
+      "week": 14,
+      "quota": 1580
+    },
+    {
+      "week": 15,
+      "quota": 1720
+    },
+    {
+      "week": 16,
+      "quota": 165,
+      "boss": "人気投票"
+    },
+    {
+      "week": 17,
+      "quota": 2250
+    },
+    {
+      "week": 18,
+      "quota": 2450
+    },
+    {
+      "week": 19,
+      "quota": 2700
+    },
+    {
+      "week": 20,
+      "quota": 2950
+    },
+    {
+      "week": 21,
+      "quota": 3250
+    },
+    {
+      "week": 22,
+      "quota": 3550
+    },
+    {
+      "week": 23,
+      "quota": 3900
+    },
+    {
+      "week": 24,
+      "quota": 4400,
+      "boss": "新連載攻勢"
+    },
+    {
+      "week": 25,
+      "quota": 7000,
+      "final": true
+    }
+  ]
+}

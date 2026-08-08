@@ -1,0 +1,12 @@
+# 依存パッケージ（npm install で復元できる）
+node_modules/
+
+# ビルド成果物（npm run build で再生成できる）
+dist/
+.vite/
+
+# OS / エディタ
+Thumbs.db
+.DS_Store
+.vscode/
+.idea/
