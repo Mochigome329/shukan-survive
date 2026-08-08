@@ -15,7 +15,7 @@ import { WeekPlayScreen } from './WeekPlayScreen';
 
 export function App({ data }: { data: GameData }) {
   const [state, dispatch] = useReducer(gameReducer, data, initialGameState);
-  // 起動時に一度だけセーブの有無を見る（タイトルの「続きから」の出し分けに使う）
+  // タイトルの「続きから」の出し分けに使う
   const [save, setSave] = useState<SaveData | null>(() => loadSave());
 
   // オートセーブ（v6.8）。週プレイ中と編集会議中だけ保存する。
@@ -30,6 +30,17 @@ export function App({ data }: { data: GameData }) {
       setSave(null);
     }
   }, [state.run, state.screen]);
+
+  /*
+   * v7.13: タイトル画面に戻ってきたら、セーブを読み直す。
+   * 以前は起動時に一度読むだけだったため、「起動→新しく連載開始→プレイ→タイトルへ戻る」
+   * の流れでは save が起動時のnullのまま据え置かれ、
+   * localStorageには中断データがあるのに「続きから」が出ないという不整合が起きていた。
+   * リロードすれば出るので、再現条件が分かりにくいバグだった
+   */
+  useEffect(() => {
+    if (state.screen === 'title') setSave(loadSave());
+  }, [state.screen]);
 
   // ボタン全般の「カチッ」（v7.8）。カード選択（シュッ）や確定（カッ）のように
   // 専用の音を用意した箇所は data-sfx="skip" を付けて自前で鳴らし、ここでは鳴らさない。

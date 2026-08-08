@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { availableServices, ART_UPGRADE_AMOUNT, ART_UPGRADE_PRICE, PACK_PRICE } from '../core/shop';
-import type { GameAction, GameState } from '../state/gameReducer';
+import { SHOP_REROLL_LIMIT, type GameAction, type GameState } from '../state/gameReducer';
 import { playPurchase } from './audio';
 import { SoundToggle } from './SoundToggle';
 import { TitleReturnButton } from './TitleReturnButton';
@@ -187,6 +187,16 @@ export function ShopScreen({ state, dispatch }: Props) {
             );
           })}
           {pack.length === 0 && <p className="shop-empty">仕入れられるカードがない</p>}
+          {pack.length > 0 && (
+            <button
+              type="button"
+              className="small-btn ghost shop-reroll"
+              disabled={state.shopRerolls >= SHOP_REROLL_LIMIT}
+              onClick={() => dispatch({ type: 'rerollShopPack' })}
+            >
+              {state.shopRerolls >= SHOP_REROLL_LIMIT ? '入れ替え済み' : 'ラインナップを入れ替える（1回まで・無料）'}
+            </button>
+          )}
           </div>
 
           {/* v7.5b: チュートリアルで「仕入れ」と「サービス」を別々に指せるよう、束ねてある */}

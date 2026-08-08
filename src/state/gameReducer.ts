@@ -43,6 +43,8 @@ export const BOSS_BRIEFING_LEAD = 5;
 export const TUTORIAL_STEP_COUNT = 8;
 /** 編集会議チュートリアルのステップ数（ShopScreenのSHOP_TUTORIAL_STEPSと揃える） */
 export const SHOP_TUTORIAL_STEP_COUNT = 4;
+/** 1回の編集会議でラインナップを入れ替えられる回数（v7.13） */
+export const SHOP_REROLL_LIMIT = 1;
 
 export type Screen = 'title' | 'setup' | 'codex' | 'play' | 'result' | 'shop' | 'cancelled' | 'clearedAll';
 
@@ -98,6 +100,12 @@ export interface GameState {
   /** 編集会議のカードパック提示内容（定義ID3枚） */
   shopPack: string[] | null;
   /**
+   * 今回の編集会議でラインナップを入れ替えた回数（v7.13）。
+   * 1回まで無料で引き直せる。編集会議に入るたび0に戻す。
+   * セーブには含めない（中断して再開すると、もともとパックは引き直される仕様のため）
+   */
+  shopRerolls: number;
+  /**
    * 初回チュートリアル（v7.5）。画面の各部を順に説明する。
    * 数値は現在のステップ（0始まり）、nullなら非表示
    */
@@ -134,6 +142,7 @@ export type GameAction =
   | { type: 'confirmPlay' }
   | { type: 'proceedFromResult' }
   | { type: 'buyShopCard'; definitionId: string }
+  | { type: 'rerollShopPack' }
   | { type: 'toggleArtUpgradeMode' }
   | { type: 'upgradeArtTarget'; instanceId: string }
   | { type: 'buyService'; serviceId: string }
@@ -188,6 +197,7 @@ export function initialGameState(data: GameData): GameState {
     demandListOpen: false,
     lastResult: null,
     shopPack: null,
+    shopRerolls: 0,
     freshnessHintShown: false,
     notice: null,
   };
@@ -535,6 +545,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         screen: 'shop',
         shopPack: rollPack(state.data, state.run, MAX_PLAYABLE_WEEK),
+        shopRerolls: 0,
         lastResult: null,
         shopTutorialStep: state.shopTutorialShown ? null : 0,
         shopTutorialShown: true,
@@ -551,11 +562,28 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         run,
-        shopPack: rollPack(state.data, run, MAX_PLAYABLE_WEEK),
+        shopPack: rollPack(state.data, run, MAX_PLAYABLE_WEEK, state.shopRerolls),
         notice:
           def?.kind === 'character'
             ? `「${name}」を控えに加えた（「新キャラ登場」でデビュー）`
             : `「${name}」を仕入れた（次の話の手札に必ず入る）`,
+      };
+    }
+
+    /**
+     * ラインナップの入れ替え（v7.13）。1回の編集会議につき1回だけ、無料で引き直せる。
+     * 3枚とも噛み合わないときに何もできないのが辛いという声への対応で、
+     * 原稿料を使わせると「引き直しのために買い物を諦める」判断になってしまうため無料にした
+     */
+    case 'rerollShopPack': {
+      if (!state.run || state.screen !== 'shop') return state;
+      if (state.shopRerolls >= SHOP_REROLL_LIMIT) return withNotice(state, '入れ替えは1回までです');
+      const rerolls = state.shopRerolls + 1;
+      return {
+        ...state,
+        shopRerolls: rerolls,
+        shopPack: rollPack(state.data, state.run, MAX_PLAYABLE_WEEK, rerolls),
+        notice: 'ラインナップを入れ替えた',
       };
     }
 

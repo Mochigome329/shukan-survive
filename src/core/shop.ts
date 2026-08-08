@@ -195,9 +195,18 @@ function followUpBoostedIds(data: GameData, state: RunState): Set<string> {
  * v5.6: 幕タグ（話数帯）と直近の展開に応じた重み付き抽選にする。
  * 緊張が2以上たまっているときは、解放できるカードの提示枠を1つ確保する（v5.5の保証を維持）。
  */
-export function rollPack(data: GameData, state: RunState, maxWeek: number): string[] {
+/**
+ * カードパックを引く。
+ * reroll は「ラインナップ入れ替え」の回数（v7.13）。同じ週・同じ購入回数でも
+ * 別の抽選結果になるよう乱数の系列に混ぜる。0のときは従来と同じ結果になる
+ */
+export function rollPack(data: GameData, state: RunState, maxWeek: number, reroll = 0): string[] {
   const pool = obtainablePool(data, state, maxWeek);
-  const rng = mulberry32(hashSeed(state.runSeed, 'shop', state.week, state.shopPurchases));
+  const rng = mulberry32(
+    reroll > 0
+      ? hashSeed(state.runSeed, 'shop', state.week, state.shopPurchases, 'reroll', reroll)
+      : hashSeed(state.runSeed, 'shop', state.week, state.shopPurchases),
+  );
   const currentAct = actOfWeek(state.week);
   const boosted = followUpBoostedIds(data, state);
 

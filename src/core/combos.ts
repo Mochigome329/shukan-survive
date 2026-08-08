@@ -1212,6 +1212,31 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     },
   },
   {
+    /**
+     * v7.13: 惨事系3枚（悲劇・大破壊・大ピンチ）のうち2枚以上で成立する役。
+     * 「特定の1組」ではなく「どの2枚でも」成立させることで、
+     * 手札事故のときでも惨事カードを腐らせずに済む受け皿にしている。
+     * 話数を問わないので、第17話以降の「暗雲立ち込める」「世界の危機」とは
+     * 別枠で共存する（あちらの方が条件が狭いぶん倍率も高い）
+     */
+    id: 'sanji_no_rensa',
+    name: '惨事の連鎖',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    extraText: '緊張+1',
+    hintText: '不幸は重なるもの',
+    conditionText: '「悲劇」「大破壊」「大ピンチ」のうち2枚以上をプレイ',
+    match: (input) => {
+      const count = ['higeki', 'daihakai', 'dai_pinch'].filter((id) => hasDev(input, id)).length;
+      return count >= 2 ? [{ boundCharIds: [] }] : [];
+    },
+    extraChanges: () => [{ type: 'addStress', amount: 1 }],
+  },
+  {
     id: 'sekai_no_kiki',
     name: '世界の危機',
     layer: 1,

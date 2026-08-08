@@ -98,6 +98,7 @@ const BY_COMBO: Record<string, string[]> = {
   // ===== 終盤・クライマックス =====
   saishuu_kessen: ['ついに最終決戦！', '全部ここに繋がってた', '手が震える'],
   anun_tachikomeru: ['嫌な予感しかしない', '今週は不穏すぎる', 'この先どうなるんだ…'],
+  sanji_no_rensa: ['畳みかけてくるな…', '救いがなさすぎる', '不幸が重なりすぎでは'],
   sekai_no_kiki: ['スケールが跳ね上がった', '世界の危機まで来たか'],
   innen_no_seisan: ['積み上げた因縁の清算', 'ここで全部返ってくるのか'],
   souryoku_no_kesshuu: ['全員集合きた！', 'この見開きは保存する'],
