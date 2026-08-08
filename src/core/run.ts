@@ -815,15 +815,29 @@ export function resolveWeek(
     ]),
   ];
 
-  // 伏線: 回収した週はリセットし、今週張ったぶんを積む（寝かせた週数のボーナスに使う、v5.3）
+  /*
+   * 伏線: 回収した週はリセットし、今週張ったぶんを積む（寝かせた週数のボーナスに使う、v5.3）。
+   *
+   * ただし最終回だけは、今週張ったぶんも回収に巻き込む（v7.16）。
+   * 通常週なら「今週張って来週以降に回収する」が成立するが、
+   * 最終回には来週がないので、伏線を張るカード（伝説を聞く等）を
+   * 伏線回収と同じ週に出しただけで、回収したのに未回収ぶんの減点が付いていた。
+   * 実際「伏線回収を使ったのに未回収2本」という結果になる
+   */
+  const isFinaleWeek = data.quotas.get(state.week)?.final ?? false;
   const keptForeshadowWeeks = foreshadowConsumed ? [] : state.foreshadowWeeks;
-  const foreshadowWeeks = [...keptForeshadowWeeks, ...Array<number>(foreshadowGained).fill(state.week)];
+  const gainedWeeks = foreshadowConsumed && isFinaleWeek ? [] : Array<number>(foreshadowGained).fill(state.week);
+  const foreshadowWeeks = [...keptForeshadowWeeks, ...gainedWeeks];
 
   const nextState: RunState = {
     ...state,
     cards,
     hand: [],
-    foreshadowTokens: foreshadowConsumed ? foreshadowGained : state.foreshadowTokens + foreshadowGained,
+    foreshadowTokens: foreshadowConsumed
+      ? isFinaleWeek
+        ? 0
+        : foreshadowGained
+      : state.foreshadowTokens + foreshadowGained,
     foreshadowWeeks,
     stress: stressReleased ? stressAdded : state.stress + stressAdded,
     funds: state.funds + breakdown.fee + demandFee,

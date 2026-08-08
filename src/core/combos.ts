@@ -115,6 +115,22 @@ const castById = (input: ComboMatchInput, instanceId: string) =>
 const castPopularity = (c: CastCharacter) => c.def.popularity + c.instance.permanentPopularityBonus;
 
 /**
+ * 「仲間だった者が敵側に回る」展開（v7.16）。
+ *
+ * 「裏切り」と「闇堕ち」は、読者から見れば同じ出来事なので、
+ * 裏切りを条件にしている役はどちらでも成立させる。
+ * 主人公が寝返る話は別の筋なので、闇堕ち側では主人公を除く
+ * （カードの仕様上そもそも主人公は対象に取れないが、役の側でも明示しておく）。
+ */
+const betrayalDevs = (input: ComboMatchInput) => [
+  ...devsOf(input, 'uragiri'),
+  ...devsOf(input, 'yamiochi').filter((d) => {
+    const target = d.targetId ? castById(input, d.targetId) : undefined;
+    return !!target && target.def.id !== PROTAGONIST_ID;
+  }),
+];
+
+/**
  * 「主役級ではない」キャラ（v5.8b、v6.6でマスコットを追加）。
  * 人気度のしきい値だと育てた相棒が外れたり主人公が入ったりして意図が濁るので、
  * 三枚目・一般人・弱虫・マスコットの4人を名指しで扱う。この4人が見せ場を作る回に役をつける。
@@ -428,9 +444,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '信頼している者の裏切り',
-    conditionText: '仲間キャラを対象に「裏切り」をプレイ',
+    conditionText: '仲間キャラを対象に「裏切り」か「闇堕ち」をプレイ',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      betrayalDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -447,9 +463,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     extraText: 'そのキャラの人気度が恒久+4',
     hintText: '近いからこそ、こじれた想い',
     // v6.6: ライバルの味方→敵の裏切りもここに合流させた（嫉妬という動機がよく合うため）
-    conditionText: '仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」をプレイ（人気度 恒久+4）',
+    conditionText: '仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」か「闇堕ち」をプレイ（人気度 恒久+4）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      betrayalDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter(
           (c): c is CastCharacter =>
@@ -472,9 +488,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 6,
     extraText: 'そのキャラの人気度が恒久+4',
     hintText: '無害さは仮面である',
-    conditionText: '仲間の「マスコット」を対象に「裏切り」をプレイ（人気度 恒久+4）',
+    conditionText: '仲間の「マスコット」を対象に「裏切り」か「闇堕ち」をプレイ（人気度 恒久+4）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      betrayalDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally' && c.def.id === 'mascot')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -493,9 +509,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 8,
     extraText: '緊張+2',
     hintText: 'いちばん信じていた相手だからこそ',
-    conditionText: '仲間の「ヒロイン」を対象に「裏切り」をプレイ（緊張+2）',
+    conditionText: '仲間の「ヒロイン」を対象に「裏切り」か「闇堕ち」をプレイ（緊張+2）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      betrayalDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally' && c.def.id === 'heroine')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -866,13 +882,13 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 5,
     extraText: 'そのキャラの人気度×3',
     hintText: 'あいつに一体何があったのか',
-    conditionText: '当週再登場したキャラを対象に「裏切り」と「悲しい過去」を同時プレイ',
+    conditionText: '当週再登場したキャラを対象に「裏切り」か「闇堕ち」と、「悲しい過去」を同時プレイ',
     match: (input) =>
       input.characters
         .filter(
           (c) =>
             c.instance.returnedThisWeek &&
-            devsOf(input, 'uragiri').some((d) => d.targetId === c.instance.instanceId) &&
+            betrayalDevs(input).some((d) => d.targetId === c.instance.instanceId) &&
             devsOf(input, 'kanashii_kako').some((d) => d.targetId === c.instance.instanceId),
         )
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),

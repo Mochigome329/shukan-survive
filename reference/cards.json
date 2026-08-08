@@ -2332,7 +2332,7 @@
    "popularityAdd": 0,
    "buzzAdd": 4,
    "hintText": "信頼している者の裏切り",
-   "conditionText": "仲間キャラを対象に「裏切り」をプレイ"
+   "conditionText": "仲間キャラを対象に「裏切り」か「闇堕ち」をプレイ"
   },
   {
    "id": "shitto_shin",
@@ -2347,7 +2347,7 @@
    "buzzAdd": 6,
    "extraText": "そのキャラの人気度が恒久+4",
    "hintText": "近いからこそ、こじれた想い",
-   "conditionText": "仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」をプレイ（人気度 恒久+4）"
+   "conditionText": "仲間の「幼なじみ」「相棒」「ライバル」のいずれかを対象に「裏切り」か「闇堕ち」をプレイ（人気度 恒久+4）"
   },
   {
    "id": "shishinchuu_no_mushi",
@@ -2362,7 +2362,7 @@
    "buzzAdd": 6,
    "extraText": "そのキャラの人気度が恒久+4",
    "hintText": "無害さは仮面である",
-   "conditionText": "仲間の「マスコット」を対象に「裏切り」をプレイ（人気度 恒久+4）"
+   "conditionText": "仲間の「マスコット」を対象に「裏切り」か「闇堕ち」をプレイ（人気度 恒久+4）"
   },
   {
    "id": "zetsubou",
@@ -2377,7 +2377,7 @@
    "buzzAdd": 8,
    "extraText": "緊張+2",
    "hintText": "いちばん信じていた相手だからこそ",
-   "conditionText": "仲間の「ヒロイン」を対象に「裏切り」をプレイ（緊張+2）"
+   "conditionText": "仲間の「ヒロイン」を対象に「裏切り」か「闇堕ち」をプレイ（緊張+2）"
   },
   {
    "id": "ano_koro_mitaini",
@@ -2603,7 +2603,7 @@
    "buzzAdd": 5,
    "extraText": "そのキャラの人気度×3",
    "hintText": "あいつに一体何があったのか",
-   "conditionText": "当週再登場したキャラを対象に「裏切り」と「悲しい過去」を同時プレイ"
+   "conditionText": "当週再登場したキャラを対象に「裏切り」か「闇堕ち」と、「悲しい過去」を同時プレイ"
   },
   {
    "id": "toki_wo_koeta_saikai",
