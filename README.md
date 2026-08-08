@@ -12,7 +12,7 @@
 
 - キャストの人気度 × 展開カードの話題性 ＝ その週のスコア
 - スコアがノルマに届かないと打ち切り警告が1つ増え、3つで連載終了
-- カードの組み合わせが噛み合うと**役**が成立してカットインが入り、大きく加点される（全96種）
+- カードの組み合わせが噛み合うと**役**が成立してカットインが入り、大きく加点される（全100種）
 - 第8・16・24話は**ボス週**。ノルマ未達で警告に関係なく即打ち切り
 - 第25話が最終回。これまでの連載内容によって選べる**結末**が変わる
 
@@ -39,7 +39,7 @@ npm run build
 | `npm run dev` | 開発サーバ（Vite） |
 | `npm run build` | 型検査 → ビルド → 配布物検査 |
 | `npm run typecheck` | 型検査のみ |
-| `npm test` | コアロジックの単体テスト（vitest / 379件） |
+| `npm test` | コアロジックの単体テスト（vitest / 382件） |
 | `npm run sim` | シミュレーター。`npm run sim -- --runs 500 --weeks 8`（25話フルは重い） |
 | `npm run cards` | 全カード・全役の一覧HTMLを `reference/cards.html` に生成（絞り込み検索つき） |
 | `npm run cards:apply` | 一覧HTMLで編集したフレーバーテキストを `cards.json` に反映 |
@@ -59,7 +59,7 @@ src/
 
 - コアロジックはUI非依存の純関数。確定前プレビューとリザルトは同じ `computeScore` を使う
 - 乱数はシード注入可能（mulberry32）で、draw / redraw / shop / boss の用途別に系列を分離
-- 役の定義は `src/core/combos.ts` のレジストリが唯一の正（96種）
+- 役の定義は `src/core/combos.ts` のレジストリが唯一の正（100種）
 - 効果音は音声ファイルを持たず Web Audio API で合成する（`ui/audio.ts`）
 - 漫画の描き文字は画像ではなくSVGパス（`scripts/trace-sfx.mjs` が生成、`data/sfx.json`）
 
