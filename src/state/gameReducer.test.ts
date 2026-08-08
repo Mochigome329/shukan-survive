@@ -190,3 +190,37 @@ describe('チュートリアルをスキップした場合、編集会議の説�
     expect(afterShop.shopTutorialStep).toBe(0);
   });
 });
+
+describe('セーブから再開すると、チュートリアルの選択が忘れられる（v7.21）', () => {
+  it('再開直後はtutorialEnabledがfalseになる（もう初回ではないため）', () => {
+    const run = startWeek(data, createRun(data, 1, { mangaTitle: 'テスト' }));
+    const resumed = gameReducer({ ...initialGameState(data), screen: 'title' }, { type: 'resumeRun', run, phase: 'play' });
+    expect(resumed.tutorialEnabled).toBe(false);
+    expect(resumed.tutorialStep).toBeNull();
+  });
+
+  it('「不要」を選んで始めたランでも、アプリを閉じて再開した後の編集会議に説明が出ない', () => {
+    let state: GameState = { ...initialGameState(data), screen: 'setup' };
+    state = gameReducer(state, { type: 'openSetup', withTutorial: false });
+    state = gameReducer(state, { type: 'startRun', seed: 1, mangaTitle: 'テスト', startingCast: ['heroine', 'aibou'] });
+    const run = state.run!;
+
+    // アプリを閉じて再度開く＝セーブから再開
+    const resumed = gameReducer({ ...initialGameState(data), screen: 'title' }, { type: 'resumeRun', run, phase: 'play' });
+    const withResult: GameState = {
+      ...resumed,
+      screen: 'result',
+      lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    };
+    const afterShop = gameReducer(withResult, { type: 'proceedFromResult' });
+    expect(afterShop.shopTutorialStep).toBeNull();
+  });
+
+  it('編集会議中に中断していた場合の再開でも、説明は出ない', () => {
+    const run = startWeek(data, createRun(data, 1, { mangaTitle: 'テスト' }));
+    const resumed = gameReducer({ ...initialGameState(data), screen: 'title' }, { type: 'resumeRun', run, phase: 'shop' });
+    expect(resumed.screen).toBe('shop');
+    expect(resumed.shopTutorialStep).toBeNull();
+    expect(resumed.shopTutorialShown).toBe(true);
+  });
+});

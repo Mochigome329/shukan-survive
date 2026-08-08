@@ -392,9 +392,17 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     }
 
     case 'resumeRun': {
-      // 第1話の説明や幕のシーンチェンジは初回だけのものなので、再開時には出さない。
-      // 編集会議で中断していた場合、提示カードはUI状態なので保存しておらず、ここで引き直す
-      const base = { ...initialGameState(state.data), run: action.run };
+      /*
+       * 第1話の説明や幕のシーンチェンジは初回だけのものなので、再開時には出さない。
+       * 編集会議で中断していた場合、提示カードはUI状態なので保存しておらず、ここで引き直す。
+       *
+       * v7.21: tutorialEnabled/shopTutorialShownも明示する。セーブはUI都合の状態を
+       * 意図的に持たない設計（run以外は再開のたびに initialGameState の既定値に戻る）ため、
+       * 何もしないと tutorialEnabled が既定値 true に戻り、「不要」を選んで始めた連載でも
+       * 再開後に最初の編集会議へ進んだ瞬間に説明が再び出てしまっていた。
+       * 再開は定義からして初回ではないので、両方とも「もう出さない」側に倒す
+       */
+      const base = { ...initialGameState(state.data), run: action.run, tutorialEnabled: false, shopTutorialShown: true };
       if (action.phase === 'shop') {
         return {
           ...base,
