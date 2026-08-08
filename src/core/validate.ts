@@ -56,7 +56,7 @@ const characterDefSchema = z.object({
   tags: z.array(genreTagSchema),
   maxCopies: z.literal(1), // 1人物1枚の原則（14.1節）
   unlockWeek: z.number().int().min(1),
-  act: actSchema.optional(),
+  act: z.union([actSchema, z.array(actSchema).min(1)]).optional(),
   rare: z.boolean().optional(),
   flexFaction: z.boolean().optional(),
   descriptions: descriptionsSchema,
@@ -71,7 +71,7 @@ const developmentDefSchema = z.object({
   tags: z.array(genreTagSchema),
   maxCopies: z.number().int().min(1),
   unlockWeek: z.number().int().min(1),
-  act: actSchema.optional(),
+  act: z.union([actSchema, z.array(actSchema).min(1)]).optional(),
   rare: z.boolean().optional(),
   soloOnly: z.boolean(),
   effects: z.array(timedEffectSchema),

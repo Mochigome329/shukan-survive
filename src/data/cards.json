@@ -2014,7 +2014,7 @@
       ],
       "maxCopies": 2,
       "unlockWeek": 1,
-      "act": "ha",
+      "act": ["ha", "kyu"],
       "soloOnly": false,
       "effects": [
         {

@@ -110,11 +110,22 @@ const RARE_WEIGHT = 0.4;
 const ACT_ORDER: Act[] = ['jo', 'ha', 'kyu'];
 
 /** 幕タグによる提示重み。現在の幕=3倍、隣の幕=1倍、遠い幕=0.3倍（2節） */
-function actWeight(cardAct: Act | undefined, currentAct: Act): number {
+/**
+ * 幕タグによる提示重み。
+ * 複数の幕を挙げているカードは、いちばん相性のよい幕で評価する（v7.13）。
+ * 「撃破」のように破でも急でも出番があるものを1つの幕に決め打ちすると、
+ * もう一方の幕で重みが1/3になり、必要なときに出てこなくなる
+ */
+function actWeight(cardAct: Act | Act[] | undefined, currentAct: Act): number {
   if (!cardAct) return 1;
-  if (cardAct === currentAct) return 3;
-  const dist = Math.abs(ACT_ORDER.indexOf(cardAct) - ACT_ORDER.indexOf(currentAct));
-  return dist === 1 ? 1 : 0.3;
+  const acts = Array.isArray(cardAct) ? cardAct : [cardAct];
+  return Math.max(
+    ...acts.map((a) => {
+      if (a === currentAct) return 3;
+      const dist = Math.abs(ACT_ORDER.indexOf(a) - ACT_ORDER.indexOf(currentAct));
+      return dist === 1 ? 1 : 0.3;
+    }),
+  );
 }
 
 interface FollowUpRule {

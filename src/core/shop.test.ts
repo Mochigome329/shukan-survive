@@ -217,17 +217,18 @@ describe('編集会議（12節・最小版）', () => {
     expect(boostedTotal).toBeGreaterThan(baseTotal * 1.5);
   });
 
-  it('幕タグ: 「撃破」は途中離脱と同じ幕（破）扱いで、序盤〜中盤から出やすい（v7.12）', () => {
-    // 敵専用の退場手段「撃破」が「急」（第17話〜）扱いだったため、
-    // 実プレイの大半を占める中盤（第6〜16話）でほぼ出ず、退場させる手段が無いように感じられていた。
-    // 「途中離脱」（破）と同格に直したので、破の週では両者が同程度出るはず
-    const run = { ...newRun(1), week: 10 }; // week=10 → 破
-    const freq = samplePackFrequency(run, MAX_WEEK, 400);
-    const gekiha = freq.get('gekiha') ?? 0;
-    const ridatsu = freq.get('ridatsu') ?? 0;
-    expect(gekiha).toBeGreaterThan(0);
-    // 完全一致は求めない（他の追随ルールの影響もあるため）が、桁が違うほどの差は無いはず
-    expect(gekiha).toBeGreaterThan(ridatsu * 0.3);
+  it('幕タグ: 「撃破」は破でも急でも出やすい（v7.13で複数幕指定に対応）', () => {
+    // 敵専用の退場手段。「急」だけだと中盤（第6〜16話）でほぼ出ず、
+    // 「破」だけにすると今度は決着をつけたい第3幕で出なくなる。
+    // act に ["ha","kyu"] を指定して、どちらの幕でも同幕扱いになることを確かめる
+    const inHa = samplePackFrequency({ ...newRun(1), week: 10 }, MAX_PLAYABLE, 400).get('gekiha') ?? 0;
+    const inKyu = samplePackFrequency({ ...newRun(1), week: 20 }, MAX_PLAYABLE, 400).get('gekiha') ?? 0;
+    expect(inHa).toBeGreaterThan(0);
+    expect(inKyu).toBeGreaterThan(0);
+
+    // 「途中離脱」は破のみなので、急では明確に減る。撃破はそうならない
+    const ridatsuInKyu = samplePackFrequency({ ...newRun(1), week: 20 }, MAX_PLAYABLE, 400).get('ridatsu') ?? 0;
+    expect(inKyu).toBeGreaterThan(ridatsuInKyu);
   });
 
   it('追随ルール: 敵キャラを入手した直後は「撃破」（敵退場の決め手）が出やすくなる（v7.12）', () => {
