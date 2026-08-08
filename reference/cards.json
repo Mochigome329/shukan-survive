@@ -2015,7 +2015,10 @@
     ],
     "maxCopies": 2,
     "unlockWeek": 1,
-    "act": "kyu",
+    "act": [
+     "ha",
+     "kyu"
+    ],
     "soloOnly": false,
     "effects": [
      {
@@ -2099,10 +2102,6 @@
     "count": 2
    },
    {
-    "definitionId": "nichijou",
-    "count": 2
-   },
-   {
     "definitionId": "shinchara",
     "count": 1
    },
@@ -2111,14 +2110,21 @@
     "count": 1
    },
    {
-    "definitionId": "sainou_no_henrin",
-    "count": 1
-   },
-   {
     "definitionId": "teki_soshiki",
     "count": 1
    }
-  ]
+  ],
+  "starterPool": [
+   "nichijou",
+   "sainou_no_henrin",
+   "unmei_deai",
+   "surechigai",
+   "hitodasuke",
+   "mikubirareta_otoko",
+   "innen",
+   "yorimichi"
+  ],
+  "starterSlots": 3
  },
  "combos": [
   {
@@ -2827,6 +2833,62 @@
    "buzzAdd": 8,
    "hintText": "決戦で追い詰められる",
    "conditionText": "第17話以降、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ"
+  },
+  {
+   "id": "misugosenai",
+   "name": "見過ごせない",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "困っている人を放っておけない",
+   "conditionText": "「人助け」+「バトル」をプレイ"
+  },
+  {
+   "id": "zassou_damashii",
+   "name": "雑草魂",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "見くびられた者ほど、黙って鍛える",
+   "conditionText": "「見くびられた男」+「修行」をプレイ"
+  },
+  {
+   "id": "innen_no_hidane",
+   "name": "因縁の火種",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "すべての因縁には始まりがある",
+   "conditionText": "「因縁」+「バトル」をプレイ"
+  },
+  {
+   "id": "douchuu_no_deai",
+   "name": "道中の出会い",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "normal",
+   "popularityAdd": 0,
+   "buzzAdd": 4,
+   "hintText": "寄り道の先で、誰かと出会う",
+   "conditionText": "「寄り道」+「新キャラ登場」か「運命的な出会い」をプレイ"
+  },
+  {
+   "id": "sanji_no_rensa",
+   "name": "惨事の連鎖",
+   "layer": 1,
+   "phase": "preScore",
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 7,
+   "extraText": "緊張+1",
+   "hintText": "不幸は重なるもの",
+   "conditionText": "「悲劇」「大破壊」「大ピンチ」のうち2枚以上をプレイ"
   },
   {
    "id": "sekai_no_kiki",

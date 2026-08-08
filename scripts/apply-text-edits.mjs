@@ -60,6 +60,41 @@ function replaceInBlock(src, id, field, value, what) {
   return src.slice(0, idAt) + newBlock + src.slice(end);
 }
 
+/**
+ * 省略可能な文字列フィールドを設定する（v7.14）。
+ * 空文字なら行ごと消し、値があれば置換、無ければ cutInTemplate の直後に挿入する。
+ * hintText と違って「そのフィールドが無い」状態が正常なので、置換だけでは足りない
+ */
+function setOptionalInBlock(src, id, field, value, what) {
+  const idAt = src.indexOf(`id: '${id}'`);
+  if (idAt === -1) {
+    problems.push(`${what}: id '${id}' が見つからない`);
+    return src;
+  }
+  const nextAt = src.indexOf("id: '", idAt + 5);
+  const end = nextAt === -1 ? src.length : nextAt;
+  const block = src.slice(idAt, end);
+  const lineRe = new RegExp(`\\n[ \\t]*${field}: '(?:[^'\\\\]|\\\\.)*',`);
+  const has = lineRe.test(block);
+
+  let newBlock;
+  if (value === '') {
+    if (!has) return src; // もともと無いので何もしない
+    newBlock = block.replace(lineRe, '');
+  } else if (has) {
+    newBlock = block.replace(lineRe, `\n    ${field}: '${tsQuote(value)}',`);
+  } else {
+    // cutInTemplate の直後に置く（役の定義でカットイン関連がまとまるように）
+    const anchor = block.match(/\n[ \t]*cutInTemplate: '[^']*',/);
+    if (!anchor) {
+      problems.push(`${what}: '${id}' に ${field} を挿入する位置（cutInTemplate）が見つからない`);
+      return src;
+    }
+    newBlock = block.replace(anchor[0], `${anchor[0]}\n    ${field}: '${tsQuote(value)}',`);
+  }
+  return src.slice(0, idAt) + newBlock + src.slice(end);
+}
+
 for (const [key, value] of Object.entries(edits)) {
   const [kind, id, field] = key.split(':');
   if (!kind || !id || !field) {
@@ -84,12 +119,14 @@ for (const [key, value] of Object.entries(edits)) {
       applied.push(key);
     }
   } else if (kind === 'combo') {
-    if (field !== 'hintText') {
-      problems.push(`${key}: 役は hintText だけ書き戻せる`);
+    if (field !== 'hintText' && field !== 'sfxId') {
+      problems.push(`${key}: 役は hintText と sfxId だけ書き戻せる`);
       continue;
     }
     const before = combosSrc;
-    combosSrc = replaceInBlock(combosSrc, id, 'hintText', value, '役');
+    // sfxIdは「無い状態」も正しい値（＝カットイン種別から自動で選ぶ）なので、追加・削除も要る
+    combosSrc =
+      field === 'sfxId' ? setOptionalInBlock(combosSrc, id, 'sfxId', value, '役') : replaceInBlock(combosSrc, id, 'hintText', value, '役');
     if (combosSrc !== before) {
       combosDirty = true;
       applied.push(key);

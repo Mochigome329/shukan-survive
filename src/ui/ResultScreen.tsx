@@ -75,8 +75,12 @@ const ONOMATOPOEIA: Record<string, string[]> = {
   bonus: ['katsu', 'don', 'bang2'],
 };
 
-/** 文字列から安定した指標を作る（同じ役には毎回同じ描き文字が出る） */
-function pickOnomatopoeia(kind: string, seed: string): string | undefined {
+/**
+ * 文字列から安定した指標を作る（同じ役には毎回同じ描き文字が出る）。
+ * 役側で sfxId を指定していればそれを最優先する（v7.14）
+ */
+function pickOnomatopoeia(kind: string, seed: string, sfxId?: string): string | undefined {
+  if (sfxId) return sfxId;
   const pool = ONOMATOPOEIA[kind] ?? ONOMATOPOEIA.normal!;
   if (pool.length === 0) return undefined;
   let h = 0;
@@ -330,7 +334,16 @@ export function ResultScreen({ state, dispatch }: Props) {
 
       {cutIn && (
         <div className={`cutin-overlay cutin-${cutIn.cutInTemplate}`}>
-          <SfxMark key={cutIn.comboId} id={pickOnomatopoeia(cutIn.cutInTemplate, cutIn.comboId) ?? ''} />
+          <SfxMark
+            key={cutIn.comboId}
+            id={
+              pickOnomatopoeia(
+                cutIn.cutInTemplate,
+                cutIn.comboId,
+                COMBO_REGISTRY.find((c) => c.id === cutIn.comboId)?.sfxId,
+              ) ?? ''
+            }
+          />
           <div className="cutin-panel">
             <span className="cutin-label">{newDiscoveries.has(cutIn.comboId) ? '役 初成立' : '成立'}</span>
             <span className="cutin-name">{cutIn.name}</span>
@@ -343,7 +356,7 @@ export function ResultScreen({ state, dispatch }: Props) {
 
       {bonusCutIn && bonusRunningTotal !== null && (
         <div className="cutin-overlay cutin-bonus">
-          <SfxMark key={bonusCutIn.id} id={pickOnomatopoeia('bonus', bonusCutIn.id) ?? ''} />
+          <SfxMark key={bonusCutIn.id} id={pickOnomatopoeia('bonus', bonusCutIn.id, bonusCutIn.sfxId) ?? ''} />
           <div className="cutin-panel">
             <span className="cutin-label">完結ボーナス {bonusStep}/{bonusCombos.length}</span>
             <span className="cutin-name">{bonusCutIn.name}</span>

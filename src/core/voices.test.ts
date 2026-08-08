@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 import { COMBO_REGISTRY } from './combos';
+import sfxData from '../data/sfx.json';
 import { computeScore } from './scoring';
 import { loadTestData, makeInstance, makeState } from './testHelpers';
 import { pickVoices, VOICED_COMBO_IDS } from '../ui/voices';
@@ -24,6 +25,16 @@ describe('読者の声（v6.9）', () => {
   it('声のIDに、存在しない役が混ざっていない', () => {
     const known = new Set(COMBO_REGISTRY.map((c) => c.id));
     expect(VOICED_COMBO_IDS.filter((id) => !known.has(id))).toEqual([]);
+  });
+
+  /*
+   * v7.14: 役ごとに描き文字（オノマトペ）を指定できるようにした。
+   * IDを打ち間違えると、カットインで何も表示されないまま気づけないので機械的に弾く
+   */
+  it('役に指定された描き文字IDが、すべて sfx.json に存在する', () => {
+    const known = new Set(Object.keys(sfxData));
+    const bad = COMBO_REGISTRY.filter((c) => c.sfxId && !known.has(c.sfxId)).map((c) => `${c.id}(${c.sfxId})`);
+    expect(bad).toEqual([]);
   });
 
   it('声はすべて日本語（英字・キリル文字の混入がない）', () => {

@@ -78,6 +78,13 @@ export interface ComboDefinition {
   /** 対象束縛キャラごとに1回まで（かませ犬など、5.5節） */
   oncePerCharacter?: boolean;
   cutInTemplate: CutInTemplate;
+  /**
+   * カットインに重ねる描き文字を役ごとに指定する（v7.14）。
+   * 省略すると cutInTemplate ごとの候補から、役IDのハッシュで自動的に選ばれる。
+   * 「この役にはこの音を当てたい」というときだけ書けばよい。
+   * 使える値は src/data/sfx.json のキー（役・カード一覧の編集画面に一覧が出る）
+   */
+  sfxId?: string;
   popularityAdd: number;
   buzzAdd: number;
   /** 週スコア乗算（7.6節: 最高倍率の1つだけ適用される） */

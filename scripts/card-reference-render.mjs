@@ -10,6 +10,8 @@ if (!dumpPath || !outPath) throw new Error('使い方: node scripts/card-referen
 
 const { cards, combos, endings = [] } = JSON.parse(fs.readFileSync(dumpPath, 'utf8'));
 const comboSrc = fs.readFileSync('src/core/combos.ts', 'utf8');
+/** 役ごとに指定できる描き文字（v7.14）。sfx.json のキーがそのまま選択肢になる */
+const sfxIds = Object.keys(JSON.parse(fs.readFileSync('src/data/sfx.json', 'utf8')));
 
 // combos.ts の「// ===== 見出し =====」からカテゴリを復元する
 const sections = [];
@@ -68,6 +70,17 @@ function comboFlags(c) {
 const field = (key, text) => `<span class="f" data-edit="${key}">${esc(text)}</span>`;
 const altField = (label, key, text) =>
   `<span class="frow alt"><span class="flabel">${esc(label)}</span>${field(key, text)}</span>`;
+
+/**
+ * 描き文字の選択（v7.14）。空欄なら従来どおりカットイン種別から自動で選ばれる。
+ * テキスト欄と同じ data-edit のキー体系に乗せているので、書き出し・書き戻しは共通の仕組みで動く
+ */
+const sfxSelect = (key, current) =>
+  `<span class="frow alt"><span class="flabel">描き文字</span>` +
+  `<select class="fsel" data-edit="${key}">` +
+  `<option value=""${current ? '' : ' selected'}>自動（種別から選ぶ）</option>` +
+  sfxIds.map((id) => `<option value="${esc(id)}"${current === id ? ' selected' : ''}>${esc(id)}</option>`).join('') +
+  `</select></span>`;
 
 function descCell(kind, c, extra = '') {
   return `<td class="c-desc">${field(`${kind}:${c.id}:revealed`, c.descriptions.revealed)}
@@ -177,6 +190,7 @@ const comboSections = sections
               <td class="c-desc">${esc(c.conditionText)}
                 ${flags.length ? `<span class="meta">${flags.map((f) => `<span class="chip">${esc(f)}</span>`).join('')}</span>` : ''}
                 ${c.hintText ? `<span class="frow alt"><span class="flabel">ヒント</span>${field(`combo:${c.id}:hintText`, c.hintText)}</span>` : ''}
+                ${sfxSelect(`combo:${c.id}:sfxId`, c.sfxId)}
               </td>
               <td class="c-eff">${esc(comboEffect(c))}</td>
             </tr>`;
@@ -194,7 +208,14 @@ const counts = {
   rare: [...cards.characters, ...cards.developments].filter((c) => c.rare).length,
 };
 
-const html = `<title>週刊サバイブ カード・役 一覧</title>
+/*
+ * charsetを明示する（v7.14）。
+ * この出力はArtifactとして公開する前提の断片だが、ローカルのファイルとして直接開くと
+ * ブラウザが windows-1252 と誤判定して全編が文字化けする。そのまま編集して書き出すと
+ * 化けた文字がソースへ書き戻ってしまうため、断片側にも持たせておく
+ */
+const html = `<meta charset="UTF-8">
+<title>週刊サバイブ カード・役 一覧</title>
 <style>
 :root {
   --paper: #f7f3ea;
@@ -360,6 +381,13 @@ body.editing .f {
 }
 body.editing .f:focus { outline: 2px solid var(--accent); background: var(--panel); }
 .f.dirty { background: var(--gold-soft); border-bottom-color: var(--gold); }
+/* 描き文字の選択（v7.14）。編集モードのときだけ触れるようにする */
+.fsel {
+  font: inherit; font-size: 11px; padding: 1px 4px; border-radius: 3px;
+  border: 1px solid var(--rule); background: var(--panel); color: inherit;
+}
+body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: transparent; background: none; }
+.fsel.dirty { background: var(--gold-soft); border-color: var(--gold); }
 .editbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .editbar button {
   font: inherit; font-size: 12px; padding: 6px 12px; cursor: pointer;
@@ -479,8 +507,11 @@ body.editing .f:focus { outline: 2px solid var(--accent); background: var(--pane
      cards.json / combos.ts / finale.ts へ書き戻す。 */
   var KEY = 'uchikiri-card-text-edits';
   var fields = Array.prototype.slice.call(document.querySelectorAll('.f[data-edit]'));
+  /* 描き文字の選択（v7.14）。テキスト欄と同じ edits に相乗りさせる */
+  var selects = Array.prototype.slice.call(document.querySelectorAll('.fsel[data-edit]'));
   var original = {};
   fields.forEach(function (el) { original[el.dataset.edit] = el.textContent; });
+  selects.forEach(function (el) { original[el.dataset.edit] = el.value; });
 
   var edits = {};
   try { edits = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { edits = {}; }
@@ -496,6 +527,11 @@ body.editing .f:focus { outline: 2px solid var(--accent); background: var(--pane
       if (Object.prototype.hasOwnProperty.call(edits, k)) {
         if (el.textContent !== edits[k]) el.textContent = edits[k];
       }
+      el.classList.toggle('dirty', Object.prototype.hasOwnProperty.call(edits, k));
+    });
+    selects.forEach(function (el) {
+      var k = el.dataset.edit;
+      if (Object.prototype.hasOwnProperty.call(edits, k) && el.value !== edits[k]) el.value = edits[k];
       el.classList.toggle('dirty', Object.prototype.hasOwnProperty.call(edits, k));
     });
     var n = Object.keys(edits).length;
@@ -523,6 +559,20 @@ body.editing .f:focus { outline: 2px solid var(--accent); background: var(--pane
     });
     /* 改行を入れさせない（1行のフレーバーとして扱う） */
     el.addEventListener('keydown', function (ev) { if (ev.key === 'Enter') ev.preventDefault(); });
+  });
+
+  selects.forEach(function (el) {
+    el.addEventListener('change', function () {
+      var k = el.dataset.edit;
+      if (el.value === original[k]) delete edits[k];
+      else edits[k] = el.value;
+      el.classList.toggle('dirty', Object.prototype.hasOwnProperty.call(edits, k));
+      var n = Object.keys(edits).length;
+      dirtyCount.textContent = n ? n + '件の変更あり（未書き出し）' : '';
+      exportBtn.disabled = n === 0;
+      resetBtn.disabled = n === 0;
+      save();
+    });
   });
 
   editToggle.addEventListener('click', function () {
@@ -587,6 +637,7 @@ body.editing .f:focus { outline: 2px solid var(--accent); background: var(--pane
     edits = {};
     save();
     fields.forEach(function (el) { el.textContent = original[el.dataset.edit]; });
+    selects.forEach(function (el) { el.value = original[el.dataset.edit]; });
     paint();
   });
 
