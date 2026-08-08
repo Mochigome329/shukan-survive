@@ -1941,8 +1941,18 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '想いが多く交錯する',
-    conditionText: '場にキャラが3人以上いる状態で「すれ違い」をプレイ',
-    match: (input) => (input.characters.length >= 3 && hasDev(input, 'surechigai') ? [{ boundCharIds: [] }] : []),
+    /*
+     * v7.23: 「場にキャラが3人以上」は三角関係の条件として的外れだった、というユーザー指摘。
+     * 三角関係は人数ではなく「想いが重なる」ことが本質なので、既に恋愛フラグを持つキャラが
+     * いる状態で、別のキャラに新たに「すれ違い」で恋愛フラグを付けたときに成立させる
+     */
+    conditionText: '恋愛フラグ所持キャラがいる状態で、別のキャラを対象に「すれ違い」をプレイ',
+    match: (input) => {
+      if (!hasDev(input, 'surechigai')) return [];
+      const surechigaiTargets = new Set(devsOf(input, 'surechigai').map((d) => d.targetId).filter((id): id is string => !!id));
+      const alreadyInLove = input.characters.some((c) => c.instance.flags.love && !surechigaiTargets.has(c.instance.instanceId));
+      return alreadyInLove ? [{ boundCharIds: [] }] : [];
+    },
   },
 
   // ===== 第2層: 連続週役（7.5節。第1層のresolved結果を参照する） =====

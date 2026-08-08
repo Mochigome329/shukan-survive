@@ -11,7 +11,7 @@ interface Props {
 }
 
 const PREFIXES = ['灼熱の', '最強', '転生', '放課後', '異世界', '真夜中の', '無敵', '零時の', '嵐を呼ぶ', '常勝'];
-const NOUNS = ['ブレイカーズ', '拳', 'アカデミア', '探偵団', 'サムライ', 'レジェンド', 'ハンター', '番長', 'マエストロ', 'ストライカー'];
+const NOUNS = ['ブレイカーズ', '拳', '大冒険', '探偵団', 'サムライ', 'レジェンド', 'ハンター', '番長', 'マエストロ', 'ストライカー'];
 
 function randomTitle(): string {
   return `${PREFIXES[Math.floor(Math.random() * PREFIXES.length)]}${NOUNS[Math.floor(Math.random() * NOUNS.length)]}`;

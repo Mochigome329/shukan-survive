@@ -3330,7 +3330,7 @@
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "想いが多く交錯する",
-   "conditionText": "場にキャラが3人以上いる状態で「すれ違い」をプレイ"
+   "conditionText": "恋愛フラグ所持キャラがいる状態で、別のキャラを対象に「すれ違い」をプレイ"
   },
   {
    "id": "doutou_no_tenkai",

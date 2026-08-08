@@ -185,7 +185,20 @@ describe('リスク役と連続週役（7.5節、M3）', () => {
     expect(b.weekMultiplier).toBe(4);
   });
 
-  it('三角関係: キャラ3人以上+すれ違いで話題+5', () => {
+  it('三角関係: 恋愛フラグ所持キャラがいる状態で、別のキャラに「すれ違い」で話題+5（v7.23）', () => {
+    const b = score(
+      [
+        makeInstance(data, 'hero', 1),
+        makeInstance(data, 'heroine', 1, { flags: { training: 0, love: true } }),
+        makeInstance(data, 'osananajimi', 1),
+        makeInstance(data, 'surechigai', 1),
+      ],
+      { cards: ['surechigai#1'], targets: { 'surechigai#1': 'osananajimi#1' } },
+    );
+    expect(b.combos.find((c) => c.comboId === 'sankaku_kankei')?.status).toBe('applied');
+  });
+
+  it('三角関係: キャラが3人以上いるだけでは成立しない（既に恋愛フラグを持つ者がいなければ）', () => {
     const b = score(
       [
         makeInstance(data, 'hero', 1),
@@ -195,7 +208,19 @@ describe('リスク役と連続週役（7.5節、M3）', () => {
       ],
       { cards: ['surechigai#1'], targets: { 'surechigai#1': 'heroine#1' } },
     );
-    expect(b.combos.find((c) => c.comboId === 'sankaku_kankei')?.status).toBe('applied');
+    expect(b.combos.find((c) => c.comboId === 'sankaku_kankei')).toBeUndefined();
+  });
+
+  it('三角関係: すれ違いの対象自身が既に恋愛フラグを持っていても、それだけでは三角関係にならない', () => {
+    const b = score(
+      [
+        makeInstance(data, 'hero', 1),
+        makeInstance(data, 'heroine', 1, { flags: { training: 0, love: true } }),
+        makeInstance(data, 'surechigai', 1),
+      ],
+      { cards: ['surechigai#1'], targets: { 'surechigai#1': 'heroine#1' } },
+    );
+    expect(b.combos.find((c) => c.comboId === 'sankaku_kankei')).toBeUndefined();
   });
 
   it('溜めからの爆発: 前週が役なし、今週ありで成立（第2層）', () => {
