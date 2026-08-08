@@ -14,6 +14,41 @@ import type { GameData } from './validate';
 /** 最終回のプレイ上限（通常は4枚） */
 export const FINALE_MAX_PLAY_CARDS = 5;
 
+/**
+ * 最終回の手札に配らないカード（v7.16）。
+ *
+ * どれも「この先まだ話が続く」前提の展開で、最終回に出てくると
+ * 「今更それ？」と読める。効果の面でも、恒久上昇は「次週以降有効」なので
+ * 最終回には一切効かず、伏線を張る系は回収する週がもう無い。
+ *
+ * ここに入れるのは、抜いても最終回の役がほとんど減らないものだけにしてある。
+ * 大ピンチ・敗北・裏切り・闇堕ちは「今更」感はあるものの、
+ * 世界の危機／間一髪／絶望／ダークヒーローといったクライマックスの役の素材なので残している。
+ *
+ * 仕入れたカードとネームストックは、プレイヤーが自分で選んだものなので対象外
+ * （抽選で勝手に配られるぶんだけを絞る）。
+ */
+export const FINALE_EXCLUDED_DEV_IDS = new Set([
+  // 効果が「次週以降有効」で、最終回には何も起きない
+  'sainou_no_henrin', // 才能の片鱗
+  'mikubirareta_otoko', // 見くびられた男
+  'igai_na_ichimen', // 意外な一面
+  'buki_get', // 武器ゲット
+  'waza_get', // 技ゲット
+  'na_serifu', // 名ゼリフ
+  'kakusareta_kettou', // 隠された血統
+  'katai_kizuna', // 固い絆
+  // 回収する週がもう無いのに伏線を張る
+  'fukusen', // 伏線
+  'yorimichi', // 寄り道
+  'densetsu', // 伝説を聞く
+  'douki_no_kokuhaku', // 動機の告白
+  // これから始まる関係・これから続く時間の話
+  'surechigai', // すれ違い
+  'timeskip', // タイムスキップ
+  'sennou', // 洗脳
+]);
+
 /** 完結ボーナス: 1 + 0.1 × 仕込み役の種類数。上限は×2.0 */
 export const COMPLETION_BONUS_PER_COMBO = 0.1;
 export const COMPLETION_BONUS_CAP = 2.0;

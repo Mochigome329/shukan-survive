@@ -6,7 +6,14 @@
  */
 import { actOfWeek } from './acts';
 import { ACT3_COMBO_MATERIALS, ACT3_DRAW_WEIGHT, COMBO_REGISTRY, SETUP_COMBO_IDS } from './combos';
-import { completionBonus, endingBuzz, endingById, endingPopularityAdd, FINALE_MAX_PLAY_CARDS } from './finale';
+import {
+  completionBonus,
+  endingBuzz,
+  endingById,
+  endingPopularityAdd,
+  FINALE_EXCLUDED_DEV_IDS,
+  FINALE_MAX_PLAY_CARDS,
+} from './finale';
 import { createDemands, updateDemands, DEMAND_REWARD_FEE } from './demands';
 import { drawRng, hashSeed, mulberry32, redrawRng, shuffled, weightedSample } from './rng';
 import { applyStateChanges, computeScore } from './scoring';
@@ -224,8 +231,15 @@ export function startWeek(data: GameData, state: RunState): RunState {
     const next = c.returnedThisWeek ? { ...c, returnedThisWeek: false } : c;
     return next.zone === 'hand' || next.zone === 'selected' ? { ...next, zone: 'activeDeck' as const } : next;
   });
-  const pool = cards.filter((c) => c.zone === 'activeDeck' && isDevelopment(data, c));
-  const poolIds = new Set(pool.map((c) => c.instanceId));
+  /*
+   * 最終回は「この先まだ話が続く」前提の展開を抽選から外す（v7.16）。
+   * 仕入れたカードとストックは自分で選んだものなので、確定枠としてそのまま配る
+   */
+  const isFinale = data.quotas.get(state.week)?.final ?? false;
+  const playable = cards.filter((c) => c.zone === 'activeDeck' && isDevelopment(data, c));
+  // 抽選の対象。確定枠（仕入れ・ストック）はここで絞らず、あとで別に足す
+  const pool = playable.filter((c) => !(isFinale && FINALE_EXCLUDED_DEV_IDS.has(c.definitionId)));
+  const playableIds = new Set(playable.map((c) => c.instanceId));
 
   // ボス週「合併号」は手札が2枚少ない（10節）
   const handSize = data.quotas.get(state.week)?.boss === '合併号' ? HAND_SIZE - 2 : HAND_SIZE;
@@ -233,7 +247,7 @@ export function startWeek(data: GameData, state: RunState): RunState {
   // 確定枠: 仕入れたカード → ストックの順（重複と紛失を除く）
   const forced: string[] = [];
   for (const id of [...state.guaranteedNextHand, ...state.stockedIds]) {
-    if (poolIds.has(id) && !forced.includes(id) && forced.length < handSize) forced.push(id);
+    if (playableIds.has(id) && !forced.includes(id) && forced.length < handSize) forced.push(id);
   }
 
   const rest = pool.filter((c) => !forced.includes(c.instanceId));
