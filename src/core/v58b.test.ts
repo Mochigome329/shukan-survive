@@ -72,9 +72,11 @@ describe('カードの役割整理（v5.8b）', () => {
     expect(rival.permanentPopularityBonus).toBe(3);
   });
 
-  it('「全員生還」は代償なしで死亡済みを全員戻す（第17話以降・レア）', () => {
+  it('「全員生還」は代償なしで死亡済みを全員戻す（第17話以降）', () => {
     const def = data.definitions.get('zenin_seikan')!;
-    expect(def.rare).toBe(true);
+    // v7.19: maxCopies:1・unlockWeek:17で既に十分に希少なため、レア倍率(0.4x)の重複ペナルティは外した。
+    // 以前はショップに一度でも並ぶ確率が実測32%しかなく「ほぼ出ない」状態だった
+    expect(def.rare).toBeFalsy();
     expect(def.unlockWeek).toBe(17);
 
     const cards = [

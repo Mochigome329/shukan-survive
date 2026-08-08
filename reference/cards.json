@@ -1002,12 +1002,18 @@
       "effect": {
        "type": "releaseStress"
       }
+     },
+     {
+      "timing": "endWeek",
+      "effect": {
+       "type": "defeatStrongestEnemyAtEndWeek"
+      }
      }
     ],
     "descriptions": {
-     "internal": "緊張を全解放し、1つにつき話題性+5（カタルシス）",
+     "internal": "緊張を全解放し、1つにつき話題性+5（カタルシス）。場の敵のうち最も人気度が高い者を自動で撃破する",
      "hidden": "溜めてきたものが大きいほど、勝利の瞬間は爆発する",
-     "revealed": "カタルシス。溜まった緊張を全解放し、1つにつき話題性+5"
+     "revealed": "カタルシス。溜まった緊張を全解放し、1つにつき話題性+5。場にいる最強の敵を自動で撃破する"
     }
    },
    {
@@ -1930,7 +1936,6 @@
     "maxCopies": 1,
     "unlockWeek": 17,
     "act": "kyu",
-    "rare": true,
     "soloOnly": false,
     "effects": [
      {
@@ -3287,10 +3292,26 @@
    "conditionText": "最終回でノルマを2倍以上超える"
   },
   {
+   "id": "zenmetsu_yaku",
+   "name": "全滅",
+   "layer": 1,
+   "phase": "preScore",
+   "scoreMultiplier": 2,
+   "cutInTemplate": "shock",
+   "popularityAdd": 0,
+   "buzzAdd": 8,
+   "extraText": "週スコア×2（キャストは全滅する）",
+   "hintText": "守るべきものすら失う",
+   "conditionText": "「全滅」をプレイする（それだけで成立）"
+  },
+  {
    "id": "zenmetsu_end",
    "name": "全滅エンド",
    "layer": 1,
    "phase": "preScore",
+   "suppresses": [
+    "zenmetsu_yaku"
+   ],
    "scoreMultiplier": 4,
    "cutInTemplate": "shock",
    "popularityAdd": 0,

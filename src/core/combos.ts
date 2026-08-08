@@ -1891,11 +1891,33 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
 
   // ===== リスク役（7.5節、M3） =====
   {
+    /*
+     * v7.19: 「全滅」だけで成立する役。他の役はどれも複数条件の組み合わせだが、
+     * 全滅は1枚出すだけで今週のキャストを丸ごと失う代償が既に大きいので、
+     * それ単独でピーキーな一手として報われていい、というユーザー判断による例外。
+     * 「悲しい過去」まで揃えた「全滅エンド」のほうが上位なので、そちらが出るときは
+     * こちらを抑制する（suppresses経由。全滅エンド側にIDを追加）
+     */
+    id: 'zenmetsu_yaku',
+    name: '全滅',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    scoreMultiplier: 2,
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 8,
+    extraText: '週スコア×2（キャストは全滅する）',
+    hintText: '守るべきものすら失う',
+    conditionText: '「全滅」をプレイする（それだけで成立）',
+    match: (input) => (hasDev(input, 'zenmetsu') ? [{ boundCharIds: [] }] : []),
+  },
+  {
     id: 'zenmetsu_end',
     name: '全滅エンド',
     layer: 1,
     phase: 'preScore',
-    suppresses: [],
+    suppresses: ['zenmetsu_yaku'],
     scoreMultiplier: 4,
     cutInTemplate: 'shock',
     popularityAdd: 0,

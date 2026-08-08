@@ -35,6 +35,7 @@ const cardEffectSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('temporaryPopularityAll'), amount: z.number().int() }),
   z.object({ type: z.literal('buzzPerDead'), amount: z.number().int() }),
   z.object({ type: z.literal('restoreDebutFaction') }),
+  z.object({ type: z.literal('defeatStrongestEnemyAtEndWeek') }),
 ]);
 
 const timedEffectSchema = z.object({ timing: timingSchema, effect: cardEffectSchema });

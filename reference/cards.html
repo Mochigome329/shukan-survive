@@ -199,8 +199,8 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
     <div class="tally">
       <span><b>15</b>キャラ</span>
       <span><b>68</b>展開</span>
-      <span><b>100</b>役</span>
-      <span><b>8</b>レア</span>
+      <span><b>101</b>役</span>
+      <span><b>7</b>レア</span>
     </div>
   </header>
 
@@ -796,10 +796,10 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
     <td class="c-name">大勝利</td>
     <td class="c-num">+3</td>
     <td class="c-target">対象なし</td>
-    <td class="c-desc"><span class="f" data-edit="dev:dai_shouri:revealed">カタルシス。溜まった緊張を全解放し、1つにつき話題性+5</span>
+    <td class="c-desc"><span class="f" data-edit="dev:dai_shouri:revealed">カタルシス。溜まった緊張を全解放し、1つにつき話題性+5。場にいる最強の敵を自動で撃破する</span>
     <span class="meta"><span class="chip">最大3枚</span><span class="chip">バトル</span></span>
     <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:dai_shouri:hidden">溜めてきたものが大きいほど、勝利の瞬間は爆発する</span></span>
-    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:dai_shouri:internal">緊張を全解放し、1つにつき話題性+5（カタルシス）</span></span>
+    <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:dai_shouri:internal">緊張を全解放し、1つにつき話題性+5（カタルシス）。場の敵のうち最も人気度が高い者を自動で撃破する</span></span>
   </td>
   </tr><tr class="is-rare">
     <td class="c-name">タイトル回収<span class="rare">レア</span></td>
@@ -846,8 +846,8 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
     <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:hangeki:hidden">押されっぱなしだった側が前に出る、その一話</span></span>
     <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:hangeki:internal">緊張を全解放。役「意外な活躍」の素材</span></span>
   </td>
-  </tr><tr class="is-rare">
-    <td class="c-name">全員生還<span class="rare">レア</span></td>
+  </tr><tr>
+    <td class="c-name">全員生還</td>
     <td class="c-num">+5</td>
     <td class="c-target">対象なし</td>
     <td class="c-desc"><span class="f" data-edit="dev:zenin_seikan:revealed">第17話以降のみ使用可能。死亡済みのキャラを全員、場に戻す。緊張も全解放</span>
@@ -1818,13 +1818,21 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
             </tr></tbody>
       </table></div>
     </div><div class="act-block">
-      <h3 class="act-head"><span class="act-mark act-combo">役</span>リスク役<em>2種</em></h3>
+      <h3 class="act-head"><span class="act-mark act-combo">役</span>リスク役<em>3種</em></h3>
       <div class="tablewrap"><table class="grid">
         <thead><tr><th>役名</th><th>成立条件</th><th>効果</th></tr></thead>
         <tbody><tr>
+              <td class="c-name">全滅</td>
+              <td class="c-desc">「全滅」をプレイする（それだけで成立）
+                
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zenmetsu_yaku:hintText">守るべきものすら失う</span></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:zenmetsu_yaku:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+              </td>
+              <td class="c-eff">話題+8 / 週スコア×2</td>
+            </tr><tr>
               <td class="c-name">全滅エンド</td>
               <td class="c-desc">「全滅」+ いずれかのキャラを対象とする「悲しい過去」
-                
+                <span class="meta"><span class="chip">全滅を抑制</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zenmetsu_end:hintText">全てを失ったあとの悲しい余韻</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:zenmetsu_end:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>

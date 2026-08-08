@@ -79,7 +79,13 @@ export type CardEffect =
    * 裏切り・洗脳・闇堕ちで敵になった仲間を取り戻すための専用カード。
    * 現在の陣営がデビュー時と同じなら何も起きない
    */
-  | { type: 'restoreDebutFaction' };
+  | { type: 'restoreDebutFaction' }
+  /**
+   * その週の敵キャラのうち最も人気度が高い者を、週終了時に撃破する（大勝利、v7.19）。
+   * 対象指定は要らず自動選択。撃破（moveZoneAtEndWeek zone:'waiting'）と同じ送り先。
+   * 場に敵がいなければ何も起きない
+   */
+  | { type: 'defeatStrongestEnemyAtEndWeek' };
 
 export interface TimedEffect {
   timing: EffectTiming;
