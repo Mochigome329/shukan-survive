@@ -4,6 +4,7 @@
  * v5.6: カードの提示は幕タグと直近の展開に応じた重み付き抽選にする（design_story_types.md）。
  */
 import { actOfWeek } from './acts';
+import { pendingDemandHints } from './demands';
 import { mulberry32, hashSeed, weightedSample } from './rng';
 import type { Act, CardInstance, RunState } from './types';
 import type { GameData } from './validate';
@@ -220,18 +221,32 @@ export function rollPack(data: GameData, state: RunState, maxWeek: number, rerol
   );
   const currentAct = actOfWeek(state.week);
   const boosted = followUpBoostedIds(data, state);
+  // 期限が近い編集部の要求があれば、その手立てになるカードを回す（v7.16）
+  const hints = pendingDemandHints(state.demands, state.week);
+  const hintBoost = new Set(hints.boost);
 
   const weightOf = (id: string) => {
     const def = data.definitions.get(id)!;
-    return actWeight(def.act, currentAct) * (boosted.has(id) ? 3 : 1) * (def.rare ? RARE_WEIGHT : 1);
+    return (
+      actWeight(def.act, currentAct) *
+      (boosted.has(id) ? 3 : 1) *
+      (hintBoost.has(id) ? 3 : 1) *
+      (def.rare ? RARE_WEIGHT : 1)
+    );
   };
 
+  /*
+   * 提示枠を1つ確保する条件。緊張の解放を優先するのは、
+   * そちらは放っておくと打ち切りに直結するため。
+   * 要求の手立ては、期限が目前でまだ達成していないときだけ確保する
+   */
   let forced: string | null = null;
-  if (state.stress >= 2) {
-    const reliefPool = pool.filter((id) => RELIEF_CARDS.has(id));
-    const picked = weightedSample(reliefPool.map((id) => ({ item: id, weight: weightOf(id) })), 1, rng);
-    forced = picked[0] ?? null;
-  }
+  const forceFrom = (ids: readonly string[]) => {
+    const candidates = pool.filter((id) => ids.includes(id));
+    return weightedSample(candidates.map((id) => ({ item: id, weight: weightOf(id) })), 1, rng)[0] ?? null;
+  };
+  if (state.stress >= 2) forced = forceFrom([...RELIEF_CARDS]);
+  else if (hints.force.length > 0) forced = forceFrom(hints.force);
 
   const rest = pool.filter((id) => id !== forced);
   const remaining = weightedSample(

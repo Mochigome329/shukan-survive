@@ -84,7 +84,13 @@ describe('編集会議（12節・最小版）', () => {
   });
 
   it('レアカードは通常カードより提示されにくい（v5.7）', () => {
-    const run = { ...newRun(1), week: 10 };
+    /*
+     * 第18話＝急で見る。以前は第10話（破）で数えていたが、
+     * どちらも急のカードなので幕の重みが0.3倍に落ち、300回引いても
+     * 各数回しか出ずに大小が誤差で入れ替わっていた。
+     * 同じ幕の中で比べれば、レア倍率0.4がそのまま差として出る
+     */
+    const run = { ...newRun(1), week: 18 };
     const freq = samplePackFrequency(run, MAX_PLAYABLE, 300);
     // タイトル回収（レア・急）より、同じ急のレアでない大勝利のほうが出る
     expect(freq.get('dai_shouri') ?? 0).toBeGreaterThan(freq.get('title_kaishu') ?? 0);
