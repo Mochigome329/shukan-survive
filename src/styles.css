@@ -686,6 +686,13 @@ button {
   outline: 3px solid var(--accent);
   outline-offset: 2px;
   border-radius: 4px;
+  /*
+   * 暗幕はオーバーレイ側の一枚板ではなく、この要素から外へ広がる影として描く（v7.15）。
+   * こうすると説明している部位だけが穴になって暗くならず、
+   * 「ここを見て」という指示と実物の見え方が一致する。
+   * spread は画面の対角より大きければよいので 100vmax
+   */
+  box-shadow: 0 0 0 100vmax rgba(26, 22, 19, 0.82);
   animation: tutorial-glow 1.2s ease-in-out infinite alternate;
 }
 
@@ -708,6 +715,12 @@ button {
  */
 .tutorial-overlay {
   z-index: 15;
+  /*
+   * 暗幕はハイライト対象の box-shadow が描くので、こちらは透明にする（v7.15）。
+   * 一枚板のままだとオーバーレイ(15)が対象(11)より前にあるぶん、
+   * 説明している当の部位まで暗く沈んでしまっていた
+   */
+  background: transparent;
 }
 
 /* ハイライト部を隠さないよう、説明の箱を上下へ寄せる */
@@ -750,6 +763,20 @@ button {
   max-height: 78vh;
   overflow-y: auto;
   text-align: left;
+}
+
+/*
+ * 寄せた先の空きに収まるよう、箱の高さを実測値で抑える（v7.15）。
+ * 変数は useTutorialHighlight が出す。24px はオーバーレイの余白20pxに
+ * ハイライトとの間隔を少し足したもの。
+ * 変数が無いとき（対象なしの手順）は 78vh のまま
+ */
+.tutorial-overlay.tutorial-box-bottom .tutorial-box {
+  max-height: min(78vh, calc(100vh - var(--tutorial-target-bottom, 0px) - 36px));
+}
+
+.tutorial-overlay.tutorial-box-top .tutorial-box {
+  max-height: min(78vh, calc(var(--tutorial-target-top, 100vh) - 36px));
 }
 
 .tutorial-box h2 {
