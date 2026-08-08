@@ -135,16 +135,26 @@ const GENERIC_BAD = ['そろそろ大きな動きがほしい', '今週はちょ
 const templateOf = (comboId: string): CutInTemplate =>
   COMBO_REGISTRY.find((c) => c.id === comboId)?.cutInTemplate ?? 'normal';
 
-function pick(rng: Rng, pool: string[], used: Set<string>): string | null {
-  const rest = pool.filter((v) => !used.has(v));
+/** 最終回・打ち切りエンドで出すと嘘になる「来週」前提の声（v7.12） */
+const NO_NEXT_WEEK = /来週/;
+
+function pick(rng: Rng, pool: string[], used: Set<string>, excludeNextWeek: boolean): string | null {
+  const rest = pool.filter((v) => !used.has(v) && (!excludeNextWeek || !NO_NEXT_WEEK.test(v)));
   if (rest.length === 0) return null;
   const v = rest[randInt(rng, rest.length)]!;
   used.add(v);
   return v;
 }
 
-/** 読者の声を2〜3件返す（同じ週は常に同じ内容になるようシード固定） */
-export function pickVoices(breakdown: ScoreBreakdown, runSeed: number, week: number): string[] {
+const GENERIC_FINALE = ['最終回、最高でした', '単行本出たら買う', 'これが読みたかった', '有終の美すぎる', '完結おめでとう'];
+
+/**
+ * 読者の声を2〜3件返す（同じ週は常に同じ内容になるようシード固定）。
+ * isEnding=true（最終回の掲載、または打ち切り決定）のときは、
+ * 「来週まで待てない」「来週どうなるの」のような続きを匂わせる声を混ぜない。
+ * この週が最後だと確定しているのに「来週も読みます」が出るのは変（v7.12）
+ */
+export function pickVoices(breakdown: ScoreBreakdown, runSeed: number, week: number, isEnding = false): string[] {
   const rng = mulberry32(hashSeed(runSeed, 'voice', week));
   const used = new Set<string>();
   const voices: string[] = [];
@@ -153,14 +163,25 @@ export function pickVoices(breakdown: ScoreBreakdown, runSeed: number, week: num
   const applied = breakdown.combos.filter((c) => c.status === 'applied');
   for (const combo of applied.slice(0, 2)) {
     const v =
-      pick(rng, BY_COMBO[combo.comboId] ?? [], used) ?? pick(rng, BY_TEMPLATE[templateOf(combo.comboId)], used);
+      pick(rng, BY_COMBO[combo.comboId] ?? [], used, isEnding) ??
+      pick(rng, BY_TEMPLATE[templateOf(combo.comboId)], used, isEnding);
     if (v) voices.push(v);
   }
 
   const ratio = breakdown.quota > 0 ? breakdown.finalScore / breakdown.quota : 0;
-  const genericPool = breakdown.quotaBypassed ? GENERIC_MID : ratio >= 1.5 ? GENERIC_GOOD : ratio >= 1 ? [...GENERIC_GOOD, ...GENERIC_MID] : GENERIC_BAD;
+  const genericPool = isEnding
+    ? ratio >= 1
+      ? GENERIC_FINALE
+      : GENERIC_BAD
+    : breakdown.quotaBypassed
+      ? GENERIC_MID
+      : ratio >= 1.5
+        ? GENERIC_GOOD
+        : ratio >= 1
+          ? [...GENERIC_GOOD, ...GENERIC_MID]
+          : GENERIC_BAD;
   while (voices.length < 3) {
-    const v = pick(rng, genericPool, used);
+    const v = pick(rng, genericPool, used, isEnding);
     if (!v) break;
     voices.push(v);
   }

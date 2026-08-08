@@ -164,7 +164,10 @@ const FOLLOW_UP_RULES: FollowUpRule[] = [
         if (c.acquiredWeek <= 0 || s.week - c.acquiredWeek > 3) return false;
         return data.definitions.get(c.definitionId)?.kind === 'character' && (data.definitions.get(c.definitionId) as { faction?: string })?.faction === 'enemy';
       }),
-    boosts: ['battle', 'kanashii_kako', 'kaishin'],
+    // v7.12: 敵を倒す／退場させる手段（撃破）もここに追随させる。
+    // 以前はここに無く、しかも撃破自体が幕タグ「急」寄りの重み付けだったため、
+    // 敵が出てから実際に退場させられるまでの導線がほぼ運任せになっていた
+    boosts: ['battle', 'kanashii_kako', 'kaishin', 'gekiha'],
   },
   { trigger: (_d, s) => recentlyPlayed(s, 'timeskip'), boosts: ['shinchara', 'kakusareta_kettou'] },
   { trigger: (_d, s) => s.stress >= 2, boosts: [...RELIEF_CARDS] },

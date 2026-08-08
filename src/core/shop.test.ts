@@ -217,6 +217,30 @@ describe('編集会議（12節・最小版）', () => {
     expect(boostedTotal).toBeGreaterThan(baseTotal * 1.5);
   });
 
+  it('幕タグ: 「撃破」は途中離脱と同じ幕（破）扱いで、序盤〜中盤から出やすい（v7.12）', () => {
+    // 敵専用の退場手段「撃破」が「急」（第17話〜）扱いだったため、
+    // 実プレイの大半を占める中盤（第6〜16話）でほぼ出ず、退場させる手段が無いように感じられていた。
+    // 「途中離脱」（破）と同格に直したので、破の週では両者が同程度出るはず
+    const run = { ...newRun(1), week: 10 }; // week=10 → 破
+    const freq = samplePackFrequency(run, MAX_WEEK, 400);
+    const gekiha = freq.get('gekiha') ?? 0;
+    const ridatsu = freq.get('ridatsu') ?? 0;
+    expect(gekiha).toBeGreaterThan(0);
+    // 完全一致は求めない（他の追随ルールの影響もあるため）が、桁が違うほどの差は無いはず
+    expect(gekiha).toBeGreaterThan(ridatsu * 0.3);
+  });
+
+  it('追随ルール: 敵キャラを入手した直後は「撃破」（敵退場の決め手）が出やすくなる（v7.12）', () => {
+    const enemyChar = makeInstance(data, 'shukuteki', 1, { faction: 'enemy', zone: 'field', acquiredWeek: 9 });
+    const base = { ...newRun(1), week: 10 };
+    const withEnemy = { ...base, cards: [...base.cards, enemyChar] };
+
+    const baseFreq = (freq: Map<string, number>) => freq.get('gekiha') ?? 0;
+    const baseTotal = baseFreq(samplePackFrequency(base, MAX_WEEK, 400));
+    const boostedTotal = baseFreq(samplePackFrequency(withEnemy, MAX_WEEK, 400));
+    expect(boostedTotal).toBeGreaterThan(baseTotal * 1.5);
+  });
+
   it('緊張2以上のときは解放カードが必ず1枠確保される（幕重み付けと共存、v5.5維持）', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'battle', 1)];
     const run = { ...makeState(cards, 3, { funds: 10, stress: 2 }), runSeed: 1 };

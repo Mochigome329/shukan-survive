@@ -110,7 +110,8 @@ export function ResultScreen({ state, dispatch }: Props) {
     return fresh;
   });
 
-  const voices = pickVoices(b, run.runSeed, playedWeek);
+  // 連載が終わる週（最終回の掲載／打ち切り決定）は、続きを匂わせる声を出さない
+  const voices = pickVoices(b, run.runSeed, playedWeek, cancelled || isLastImplemented);
 
   // この週にキャストへ加わったキャラ（登場・復活・復帰）。役と同じくカットインで見せる（v5.9）
   const debuts = b.stateChanges

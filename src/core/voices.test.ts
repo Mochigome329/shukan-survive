@@ -67,4 +67,28 @@ describe('読者の声（v6.9）', () => {
     expect(voices.length).toBeLessThanOrEqual(3);
     expect(new Set(voices).size).toBe(voices.length);
   });
+
+  it('連載が終わる週（isEnding）は「来週」を匂わせる声が出ない（v7.12）', () => {
+    // 「主人公死亡」を成立させる。この役の専用声には「嘘だろ…来週どうなるの」が含まれており、
+    // isEnding=falseなら普通に出うる文言。最終回・打ち切り決定の週でこれが出ると
+    // 「続きがある」前提の声になってしまうため、isEnding=trueでは除外されるべき
+    const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'shibou', 1)];
+    const state = makeState(cards, 5);
+    const b = computeScore({
+      data,
+      cards: state.cards,
+      week: 5,
+      selection: { cards: ['shibou#1'], targets: { 'shibou#1': 'hero#1' } },
+    });
+    expect(b.combos.some((c) => c.comboId === 'shujinkou_shibou' && c.status === 'applied')).toBe(true);
+
+    for (let seed = 0; seed < 50; seed++) {
+      const voices = pickVoices(b, seed, 5, true);
+      expect(voices.some((v) => v.includes('来週'))).toBe(false);
+    }
+    // 比較対象: isEnding=falseなら、十分な試行で「来週」を含む声が実際に出ることを確認する
+    // （フィルタが常時働いているだけで、そもそも出せない状況ではないことの裏付け）
+    const withoutEndingFilter = Array.from({ length: 50 }, (_, seed) => pickVoices(b, seed, 5, false)).flat();
+    expect(withoutEndingFilter.some((v) => v.includes('来週'))).toBe(true);
+  });
 });
