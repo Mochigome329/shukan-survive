@@ -350,6 +350,24 @@ describe('基本役（7.3節、v5.2: キャラ条件は場のキャストを参�
     expect(used.combos.find((c) => c.comboId === 'kamase_inu')).toBeUndefined();
   });
 
+  it('かませ犬: 敵として出した新顔は「撃破」で退場させても成立する', () => {
+    const cards = [
+      makeInstance(data, 'shukuteki', 1),
+      makeInstance(data, 'teki_kanbu_power', 1, { zone: 'bench' }),
+      makeInstance(data, 'shinchara', 1),
+      makeInstance(data, 'gekiha', 1),
+      makeInstance(data, 'battle', 1),
+    ];
+    const selection = {
+      cards: ['shinchara#1', 'gekiha#1', 'battle#1'],
+      targets: { 'shinchara#1': 'teki_kanbu_power#1', 'gekiha#1': 'teki_kanbu_power#1' },
+    };
+    const b = score(cards, selection);
+    expect(b.combos.find((c) => c.comboId === 'kamase_inu')?.status).toBe('applied');
+    // 恒久+5をもらうのは、退場した新顔ではなく場に残る別の敵
+    expect(b.stateChanges).toContainEqual({ type: 'permanentPopularityAdd', instanceId: 'shukuteki#1', amount: 5 });
+  });
+
   it('かませ犬: 新キャラ登場だけで途中離脱していないキャラは対象にならない（不成立）', () => {
     const cards = [
       makeInstance(data, 'rival', 1),

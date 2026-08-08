@@ -709,7 +709,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
     <td class="c-name">記憶喪失</td>
     <td class="c-num">+4</td>
     <td class="c-target">場のキャラ1人</td>
-    <td class="c-desc"><span class="f" data-edit="dev:kioku_soushitsu:revealed">対象のフラグ（修行・恋愛）をすべて喪失。かわりに人気度が恒久+6</span>
+    <td class="c-desc"><span class="f" data-edit="dev:kioku_soushitsu:revealed">対象のフラグ（修行・覚醒・恋愛）をすべて喪失。かわりに人気度が恒久+6</span>
     
     <span class="frow alt"><span class="flabel">未公開</span><span class="f" data-edit="dev:kioku_soushitsu:hidden">積み上げたものを失った主人公を、読者は放っておけない</span></span>
     <span class="frow alt"><span class="flabel">内部</span><span class="f" data-edit="dev:kioku_soushitsu:internal">対象の仕込み（修行・恋愛フラグ）をすべて失う。かわりに人気度が恒久+6。失ったフラグは「おかえり」で取り戻せる（v7.4）</span></span>
@@ -1062,7 +1062,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">第5話までに「運命的な出会い」でヒロインをデビューさせる
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:boy_meets_girl:hintText">少年と少女の出会いが運命を回し始める</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:boy_meets_girl:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:boy_meets_girl:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki" selected>dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1110,7 +1110,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">「日常回」を2枚以上同時にプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:heiwa_na_nichijou:hintText">なにも起こらない週にも価値がある</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:heiwa_na_nichijou:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:heiwa_na_nichijou:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai" selected>waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+2</td>
             </tr><tr>
@@ -1196,7 +1196,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">敵の「幼なじみ」か「相棒」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ano_koro_mitaini:hintText">またお前と同じ側に立てる</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ano_koro_mitaini:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ano_koro_mitaini:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+6</td>
             </tr><tr>
@@ -1204,7 +1204,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">敵の「ヒロイン」を対象に「裏切り」をプレイ（仲間へ戻る。緊張を全解放、v6.6）
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:anata_to_tomoni:hintText">離れていた時間の分だけ想いは募る</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:anata_to_tomoni:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:anata_to_tomoni:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+8</td>
             </tr><tr>
@@ -1220,7 +1220,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5）
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kanashiki_akuyaku:hintText">悪の過去が明かされるとき</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kanashiki_akuyaku:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kanashiki_akuyaku:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+3</td>
             </tr><tr>
@@ -1228,7 +1228,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">同じ敵キャラを対象に「悲しい過去」と「改心」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kaishin_no_monogatari:hintText">過去を乗り越え共に並び立つ</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kaishin_no_monogatari:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kaishin_no_monogatari:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1257,7 +1257,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-eff">人気+15</td>
             </tr><tr>
               <td class="c-name">かませ犬</td>
-              <td class="c-desc">「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」+「バトル」をプレイ（新顔ごとに1回）
+              <td class="c-desc">「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」か「撃破」+「バトル」をプレイ（新顔ごとに1回）
                 <span class="meta"><span class="chip">1キャラ1回</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kamase_inu:hintText">今日出たばかりですぐ退場</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kamase_inu:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
@@ -1276,7 +1276,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">主人公を対象に「死亡」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shujinkou_shibou:hintText">名の通りの禁じ手</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:shujinkou_shibou:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:shujinkou_shibou:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+7</td>
             </tr><tr>
@@ -1284,7 +1284,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">裏切り・洗脳・闇堕ちなどで敵になった仲間を対象に「死亡」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:omoi_todokazu:hintText">心は戻らないままもう戻らない</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:omoi_todokazu:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:omoi_todokazu:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+6</td>
             </tr></tbody>
@@ -1298,7 +1298,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">師匠・父・母のいずれかを対象に「死亡」をプレイ
                 <span class="meta"><span class="chip">仕込み</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:shitei_no_wakare:hintText">導く者を失ったとき</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:shitei_no_wakare:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:shitei_no_wakare:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo" selected>poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+2</td>
             </tr><tr>
@@ -1314,7 +1314,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">恋愛フラグ所持キャラを対象に「告白」をプレイ（週スコア×2.5）
                 <span class="meta"><span class="chip">仕込み</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ryouomoi:hintText">想いが通じ合う瞬間</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ryouomoi:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ryouomoi:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">週スコア×2.5</td>
             </tr><tr>
@@ -1400,7 +1400,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">「回想」と「死亡」を同じ週にプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:soumatou:hintText">最期に流れるあたたかな思い出</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:soumatou:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:soumatou:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo" selected>poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1416,7 +1416,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">「タイムスキップ」と「回想」を同じ週にプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sorekara_toki_ga_tatta:hintText">飛ばした年月を振り返る</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:sorekara_toki_ga_tatta:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:sorekara_toki_ga_tatta:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don" selected>don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+8</td>
             </tr><tr>
@@ -1424,7 +1424,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">場に「幼なじみ」がいる状態で「回想」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ano_koro_no_bokutachi:hintText">幼なじみと過ごした日々</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ano_koro_no_bokutachi:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ano_koro_no_bokutachi:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1502,7 +1502,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">第17話以降、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:anun_tachikomeru:hintText">決戦で追い詰められる</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:anun_tachikomeru:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:anun_tachikomeru:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa" selected>zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+8</td>
             </tr><tr>
@@ -1517,7 +1517,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-name">雑草魂</td>
               <td class="c-desc">「見くびられた男」+「修行」をプレイ
                 
-                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zassou_damashii:hintText">見くびられた者ほど、黙って鍛える</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:zassou_damashii:hintText">強くなって見返してやる！</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:zassou_damashii:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+4</td>
@@ -1525,7 +1525,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-name">因縁の火種</td>
               <td class="c-desc">「因縁」+「バトル」をプレイ
                 
-                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:innen_no_hidane:hintText">すべての因縁には始まりがある</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:innen_no_hidane:hintText">因縁結ぶ戦い</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:innen_no_hidane:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+4</td>
@@ -1533,7 +1533,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-name">道中の出会い</td>
               <td class="c-desc">「寄り道」+「新キャラ登場」か「運命的な出会い」をプレイ
                 
-                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:douchuu_no_deai:hintText">寄り道の先で、誰かと出会う</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:douchuu_no_deai:hintText">寄り道の先の出会い</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:douchuu_no_deai:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+4</td>
@@ -1541,7 +1541,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-name">惨事の連鎖</td>
               <td class="c-desc">「悲劇」「大破壊」「大ピンチ」のうち2枚以上をプレイ
                 
-                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sanji_no_rensa:hintText">不幸は重なるもの</span></span>
+                <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sanji_no_rensa:hintText">連なる破壊と悲劇</span></span>
                 <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:sanji_no_rensa:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+7</td>
@@ -1574,7 +1574,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">第17話以降、同じキャラを対象に「途中離脱」と「悲しい過去」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ketsui_no_wakare:hintText">終盤での悲しき離別</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ketsui_no_wakare:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ketsui_no_wakare:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo" selected>poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+7</td>
             </tr><tr>
@@ -1628,7 +1628,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">場に敵キャラと「一般人」がいる状態で「日常回」か「人助け」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:aku_nimo_kizuna:hintText">名もなき誰かと心通わせる悪役</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:aku_nimo_kizuna:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:aku_nimo_kizuna:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+7</td>
             </tr><tr>
@@ -1674,7 +1674,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">場に「母」がいる状態で「日常回」か「骨休め」をプレイ
                 <span class="meta"><span class="chip">平和な日常を抑制</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ofukuro_no_aji:hintText">帰る場所での休息</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ofukuro_no_aji:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ofukuro_no_aji:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1682,7 +1682,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">場に「母」がいる状態で「大ピンチ」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:haha_wa_tsuyoshi:hintText">守るために前に出る</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:haha_wa_tsuyoshi:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:haha_wa_tsuyoshi:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori" selected>horori</option></select></span>
               </td>
               <td class="c-eff">話題+5 / 人気×3</td>
             </tr><tr>
@@ -1730,7 +1730,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">過去に「大喧嘩」を描いた状態で「仲直り」をプレイ
                 <span class="meta"><span class="chip">仕込み</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:ame_futte_ji_katamaru:hintText">強くぶつかった後の和解</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ame_futte_ji_katamaru:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:ame_futte_ji_katamaru:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+7</td>
             </tr></tbody>
@@ -1744,7 +1744,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">第17話以降に「日常回」をプレイ
                 <span class="meta"><span class="chip">平和な日常・緩急を抑制</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:fuon_na_nichijou:hintText">決戦を前にした静けさ</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:fuon_na_nichijou:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:fuon_na_nichijou:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa" selected>zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr><tr>
@@ -1752,7 +1752,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">第17話以降に「宴会」か「骨休め」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:kessen_zenya:hintText">最後の休息</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kessen_zenya:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:kessen_zenya:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin" selected>jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+6</td>
             </tr></tbody>
@@ -1804,7 +1804,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">最終回に「日常回」をプレイ
                 <span class="meta"><span class="chip">不穏な日常・平和な日常・緩急を抑制</span></span>
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:torimodoshita_hibi:hintText">何でもない日常を取り戻す</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:torimodoshita_hibi:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:torimodoshita_hibi:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai" selected>waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+9</td>
             </tr><tr>
@@ -1834,7 +1834,7 @@ body:not(.editing) .fsel { pointer-events: none; opacity: 0.55; border-color: tr
               <td class="c-desc">場にキャラが3人以上いる状態で「すれ違い」をプレイ
                 
                 <span class="frow alt"><span class="flabel">ヒント</span><span class="f" data-edit="combo:sankaku_kankei:hintText">想いが多く交錯する</span></span>
-                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:sankaku_kankei:sfxId"><option value="" selected>自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki">dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
+                <span class="frow alt"><span class="flabel">描き文字</span><select class="fsel" data-edit="combo:sankaku_kankei:sfxId"><option value="">自動（種別から選ぶ）</option><option value="don">don</option><option value="baan">baan</option><option value="gogogo">gogogo</option><option value="katsu">katsu</option><option value="bang2">bang2</option><option value="interrobang">interrobang</option><option value="dododo">dododo</option><option value="dokidoki" selected>dokidoki</option><option value="waiwai">waiwai</option><option value="zawazawa">zawazawa</option><option value="jiin">jiin</option><option value="poroporo">poroporo</option><option value="horori">horori</option></select></span>
               </td>
               <td class="c-eff">話題+5</td>
             </tr></tbody>

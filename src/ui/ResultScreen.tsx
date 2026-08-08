@@ -7,6 +7,7 @@ import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gam
 import { playCheer, playCutinNote } from './audio';
 import { addDiscovered, getDiscovered } from './discovery';
 import { SfxMark } from './SfxMark';
+import { JaggedBalloon, UniFlash } from './CutInShapes';
 import { pickVoices } from './voices';
 
 interface Props {
@@ -86,6 +87,16 @@ function pickOnomatopoeia(kind: string, seed: string, sfxId?: string): string | 
   let h = 0;
   for (let i = 0; i < seed.length; i++) h = (h * 31 + seed.charCodeAt(i)) >>> 0;
   return pool[h % pool.length]!;
+}
+
+/*
+ * 長い役名は一段小さく組む。
+ * カットインの枠（ギザギザ吹き出し・ウニフラッシュの中央の丸）は丸みのある形なので、
+ * 34pxのまま折り返すと「ジャイアントキリング」「ボーイミーツガール」のような
+ * 8字以上の役名が枠の外へ出てしまう。全100役を実際に流し込んで決めたしきい値
+ */
+function nameClass(name: string): string {
+  return name.length >= 8 ? 'cutin-name cutin-name-long' : 'cutin-name';
 }
 
 /**
@@ -334,6 +345,7 @@ export function ResultScreen({ state, dispatch }: Props) {
 
       {cutIn && (
         <div className={`cutin-overlay cutin-${cutIn.cutInTemplate}`}>
+          {cutIn.cutInTemplate === 'emotion' && <UniFlash />}
           <SfxMark
             key={cutIn.comboId}
             id={
@@ -345,8 +357,9 @@ export function ResultScreen({ state, dispatch }: Props) {
             }
           />
           <div className="cutin-panel">
+            {cutIn.cutInTemplate === 'shock' && <JaggedBalloon />}
             <span className="cutin-label">{newDiscoveries.has(cutIn.comboId) ? '役 初成立' : '成立'}</span>
-            <span className="cutin-name">{cutIn.name}</span>
+            <span className={nameClass(cutIn.name)}>{cutIn.name}</span>
             <span className="cutin-effect">{comboEffectText(cutIn)}</span>
             {cutIn.extraText && <span className="cutin-extra">{cutIn.extraText}</span>}
             {newDiscoveries.has(cutIn.comboId) && <span className="cutin-codex">役図鑑に登録</span>}
@@ -359,7 +372,7 @@ export function ResultScreen({ state, dispatch }: Props) {
           <SfxMark key={bonusCutIn.id} id={pickOnomatopoeia('bonus', bonusCutIn.id, bonusCutIn.sfxId) ?? ''} />
           <div className="cutin-panel">
             <span className="cutin-label">完結ボーナス {bonusStep}/{bonusCombos.length}</span>
-            <span className="cutin-name">{bonusCutIn.name}</span>
+            <span className={nameClass(bonusCutIn.name)}>{bonusCutIn.name}</span>
             <span className="cutin-effect">積み上げてきた仕込み</span>
             <span className="cutin-bonus-total">× {bonusRunningTotal.toFixed(1)}</span>
           </div>

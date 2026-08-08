@@ -1619,6 +1619,12 @@ button {
 }
 
 /* ===== カットイン（13.3節） ===== */
+/*
+ * v7.14: 暗幕をやめて紙色の幕にした。
+ * 漫画のコマは白い紙の上に描かれるものなので、画面を暗く落とすと
+ * 「舞台照明が落ちた」感じになり、誌面の見開きらしさが出なかった。
+ * 集中線も白い線から黒い線に変わる
+ */
 .cutin-overlay {
   position: fixed;
   inset: 0;
@@ -1627,8 +1633,8 @@ button {
   align-items: center;
   justify-content: center;
   background:
-    repeating-linear-gradient(-60deg, transparent 0 14px, rgba(255, 255, 255, 0.05) 14px 16px),
-    rgba(20, 16, 14, 0.86);
+    repeating-linear-gradient(-60deg, transparent 0 14px, rgba(26, 22, 19, 0.07) 14px 16px),
+    rgba(247, 243, 234, 0.97);
   animation: cutin-bg 0.15s ease-out;
 }
 
@@ -1665,7 +1671,8 @@ button {
   max-width: 84vw;
   max-height: clamp(100px, 26vh, 170px);
   overflow: visible;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.55));
+  /* 紙色の幕になったので、真っ黒の影だと描き文字と一体化して太った字に見える。薄く落とす */
+  filter: drop-shadow(5px 5px 0 rgba(26, 22, 19, 0.22));
   transform: rotate(-12deg) scale(1);
   animation: cutin-sfx-pop 0.34s cubic-bezier(0.2, 1.7, 0.4, 1);
   pointer-events: none;
@@ -1683,9 +1690,16 @@ button {
   bottom: 9%;
 }
 
+/*
+ * v7.14: 塗りと縁取りを入れ替えた。
+ * 暗幕のころは紙色で塗って黒くフチを取れば白い字として浮いたが、
+ * 幕が紙色になった今それをやると、塗りが地とまったく同じ色になって
+ * 輪郭線だけの中抜き文字になってしまう。
+ * 白い紙に書かれた効果音は黒で塗るのが本来なので、そちらへ寄せる
+ */
 .cutin-sfx path {
-  fill: var(--paper);
-  stroke: var(--ink);
+  fill: var(--ink);
+  stroke: var(--paper);
   stroke-width: 4px;
   stroke-linejoin: round;
 }
@@ -1712,7 +1726,8 @@ button {
 }
 
 .cutin-shock .cutin-sfx path {
-  fill: #ff5a44;
+  /* 紙色の地に対して4.6:1。大きな描き文字なので朱色のままでも十分に読める */
+  fill: var(--accent);
 }
 
 @keyframes cutin-sfx-shock {
@@ -1742,7 +1757,12 @@ button {
 }
 
 .cutin-emotion .cutin-sfx path {
-  fill: #fdf1f7;
+  /*
+   * 情感系の描き文字はウニフラッシュの黒い針の上にも重なる。
+   * 明るい色で塗ると針の上でしか読めず、紙色の地の上では消えてしまうので、
+   * 紙の上でも針の上でも輪郭が立つよう、濃い色で塗って紙色でフチを取る
+   */
+  fill: #7d3559;
   stroke-width: 3px;
 }
 
@@ -1758,7 +1778,8 @@ button {
 }
 
 .cutin-bonus .cutin-sfx path {
-  fill: #ffe89a;
+  /* 淡い金は紙色の地に沈むので、濃い金へ寄せる */
+  fill: #a87b12;
 }
 
 /*
@@ -1791,12 +1812,15 @@ button {
 }
 
 .cutin-panel {
+  /* 背後に敷くギザギザ吹き出し（.cutin-balloon）の位置の基準になる */
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
   padding: 26px 34px;
-  background: var(--paper);
+  /* 幕が紙色になったので、パネルは一段濃い紙色にしないと地に溶けてしまう */
+  background: var(--paper-dark);
   border: 4px solid var(--ink);
   transform: rotate(-3deg) skewX(-3deg);
   box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.5);
@@ -1832,6 +1856,11 @@ button {
   line-height: 1.2;
 }
 
+/* 8字以上の役名（ResultScreen.tsx の nameClass が付ける）。丸い枠に収めるため一段小さく組む */
+.cutin-name-long {
+  font-size: 28px;
+}
+
 .cutin-effect {
   font-size: 15px;
   font-weight: 800;
@@ -1844,57 +1873,103 @@ button {
 }
 
 /*
- * v7.3: 衝撃系はトゲトゲ、情感系はモクモクの枠。
- * v7.1では clip-path / mask をパネル全体にかけていたが、パネルは横長なので
- * 円状に置いたトゲが横に引き伸ばされ、さらに内側へ食い込んだ部分が文字を切っていた。
- * v7.3では枠を border-image の9スライスに変えた:
- * - 角は1回だけ、辺のトゲ／コブは repeat:round でタイル状に繰り返される
- *   → パネルの縦横比が変わってもトゲの形は歪まない
- * - 装飾はボーダー領域に描かれるので、内容領域は素直な長方形のまま＝文字が絶対に切れない
- * 影は box-shadow（長方形）ではなく drop-shadow（実際の形に沿う）を使う
+ * v7.14: 衝撃系はギザギザ吹き出し、情感系はウニフラッシュ。
+ *
+ * v7.3〜v7.13では枠を border-image の9スライスで描いていたが、
+ * 9スライスは辺ごとに同じタイルを繰り返す仕組みなので、
+ * 「全周が均等にギザギザ」も「中心から放射」も原理的に作れない。
+ * 衝撃系は4方向だけ大きく尖って角は直角のまま、情感系は十字/花形に見えていた。
+ * そこで枠をやめ、頂点をひとつずつ持つ1枚の図形（CutInShapes.tsx）を背後に敷いている。
  */
 .cutin-shock .cutin-panel {
   color: #fff;
   background: transparent;
-  border: 26px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2090%2090%22%3E%3Cpath%20d%3D%22M12%2C12%20L30%2C12%20L45%2C0%20L60%2C12%20L78%2C12%20L78%2C30%20L90%2C45%20L78%2C60%20L78%2C78%20L60%2C78%20L45%2C90%20L30%2C78%20L12%2C78%20L12%2C60%20L0%2C45%20L12%2C30%20Z%22%20fill%3D%22%232a1512%22%20stroke%3D%22%23ff5a44%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") 30 / 26px round;
-  padding: 6px 16px;
+  border: none;
   box-shadow: none;
+  /*
+   * 吹き出しの谷（内側の頂点）より内に文字が収まるよう、余白はかなり多めに取る。
+   * 長方形は楕円に内接させると面積が半分ほどしか使えないので、
+   * 見た目の感覚で決めた 44px/52px では「暗雲立ち込める」のように
+   * 折り返す役名が6件はみ出していた。全21件の衝撃系の役名を実際に流し込んで、
+   * 多角形の塗りに文字の四隅が入るか判定して決めた値
+   */
+  padding: 64px 68px;
   filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.45));
 }
 
+.cutin-balloon {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.cutin-balloon polygon {
+  fill: #2a1512;
+  stroke: #ff5a44;
+  /* 縦横比を無視して伸ばすので、線幅が潰れないよう表示サイズ基準にする */
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* 濃い吹き出し地に朱色（4.6:1）を乗せるより、白抜きのほうがはるかに読みやすい（17.3:1） */
 .cutin-shock .cutin-name {
-  color: #ff5a44;
-  text-shadow: 2px 2px 0 #000;
+  color: #fff;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.6);
 }
 
 .cutin-shock .cutin-effect {
-  color: #ffb3a8;
+  color: #ffd0c8;
+}
+
+/* 既定の補足文の色（#6b6152）は濃い吹き出し地では沈むので、明るい側へ寄せる */
+.cutin-shock .cutin-extra {
+  color: #d8bdb7;
 }
 
 /*
- * 情感系のもくもく吹き出し（v7.13で作り直し）。
- *
- * 直した点は2つ。
- * ① スライスに fill を付けた。以前は border-image に fill が無く、9分割の中央が
- *    描画されないためパネル内側が透明のままだった。そこに濃いピンクの役名
- *    （#a94b7c）が乗ると暗幕を背景にコントラスト2.48:1しか出ておらず、
- *    「大きな文字」の基準3:1すら下回っていた（衝撃系は白文字＋黒フチ前提なので問題なし）
- * ② コブがviewBoxの外へはみ出して上下左右で切り落とされ、かつ角が直角のままだったため、
- *    もくもくではなく十字/花形に見えていた。辺は半円のコブ、角にも大きめのコブを置き、
- *    すべてviewBox内（96×96）に収まる形に引き直した
+ * 情感系のウニフラッシュ。
+ * 中心の丸は幕と同じ紙色なので、実際に見えるのは放射する黒い針だけになり、
+ * 「紙にペンで引いた集中線」として読める。パネル自体は枠も地も持たせず、
+ * 丸の上に文字だけを置く
  */
 .cutin-emotion .cutin-panel {
   background: transparent;
-  border: 22px solid transparent;
-  border-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2096%2096%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%220.6%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%23fdf1f7%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23f3e3f5%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Cpath%20d%3D%22M32%2C18%20A8%2C8%200%200%201%2048%2C18%20A8%2C8%200%200%201%2064%2C18%20A11%2C11%200%200%201%2078%2C32%20A8%2C8%200%200%201%2078%2C48%20A8%2C8%200%200%201%2078%2C64%20A11%2C11%200%200%201%2064%2C78%20A8%2C8%200%200%201%2048%2C78%20A8%2C8%200%200%201%2032%2C78%20A11%2C11%200%200%201%2018%2C64%20A8%2C8%200%200%201%2018%2C48%20A8%2C8%200%200%201%2018%2C32%20A11%2C11%200%200%201%2032%2C18%20Z%22%20fill%3D%22url(%23g)%22%20stroke%3D%22%23a94b7c%22%20stroke-width%3D%224%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E") 32 fill / 22px round;
-  padding: 10px 20px;
+  border: none;
   box-shadow: none;
-  filter: drop-shadow(6px 6px 0 rgba(0, 0, 0, 0.3));
+  padding: 0;
+  filter: none;
+}
+
+.cutin-flash {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  /*
+   * 幕は画面いっぱい（position: fixed; inset: 0）なので、%で指定すると画面が広いほど
+   * 際限なく大きくなる。実際1280px幅では2112pxまで膨らんで左右に針がはみ出していた。
+   * 集中線の大きさは画面ではなく中の文字に合わせたいものなので、上限を実寸で切る。
+   * 狭い画面では針が画面端で切れるが、それは紙の外へ抜けていく見え方になるので問題ない
+   */
+  width: min(180vw, 680px);
+  height: min(66vh, 395px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.cutin-flash-spikes {
+  fill: var(--ink);
+}
+
+.cutin-flash-core {
+  fill: var(--paper);
 }
 
 .cutin-emotion .cutin-name {
-  /* 内側が塗られた状態での可読性を確保するため、枠線より少しだけ濃い色にする（4.47→5.19:1） */
   color: #9c4271;
 }
 

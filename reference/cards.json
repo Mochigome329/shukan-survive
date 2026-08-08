@@ -1859,7 +1859,7 @@
     "descriptions": {
      "internal": "対象の仕込み（修行・恋愛フラグ）をすべて失う。かわりに人気度が恒久+6。失ったフラグは「おかえり」で取り戻せる（v7.4）",
      "hidden": "積み上げたものを失った主人公を、読者は放っておけない",
-     "revealed": "対象のフラグ（修行・恋愛）をすべて喪失。かわりに人気度が恒久+6"
+     "revealed": "対象のフラグ（修行・覚醒・恋愛）をすべて喪失。かわりに人気度が恒久+6"
     }
    },
    {
@@ -2191,6 +2191,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "dokidoki",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "少年と少女の出会いが運命を回し始める",
@@ -2257,6 +2258,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "normal",
+   "sfxId": "waiwai",
    "popularityAdd": 0,
    "buzzAdd": 2,
    "hintText": "なにも起こらない週にも価値がある",
@@ -2383,6 +2385,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 6,
    "extraText": "そのキャラの人気度が恒久+4",
@@ -2395,6 +2398,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 8,
    "extraText": "緊張を全解放",
@@ -2419,6 +2423,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 3,
    "extraText": "そのキャラの人気度が恒久+5",
@@ -2431,6 +2436,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "過去を乗り越え共に並び立つ",
@@ -2480,7 +2486,7 @@
    "buzzAdd": 3,
    "extraText": "敵キャラの人気度が恒久+5",
    "hintText": "今日出たばかりですぐ退場",
-   "conditionText": "「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」+「バトル」をプレイ（新顔ごとに1回）"
+   "conditionText": "「新キャラ登場」で出したキャラを対象に同じ週「途中離脱」か「撃破」+「バトル」をプレイ（新顔ごとに1回）"
   },
   {
    "id": "hissatsu_hatsuhirou",
@@ -2501,6 +2507,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "shock",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "名の通りの禁じ手",
@@ -2512,6 +2519,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 6,
    "extraText": "緊張+1",
@@ -2525,6 +2533,7 @@
    "phase": "preScore",
    "isSetupCombo": true,
    "cutInTemplate": "emotion",
+   "sfxId": "poroporo",
    "popularityAdd": 0,
    "buzzAdd": 2,
    "extraText": "「継承の覚醒」の前提になる",
@@ -2553,6 +2562,7 @@
    "isSetupCombo": true,
    "scoreMultiplier": 2.5,
    "cutInTemplate": "setupPayoff",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 0,
    "extraText": "週スコア×2.5。恋愛フラグを消費する",
@@ -2690,6 +2700,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "poroporo",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "最期に流れるあたたかな思い出",
@@ -2712,6 +2723,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "don",
    "popularityAdd": 0,
    "buzzAdd": 8,
    "hintText": "飛ばした年月を振り返る",
@@ -2723,6 +2735,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "幼なじみと過ごした日々",
@@ -2829,6 +2842,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "shock",
+   "sfxId": "zawazawa",
    "popularityAdd": 0,
    "buzzAdd": 8,
    "hintText": "決戦で追い詰められる",
@@ -2853,7 +2867,7 @@
    "cutInTemplate": "normal",
    "popularityAdd": 0,
    "buzzAdd": 4,
-   "hintText": "見くびられた者ほど、黙って鍛える",
+   "hintText": "強くなって見返してやる！",
    "conditionText": "「見くびられた男」+「修行」をプレイ"
   },
   {
@@ -2864,7 +2878,7 @@
    "cutInTemplate": "shock",
    "popularityAdd": 0,
    "buzzAdd": 4,
-   "hintText": "すべての因縁には始まりがある",
+   "hintText": "因縁結ぶ戦い",
    "conditionText": "「因縁」+「バトル」をプレイ"
   },
   {
@@ -2875,7 +2889,7 @@
    "cutInTemplate": "normal",
    "popularityAdd": 0,
    "buzzAdd": 4,
-   "hintText": "寄り道の先で、誰かと出会う",
+   "hintText": "寄り道の先の出会い",
    "conditionText": "「寄り道」+「新キャラ登場」か「運命的な出会い」をプレイ"
   },
   {
@@ -2887,7 +2901,7 @@
    "popularityAdd": 0,
    "buzzAdd": 7,
    "extraText": "緊張+1",
-   "hintText": "不幸は重なるもの",
+   "hintText": "連なる破壊と悲劇",
    "conditionText": "「悲劇」「大破壊」「大ピンチ」のうち2枚以上をプレイ"
   },
   {
@@ -2938,6 +2952,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "poroporo",
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "終盤での悲しき離別",
@@ -3009,6 +3024,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "名もなき誰かと心通わせる悪役",
@@ -3070,6 +3086,7 @@
     "heiwa_na_nichijou"
    ],
    "cutInTemplate": "emotion",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "extraText": "キャスト全員の人気度が恒久+2",
@@ -3083,6 +3100,7 @@
    "phase": "preScore",
    "charMultiplier": 3,
    "cutInTemplate": "shock",
+   "sfxId": "horori",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "extraText": "母の人気度×3",
@@ -3155,6 +3173,7 @@
    "phase": "preScore",
    "isSetupCombo": true,
    "cutInTemplate": "setupPayoff",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "強くぶつかった後の和解",
@@ -3170,6 +3189,7 @@
     "kankyuu"
    ],
    "cutInTemplate": "emotion",
+   "sfxId": "zawazawa",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "決戦を前にした静けさ",
@@ -3181,6 +3201,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "jiin",
    "popularityAdd": 0,
    "buzzAdd": 6,
    "hintText": "最後の休息",
@@ -3247,6 +3268,7 @@
     "kankyuu"
    ],
    "cutInTemplate": "emotion",
+   "sfxId": "waiwai",
    "popularityAdd": 0,
    "buzzAdd": 9,
    "hintText": "何でもない日常を取り戻す",
@@ -3283,6 +3305,7 @@
    "layer": 1,
    "phase": "preScore",
    "cutInTemplate": "emotion",
+   "sfxId": "dokidoki",
    "popularityAdd": 0,
    "buzzAdd": 5,
    "hintText": "想いが多く交錯する",
