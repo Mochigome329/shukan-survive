@@ -149,3 +149,27 @@ describe('追加したバッドエンド（v7.17）', () => {
     }
   });
 });
+
+describe('全員生還は、戻らない死亡済みの敵を今週のキャストに数えない（v7.17 codexレビュー指摘）', () => {
+  it('死亡済みの敵がいても、その週の人気度に混ざらない', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'rival', 1, { zone: 'dead', faction: 'enemy', debutFaction: 'enemy' }),
+      makeInstance(data, 'yumeochi', 1),
+    ];
+    const state = makeState(cards, 10);
+    const b = computeScore({ data, cards: state.cards, week: 10, selection: { cards: ['yumeochi#1'], targets: {} } });
+    expect(b.popularityTotal).toBe(10); // 主人公のみ。敵ライバル(15)を含めば25になってしまう
+  });
+
+  it('登場時に味方だった死亡済みキャラは、戻る週からちゃんと人気度に入る（従来どおり）', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'aibou', 1, { zone: 'dead', faction: 'enemy', debutFaction: 'ally' }),
+      makeInstance(data, 'yumeochi', 1),
+    ];
+    const state = makeState(cards, 10);
+    const b = computeScore({ data, cards: state.cards, week: 10, selection: { cards: ['yumeochi#1'], targets: {} } });
+    expect(b.popularityTotal).toBe(18); // 主人公10 + 相棒8
+  });
+});

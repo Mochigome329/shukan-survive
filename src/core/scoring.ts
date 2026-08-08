@@ -144,8 +144,17 @@ function resolvePlayed(input: ScoreInput): { characters: CastCharacter[]; develo
     // 夢オチ(reviveAllDead)も同様に、戻ってきた全員を今週のキャストに数える（v5.7）。
     // 数えないと「全滅を立て直す最終手段」なのにキャスト0人で採点され、ほぼ0点になっていた。
     if (dev.def.effects.some((e) => e.effect.type === 'reviveAllDead')) {
+      /*
+       * v7.17: 実際に戻るのは登場時に味方だった者だけ（applyStateChangesのrevivableDeadと同じ条件）。
+       * ここが zone==='dead' 全員のままだと、戻らない死亡済みの敵まで
+       * その週のキャストとして人気度に加算されてしまう
+       */
       for (const instance of input.cards) {
-        if (instance.zone === 'dead') addToCast(instance.instanceId);
+        if (instance.zone !== 'dead') continue;
+        const def = input.data.definitions.get(instance.definitionId);
+        if (def?.kind === 'character' && (instance.debutFaction ?? instance.faction) === 'ally') {
+          addToCast(instance.instanceId);
+        }
       }
     }
   }

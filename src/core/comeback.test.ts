@@ -6,12 +6,12 @@ import { gameReducer, initialGameState, type GameState } from '../state/gameRedu
 
 const data = loadTestData();
 
-/** 全滅後の状態: 主人公以外3人が死亡済み、主人公も死亡済み */
+/** 全滅後の状態: 主人公以外3人が死亡済み、主人公も死亡済み。ライバルは開始時に仲間側を選んだ想定 */
 function wipedOut(extra: string[] = []) {
   return [
     makeInstance(data, 'hero', 1, { permanentPopularityBonus: 20, zone: 'dead' }),
     makeInstance(data, 'heroine', 1, { permanentPopularityBonus: 15, zone: 'dead' }),
-    makeInstance(data, 'rival', 1, { permanentPopularityBonus: 15, zone: 'dead' }),
+    makeInstance(data, 'rival', 1, { permanentPopularityBonus: 15, zone: 'dead', faction: 'ally', debutFaction: 'ally' }),
     makeInstance(data, 'aibou', 1, { permanentPopularityBonus: 10, zone: 'dead' }),
     ...extra.map((id, i) => makeInstance(data, id, i + 1)),
   ];
