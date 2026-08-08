@@ -31,7 +31,7 @@ describe('全滅は単独でも役として成立する（v7.19）', () => {
   });
 });
 
-describe('大勝利は場の最弱の敵を自動で撃破する（v7.20）', () => {
+describe('大勝利は場の最弱の敵を自動で撃破する（v7.20, v7.22）', () => {
   it('敵が複数いれば、人気度が最も低い敵がwaitingへ送られる', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
@@ -75,5 +75,42 @@ describe('大勝利は場の最弱の敵を自動で撃破する（v7.20）', ()
     // 死亡・撃破・途中離脱を含まない展開（修行）を混ぜても、大勝利の自動撃破は普通に発生する
     const b = score(cards, ['shugyou#1', 'dai_shouri#1'], { 'shugyou#1': 'aibou#1' });
     expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'rival#1', to: 'waiting' });
+  });
+
+  /*
+   * v7.22: 実プレイで「敵が父しかいないのに、最終回でも場に残っていた」という報告があった。
+   * 原因は、自動撃破の対象を今週ハイライトされた出演者（最大6人）に限っていたこと。
+   * 撃破は対象選択UIが無い自動効果なので、「在籍してはいるが今週の出演枠に
+   * たまたま入っていなかった」だけで不発になっても、プレイヤーには気づきようがない。
+   * 出演の有無に関わらず、在籍している敵全員を対象にするよう直した
+   */
+  it('敵が在籍しているが今週の出演枠（6人）に入っていなくても、撃破の対象になる', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'heroine', 1),
+      makeInstance(data, 'aibou', 1),
+      makeInstance(data, 'osananajimi', 1),
+      makeInstance(data, 'shishou', 1),
+      makeInstance(data, 'mascot', 1),
+      makeInstance(data, 'chichi', 1, { faction: 'enemy', debutFaction: 'enemy' }),
+      makeInstance(data, 'dai_shouri', 1),
+    ];
+    // 出演6人を父以外で埋める。父は在籍しているが今週は出演していない
+    const highlightIds = ['hero#1', 'heroine#1', 'aibou#1', 'osananajimi#1', 'shishou#1', 'mascot#1'];
+    const state = makeState(cards, 24, { highlightIds });
+    const b = computeScore({ data, cards: state.cards, week: 24, selection: { cards: ['dai_shouri#1'], targets: {} } });
+    expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'chichi#1', to: 'waiting' });
+  });
+
+  it('控え・死亡済み・再登場待ちの敵は対象にならない（場にいる敵だけ）', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'rival', 1, { faction: 'enemy', zone: 'bench' }),
+      makeInstance(data, 'shukuteki', 1, { faction: 'enemy', zone: 'dead' }),
+      makeInstance(data, 'teki_kanbu_power', 1, { faction: 'enemy', zone: 'waiting' }),
+      makeInstance(data, 'dai_shouri', 1),
+    ];
+    const b = score(cards, ['dai_shouri#1']);
+    expect(b.stateChanges.some((c) => c.type === 'moveZone')).toBe(false);
   });
 });

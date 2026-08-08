@@ -434,23 +434,30 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
         }
         case 'defeatWeakestEnemyAtEndWeek': {
           /*
-           * 大勝利: 対象指定なしで、今週の敵キャストのうち最も人気度が低い者を自動で撃破する（v7.20）。
-           * ただし、他のカード（死亡・撃破・途中離脱など）で今週すでに敵の退場が決まっているなら、
+           * 大勝利: 対象指定なしで、場にいる敵キャラのうち最も人気度が低い者を自動で撃破する（v7.22）。
+           *
+           * v7.20では対象を今週ハイライトされた出演者（characters）に限っていたが、
+           * これだと「敵は場にいるのに、たまたま今週の出演枠（最大6人）に入っていなかった」
+           * だけで自動効果が何も起きず、しかも対象選択UIが無いぶんプレイヤーには
+           * 気づきようがなかった（例: 敵が父1人だけの週でも、父が出演枠から漏れていれば不発）。
+           * 自動効果である以上、出演の有無に関わらず在籍している敵全員を対象にする。
+           *
+           * 他のカード（死亡・撃破・途中離脱など）で今週すでに敵の退場が決まっているなら、
            * 大勝利の追加撃破は発生しない（同じ週に敵を仕留めていれば、上乗せしない）
            */
           const enemyAlreadyExiting = developments.some((d) => {
             if (!d.targetId || !d.def.effects.some((e) => e.effect.type === 'moveZoneAtEndWeek')) return false;
-            return characters.some((ch) => ch.instance.instanceId === d.targetId && ch.instance.faction === 'enemy');
+            return input.cards.find((c) => c.instanceId === d.targetId)?.faction === 'enemy';
           });
           if (!enemyAlreadyExiting) {
-            const enemies = characters.filter((ch) => ch.instance.faction === 'enemy');
+            const enemies = input.cards.filter(
+              (c) => c.zone === 'field' && c.faction === 'enemy' && data.definitions.get(c.definitionId)?.kind === 'character',
+            );
             if (enemies.length > 0) {
-              const weakest = enemies.reduce((a, b) =>
-                a.def.popularity + a.instance.permanentPopularityBonus <= b.def.popularity + b.instance.permanentPopularityBonus
-                  ? a
-                  : b,
-              );
-              stateChanges.push({ type: 'moveZone', instanceId: weakest.instance.instanceId, to: 'waiting' });
+              const popularityOf = (c: (typeof enemies)[number]) =>
+                (data.definitions.get(c.definitionId) as { popularity: number }).popularity + c.permanentPopularityBonus;
+              const weakest = enemies.reduce((a, b) => (popularityOf(a) <= popularityOf(b) ? a : b));
+              stateChanges.push({ type: 'moveZone', instanceId: weakest.instanceId, to: 'waiting' });
             }
           }
           break;
