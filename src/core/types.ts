@@ -81,11 +81,12 @@ export type CardEffect =
    */
   | { type: 'restoreDebutFaction' }
   /**
-   * その週の敵キャラのうち最も人気度が高い者を、週終了時に撃破する（大勝利、v7.19）。
+   * その週の敵キャラのうち最も人気度が低い者を、週終了時に撃破する（大勝利、v7.20）。
    * 対象指定は要らず自動選択。撃破（moveZoneAtEndWeek zone:'waiting'）と同じ送り先。
-   * 場に敵がいなければ何も起きない
+   * 場に敵がいなければ何も起きない。他のカードで既に敵の退場（死亡・撃破・途中離脱等）が
+   * 決まっている週は、追加の撃破は発生しない（v7.20）
    */
-  | { type: 'defeatStrongestEnemyAtEndWeek' };
+  | { type: 'defeatWeakestEnemyAtEndWeek' };
 
 export interface TimedEffect {
   timing: EffectTiming;

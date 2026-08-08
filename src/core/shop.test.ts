@@ -257,3 +257,39 @@ describe('編集会議（12節・最小版）', () => {
     }
   });
 });
+
+describe('全滅を持っている/使ったランでは「全員生還」が出やすくなる（v7.20）', () => {
+  it('全滅を保有しているだけで提示重みが上がる', () => {
+    const base = { ...newRun(1), week: 20 };
+    const withZenmetsu = {
+      ...base,
+      cards: [...base.cards, makeInstance(data, 'zenmetsu', 99, { zone: 'activeDeck' })],
+    };
+    const freqWithout = samplePackFrequency(base, MAX_PLAYABLE, 400);
+    const freqWith = samplePackFrequency(withZenmetsu, MAX_PLAYABLE, 400);
+    expect(freqWith.get('zenin_seikan') ?? 0).toBeGreaterThan(freqWithout.get('zenin_seikan') ?? 0);
+  });
+
+  it('過去に全滅を使ったことがあるだけでも（今は持っていなくても）重みが上がる', () => {
+    const base = { ...newRun(1), week: 20 };
+    const havingPlayed = {
+      ...base,
+      log: [
+        ...base.log,
+        {
+          week: 18,
+          playedInstanceIds: [],
+          playedDefinitionIds: ['zenmetsu'],
+          comboIds: [],
+          score: 0,
+          quota: 0,
+          cleared: true,
+          warningsAfter: 0,
+        },
+      ],
+    };
+    const freqWithout = samplePackFrequency(base, MAX_PLAYABLE, 400);
+    const freqWith = samplePackFrequency(havingPlayed, MAX_PLAYABLE, 400);
+    expect(freqWith.get('zenin_seikan') ?? 0).toBeGreaterThan(freqWithout.get('zenin_seikan') ?? 0);
+  });
+});

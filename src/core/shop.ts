@@ -182,6 +182,17 @@ const FOLLOW_UP_RULES: FollowUpRule[] = [
     boosts: ['battle', 'kanashii_kako', 'kaishin', 'gekiha'],
   },
   { trigger: (_d, s) => recentlyPlayed(s, 'timeskip'), boosts: ['shinchara', 'kakusareta_kettou'] },
+  /*
+   * v7.20: 「全滅」を持っている、あるいは使ったことがあるランには「全員生還」を出しやすくする。
+   * 全滅の代償を払った（払う覚悟をしている）連載にこそ、全員生還という奇跡の受け皿が要る、という設計。
+   * recentlyPlayedの3週以内という短い窓ではなく、連載を通じて一度でも張った/使った事実を見る
+   * （全滅は好きなタイミングで温存されることも多く、直近3週に絞ると取りこぼしやすいため）
+   */
+  {
+    trigger: (_d, s) =>
+      s.cards.some((c) => c.definitionId === 'zenmetsu') || s.log.some((w) => w.playedDefinitionIds.includes('zenmetsu')),
+    boosts: ['zenin_seikan'],
+  },
   { trigger: (_d, s) => s.stress >= 2, boosts: [...RELIEF_CARDS] },
   // 控えでデビューを待っているキャラがいるなら、デビュー手段を出しやすくする（v5.9）。
   // デッキが育つほど手札に来にくくなるので、必要なときに補充できる導線を作る

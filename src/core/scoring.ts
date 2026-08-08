@@ -432,29 +432,26 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
           }
           break;
         }
-        case 'defeatStrongestEnemyAtEndWeek': {
+        case 'defeatWeakestEnemyAtEndWeek': {
           /*
-           * 大勝利: 対象指定なしで、今週の敵キャストのうち最も人気度が高い者を撃破する（v7.19）。
-           * ただし、他のカード（死亡・撃破・途中離脱など）で既に今週の退場先が
-           * 決まっている敵は対象から外す。因縁の決着（3週以上の敵を「死亡」で決着）と
-           * 同じ週に重ねたとき、自動選択がその敵を「waiting」で上書きして
-           * 死亡させたはずが撃破扱いに化けるのを防ぐ
+           * 大勝利: 対象指定なしで、今週の敵キャストのうち最も人気度が低い者を自動で撃破する（v7.20）。
+           * ただし、他のカード（死亡・撃破・途中離脱など）で今週すでに敵の退場が決まっているなら、
+           * 大勝利の追加撃破は発生しない（同じ週に敵を仕留めていれば、上乗せしない）
            */
-          const alreadyMoved = new Set(
-            developments.flatMap((d) =>
-              d.targetId && d.def.effects.some((e) => e.effect.type === 'moveZoneAtEndWeek') ? [d.targetId] : [],
-            ),
-          );
-          const enemies = characters.filter(
-            (ch) => ch.instance.faction === 'enemy' && !alreadyMoved.has(ch.instance.instanceId),
-          );
-          if (enemies.length > 0) {
-            const strongest = enemies.reduce((a, b) =>
-              a.def.popularity + a.instance.permanentPopularityBonus >= b.def.popularity + b.instance.permanentPopularityBonus
-                ? a
-                : b,
-            );
-            stateChanges.push({ type: 'moveZone', instanceId: strongest.instance.instanceId, to: 'waiting' });
+          const enemyAlreadyExiting = developments.some((d) => {
+            if (!d.targetId || !d.def.effects.some((e) => e.effect.type === 'moveZoneAtEndWeek')) return false;
+            return characters.some((ch) => ch.instance.instanceId === d.targetId && ch.instance.faction === 'enemy');
+          });
+          if (!enemyAlreadyExiting) {
+            const enemies = characters.filter((ch) => ch.instance.faction === 'enemy');
+            if (enemies.length > 0) {
+              const weakest = enemies.reduce((a, b) =>
+                a.def.popularity + a.instance.permanentPopularityBonus <= b.def.popularity + b.instance.permanentPopularityBonus
+                  ? a
+                  : b,
+              );
+              stateChanges.push({ type: 'moveZone', instanceId: weakest.instance.instanceId, to: 'waiting' });
+            }
           }
           break;
         }

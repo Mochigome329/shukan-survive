@@ -31,8 +31,8 @@ describe('全滅は単独でも役として成立する（v7.19）', () => {
   });
 });
 
-describe('大勝利は場の最強の敵を自動で撃破する（v7.19）', () => {
-  it('敵が複数いれば、人気度が最も高い敵がwaitingへ送られる', () => {
+describe('大勝利は場の最弱の敵を自動で撃破する（v7.20）', () => {
+  it('敵が複数いれば、人気度が最も低い敵がwaitingへ送られる', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
       makeInstance(data, 'rival', 1, { faction: 'enemy' }), // 15
@@ -40,8 +40,8 @@ describe('大勝利は場の最強の敵を自動で撃破する（v7.19）', ()
       makeInstance(data, 'dai_shouri', 1),
     ];
     const b = score(cards, ['dai_shouri#1']);
-    expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'shukuteki#1', to: 'waiting' });
-    expect(b.stateChanges).not.toContainEqual({ type: 'moveZone', instanceId: 'rival#1', to: 'waiting' });
+    expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'rival#1', to: 'waiting' });
+    expect(b.stateChanges).not.toContainEqual({ type: 'moveZone', instanceId: 'shukuteki#1', to: 'waiting' });
   });
 
   it('敵が場にいなければ何も起きない', () => {
@@ -50,17 +50,30 @@ describe('大勝利は場の最強の敵を自動で撃破する（v7.19）', ()
     expect(b.stateChanges.some((c) => c.type === 'moveZone')).toBe(false);
   });
 
-  it('同じ敵を別カードで既に「死亡」させている場合は、自動撃破が上書きしない', () => {
+  it('同じ週に別カードで既に敵の退場（死亡）が決まっていれば、追加の撃破は発生しない', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
       makeInstance(data, 'shukuteki', 1, { faction: 'enemy', playCount: 3 }),
-      makeInstance(data, 'rival', 1, { faction: 'enemy' }), // 次点。死亡を上書きしない代わりにこちらが撃破される
+      makeInstance(data, 'rival', 1, { faction: 'enemy' }), // 撃破すれば普段はこちら（最弱）が選ばれるはずの敵
       makeInstance(data, 'shibou', 1),
       makeInstance(data, 'dai_shouri', 1),
     ];
     const b = score(cards, ['shibou#1', 'dai_shouri#1'], { 'shibou#1': 'shukuteki#1' });
     expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'shukuteki#1', to: 'dead' });
-    expect(b.stateChanges).not.toContainEqual({ type: 'moveZone', instanceId: 'shukuteki#1', to: 'waiting' });
+    // 大勝利ぶんの追加撃破は一切発生しない（rivalも動かない）
+    expect(b.stateChanges.filter((c) => c.type === 'moveZone')).toHaveLength(1);
+  });
+
+  it('同じ週に敵の退場が決まっていなければ、従来どおり最弱の敵を撃破する', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'aibou', 1),
+      makeInstance(data, 'rival', 1, { faction: 'enemy' }),
+      makeInstance(data, 'shugyou', 1),
+      makeInstance(data, 'dai_shouri', 1),
+    ];
+    // 死亡・撃破・途中離脱を含まない展開（修行）を混ぜても、大勝利の自動撃破は普通に発生する
+    const b = score(cards, ['shugyou#1', 'dai_shouri#1'], { 'shugyou#1': 'aibou#1' });
     expect(b.stateChanges).toContainEqual({ type: 'moveZone', instanceId: 'rival#1', to: 'waiting' });
   });
 });
