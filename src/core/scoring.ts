@@ -406,6 +406,10 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
             if (target?.faction) {
               stateChanges.push({ type: 'flipFaction', instanceId: targetId, to: target.faction === 'ally' ? 'enemy' : 'ally' });
             }
+            // 「裏切り」の対象になった回数を数える（役「二重スパイ」用、v7.24）。洗脳は数えない
+            if (def.id === 'uragiri') {
+              stateChanges.push({ type: 'incrementBetrayalCount', instanceId: targetId });
+            }
           }
           break;
         }
@@ -704,6 +708,11 @@ export function applyStateChanges(cards: readonly CardInstance[], changes: reado
       case 'setDebutFaction': {
         const c = byId.get(change.instanceId);
         if (c) c.debutFaction = change.faction;
+        break;
+      }
+      case 'incrementBetrayalCount': {
+        const c = byId.get(change.instanceId);
+        if (c) c.betrayalCount = (c.betrayalCount ?? 0) + 1;
         break;
       }
     }

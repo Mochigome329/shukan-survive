@@ -1955,6 +1955,360 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     },
   },
 
+  // ===== v7.24: ユーザー提案の追加役 =====
+  {
+    id: 'dokoku',
+    name: '慟哭',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    hintText: '大切な人を失った慟哭',
+    conditionText: '仲間のヒロインか相棒を対象に「死亡」か「自己犠牲」をプレイ',
+    match: (input) => {
+      const targets = [...devsOf(input, 'shibou'), ...devsOf(input, 'jiko_gisei')]
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter(
+          (c): c is CastCharacter => !!c && c.instance.faction === 'ally' && (c.def.id === 'heroine' || c.def.id === 'aibou'),
+        )
+        .filter((c, i, arr) => arr.findIndex((x) => x.instance.instanceId === c.instance.instanceId) === i);
+      return targets.map((c) => ({ boundCharIds: [c.instance.instanceId] }));
+    },
+  },
+  {
+    /*
+     * v7.24: 主人公を対象にした「闇堕ち」は、実際には陣営を反転させない（v6.2の仕様。
+     * ダークヒーロー化しても物語上は主人公のままにする、という既存の割り切り）。
+     * そのため既存の「ダークヒーロー」役と同じく、devsOf(yamiochi)のtargetIdだけを見て判定する
+     */
+    id: 'fukushuu_oni',
+    name: '復讐鬼',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: ['dark_hero', 'dokoku'],
+    cutInTemplate: 'shock',
+    charMultiplier: 2,
+    popularityAdd: 0,
+    buzzAdd: 9,
+    extraText: '主人公の人気度×2',
+    hintText: '怒りに我を忘れた主人公',
+    conditionText: '仲間のヒロインか相棒の死亡・自己犠牲と同じ週に、主人公を対象に「闇堕ち」をプレイ',
+    match: (input) => {
+      const hero = input.characters.find((c) => c.def.id === 'hero');
+      if (!hero) return [];
+      const yamiochiOnHero = devsOf(input, 'yamiochi').some((d) => d.targetId === hero.instance.instanceId);
+      if (!yamiochiOnHero) return [];
+      const lost = [...devsOf(input, 'shibou'), ...devsOf(input, 'jiko_gisei')]
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .some((c) => !!c && c.instance.faction === 'ally' && (c.def.id === 'heroine' || c.def.id === 'aibou'));
+      return lost ? [{ boundCharIds: [hero.instance.instanceId] }] : [];
+    },
+  },
+  {
+    id: 'nakushita_kizuna',
+    name: 'なくした絆',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    isSetupCombo: true,
+    cutInTemplate: 'emotion',
+    sfxId: 'horori',
+    popularityAdd: 0,
+    buzzAdd: 5,
+    hintText: '積み上げてきたものが消えていく',
+    conditionText: '仲間のヒロイン・相棒・幼なじみのいずれかを対象に「記憶喪失」をプレイ',
+    match: (input) =>
+      devsOf(input, 'kioku_soushitsu')
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter(
+          (c): c is CastCharacter =>
+            !!c && c.instance.faction === 'ally' && ['heroine', 'aibou', 'osananajimi'].includes(c.def.id),
+        )
+        .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+  },
+  {
+    /*
+     * v7.24: ユーザー原案は「なくした絆」と同じ条件（記憶喪失）が2回書かれていたが、
+     * それだと同じ役が二重に定義されるだけなので、対になる「取り戻す」側と解釈した。
+     * 「おかえり」は記憶喪失で失ったフラグを一緒に取り戻す効果を既に持つ（lostFlags経由）ので、
+     * その対象が「なくした絆」と同じ3人のいずれかだったときに成立させる
+     */
+    id: 'torimodoshita_kizuna',
+    name: '取り戻した絆',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'setupPayoff',
+    sfxId: 'jiin',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    hintText: '一度失ったものを取り戻す',
+    conditionText: '記憶を失ったヒロイン・相棒・幼なじみのいずれかを対象に「おかえり」をプレイ',
+    match: (input) =>
+      devsOf(input, 'okaeri')
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter(
+          (c): c is CastCharacter =>
+            !!c && !!c.instance.lostFlags && ['heroine', 'aibou', 'osananajimi'].includes(c.def.id),
+        )
+        .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+  },
+  {
+    id: 'ore_ni_makasete_saki_e',
+    name: '俺に任せて先へ',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 6,
+    hintText: '仲間を逃がすための一手',
+    conditionText: '相棒か三枚目を対象に「自己犠牲」をプレイ',
+    match: (input) =>
+      devsOf(input, 'jiko_gisei')
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally' && (c.def.id === 'aibou' || c.def.id === 'sanmaime'))
+        .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+  },
+  {
+    id: 'nouaru_taka_wa',
+    name: '能ある鷹は',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 4,
+    hintText: '侮れない実力',
+    conditionText: '三枚目を対象に「能力覚醒」か「真の覚醒」をプレイ',
+    match: (input) =>
+      [...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')]
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally' && c.def.id === 'sanmaime')
+        .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+  },
+  {
+    id: 'aun_no_kokyuu',
+    name: '阿吽の呼吸',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 2,
+    hintText: '言葉なしで通じ合うコンビ',
+    conditionText: '場に「相棒」がいる状態で「バトル」をプレイ',
+    match: (input) =>
+      input.characters.some((c) => c.def.id === 'aibou') && hasDev(input, 'battle') ? [{ boundCharIds: [] }] : [],
+  },
+  {
+    id: 'akuyuu',
+    name: '悪友',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 3,
+    hintText: 'いつも一緒に悪だくみ',
+    conditionText: '場に「相棒」と「三枚目」がいる状態で「日常回」をプレイ',
+    match: (input) => {
+      const hasAibou = input.characters.some((c) => c.def.id === 'aibou');
+      const hasSanmaime = input.characters.some((c) => c.instance.faction === 'ally' && c.def.id === 'sanmaime');
+      return hasAibou && hasSanmaime && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : [];
+    },
+  },
+  {
+    id: 'sessa_takuma',
+    name: '切磋琢磨',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 3,
+    hintText: '互いに高め合う',
+    conditionText: '場に「相棒」か「三枚目」がいる状態で「修行」をプレイ',
+    match: (input) => {
+      const hasPartner = input.characters.some(
+        (c) => c.def.id === 'aibou' || (c.instance.faction === 'ally' && c.def.id === 'sanmaime'),
+      );
+      return hasPartner && hasDev(input, 'shugyou') ? [{ boundCharIds: [] }] : [];
+    },
+  },
+  {
+    id: 'daishou_aru_chikara',
+    name: '代償ある力',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    isSetupCombo: true,
+    charMultiplier: 2,
+    cutInTemplate: 'setupPayoff',
+    popularityAdd: 0,
+    buzzAdd: 6,
+    extraText: 'そのキャラの人気度×2',
+    hintText: '力には代償がつきまとう',
+    conditionText: '同じキャラを対象に「禁断の力」と「能力覚醒」か「真の覚醒」をプレイ',
+    match: (input) => {
+      const kindanTargets = new Set(devsOf(input, 'kindan_no_chikara').map((d) => d.targetId).filter((id): id is string => !!id));
+      const awakened = [...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')]
+        .map((d) => d.targetId)
+        .filter((id): id is string => !!id && kindanTargets.has(id));
+      return [...new Set(awakened)].map((id) => ({ boundCharIds: [id] }));
+    },
+  },
+  {
+    id: 'hakai_heiki',
+    name: '破壊兵器',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    isSetupCombo: true,
+    cutInTemplate: 'setupPayoff',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    hintText: '制御できない力を宿した武器',
+    conditionText: '同じキャラを対象に「禁断の力」と「武器ゲット」をプレイ',
+    match: (input) => {
+      const kindanTargets = new Set(devsOf(input, 'kindan_no_chikara').map((d) => d.targetId).filter((id): id is string => !!id));
+      const armed = devsOf(input, 'buki_get')
+        .map((d) => d.targetId)
+        .filter((id): id is string => !!id && kindanTargets.has(id));
+      return [...new Set(armed)].map((id) => ({ boundCharIds: [id] }));
+    },
+  },
+  {
+    id: 'osorubeki_henshin',
+    name: '恐るべき変身',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    hintText: '敵が力に飲まれていく',
+    conditionText: '敵キャラを対象に「禁断の力」「能力覚醒」「真の覚醒」のいずれかをプレイ',
+    match: (input) => {
+      const targets = [...devsOf(input, 'kindan_no_chikara'), ...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')]
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy')
+        .filter((c, i, arr) => arr.findIndex((x) => x.instance.instanceId === c.instance.instanceId) === i);
+      return targets.map((c) => ({ boundCharIds: [c.instance.instanceId] }));
+    },
+  },
+  {
+    id: 'henshin',
+    name: '変身',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    isSetupCombo: true,
+    charMultiplier: 2,
+    cutInTemplate: 'setupPayoff',
+    popularityAdd: 0,
+    buzzAdd: 6,
+    extraText: 'マスコットとヒロインの人気度×2',
+    hintText: '小さな相棒の力を借りて',
+    conditionText: 'マスコットとヒロイン（ともに仲間）を、それぞれ対象に「能力覚醒」か「真の覚醒」でプレイ',
+    match: (input) => {
+      const awakenedIds = new Set(
+        [...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')].map((d) => d.targetId).filter((id): id is string => !!id),
+      );
+      const mascot = input.characters.find((c) => c.instance.faction === 'ally' && c.def.id === 'mascot');
+      const heroine = input.characters.find((c) => c.instance.faction === 'ally' && c.def.id === 'heroine');
+      if (!mascot || !heroine) return [];
+      if (!awakenedIds.has(mascot.instance.instanceId) || !awakenedIds.has(heroine.instance.instanceId)) return [];
+      return [{ boundCharIds: [mascot.instance.instanceId, heroine.instance.instanceId] }];
+    },
+  },
+  {
+    /*
+     * v7.24: 「同じキャラが2回裏切りの対象になる」ことの判定には、その週の情報だけでは足りない
+     * （前に一度裏切られたことがある、という過去の履歴が要る）。CardInstance.betrayalCount
+     * （裏切りの対象になった回数。洗脳は数えない）を新設し、それが1以上＝既に一度裏切られている
+     * キャラを、今週また「裏切り」の対象にしたときに成立させる
+     */
+    id: 'nijuu_supai',
+    name: '二重スパイ',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'shock',
+    popularityAdd: 0,
+    buzzAdd: 7,
+    hintText: '何度目の寝返りだ',
+    conditionText: '過去に一度「裏切り」の対象になったキャラを、再び「裏切り」の対象にする',
+    match: (input) => {
+      const targets = devsOf(input, 'uragiri')
+        .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
+        .filter((c): c is CastCharacter => !!c && (c.instance.betrayalCount ?? 0) >= 1)
+        .filter((c, i, arr) => arr.findIndex((x) => x.instance.instanceId === c.instance.instanceId) === i);
+      return targets.map((c) => ({ boundCharIds: [c.instance.instanceId] }));
+    },
+  },
+  {
+    id: 'ikinuki',
+    name: '息抜き',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 2,
+    hintText: 'たまにはゆるく',
+    conditionText: '場に「相棒」か「三枚目」がいる状態で「骨休め」をプレイ',
+    match: (input) => {
+      const hasPartner = input.characters.some(
+        (c) => c.def.id === 'aibou' || (c.instance.faction === 'ally' && c.def.id === 'sanmaime'),
+      );
+      return hasPartner && hasDev(input, 'honeyasume') ? [{ boundCharIds: [] }] : [];
+    },
+  },
+  {
+    /*
+     * v7.24: 「母+日常/骨休め」は既存の「おふくろの味」と条件が重なる（そちらは母限定・
+     * 日常回か骨休めのどちらでも成立）。この役はマスコットも対象に含めるぶん広いので、
+     * 母のときは両方の役が同時に成立しうる。それぞれ別の見せ場として意図的に両立させる
+     */
+    id: 'supporter',
+    name: 'サポーター',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'normal',
+    popularityAdd: 0,
+    buzzAdd: 3,
+    hintText: '縁の下の力持ち',
+    conditionText: '場に「マスコット」か「母」がいる状態で「日常回」をプレイ',
+    match: (input) => {
+      const hasSupporter = input.characters.some(
+        (c) => c.instance.faction === 'ally' && (c.def.id === 'mascot' || c.def.id === 'haha'),
+      );
+      return hasSupporter && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : [];
+    },
+  },
+  {
+    id: 'dakkan',
+    name: '奪還',
+    layer: 1,
+    phase: 'preScore',
+    suppresses: [],
+    cutInTemplate: 'setupPayoff',
+    popularityAdd: 0,
+    buzzAdd: 6,
+    hintText: '大切な人を取り戻す',
+    conditionText: '場にヒロインか母がいる状態で「救出」をプレイ',
+    match: (input) => {
+      const hasTarget = input.characters.some(
+        (c) => c.instance.faction === 'ally' && (c.def.id === 'heroine' || c.def.id === 'haha'),
+      );
+      return hasTarget && hasDev(input, 'kyuushutsu') ? [{ boundCharIds: [] }] : [];
+    },
+  },
+
   // ===== 第2層: 連続週役（7.5節。第1層のresolved結果を参照する） =====
   {
     id: 'doutou_no_tenkai',

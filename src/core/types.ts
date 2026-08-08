@@ -190,6 +190,11 @@ export interface CardInstance {
    * 復活時や「おかえり」で「元の陣営」に戻すための基準になる
    */
   debutFaction: Faction | null;
+  /**
+   * 「裏切り」の対象になった回数（v7.24）。役「二重スパイ」の判定に使う。
+   * 「洗脳」は数えない（裏切りと違って対立というより支配に近いため）。省略時は0扱い
+   */
+  betrayalCount?: number;
 }
 
 /** プレイ選択。cardsは手札のinstanceId、targetsは展開カード→対象キャラの割当 */
@@ -228,7 +233,9 @@ export type StateChange =
   /** 「記憶喪失」で失ったフラグを取り戻す（おかえり、v7.4） */
   | { type: 'restoreCharFlags'; instanceId: string }
   /** デビュー時の陣営を記録する（初回デビュー時に一度だけ、v6.6） */
-  | { type: 'setDebutFaction'; instanceId: string; faction: Faction };
+  | { type: 'setDebutFaction'; instanceId: string; faction: Faction }
+  /** 「裏切り」の対象になった回数を1増やす（役「二重スパイ」用、v7.24） */
+  | { type: 'incrementBetrayalCount'; instanceId: string };
 
 /** カットイン演出テンプレート（13.3節） */
 export type CutInTemplate = 'normal' | 'shock' | 'emotion' | 'setupPayoff';
