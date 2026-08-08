@@ -122,6 +122,14 @@ const castPopularity = (c: CastCharacter) => c.def.popularity + c.instance.perma
  * 主人公が寝返る話は別の筋なので、闇堕ち側では主人公を除く
  * （カードの仕様上そもそも主人公は対象に取れないが、役の側でも明示しておく）。
  */
+/**
+ * 死亡済みの「味方」だけ（v7.17）。
+ * 弔いや生還を扱う役が input.deadCharacters をそのまま見ていたため、
+ * 倒した敵が死んでいるだけで「かたき討ち」「奇跡の生還」が成立していた。
+ * 悼む相手は味方なので、敵の死は勘定に入れない
+ */
+const deadAllies = (input: ComboMatchInput) => input.deadCharacters.filter((c) => c.instance.faction === 'ally');
+
 const betrayalDevs = (input: ComboMatchInput) => [
   ...devsOf(input, 'uragiri'),
   ...devsOf(input, 'yamiochi').filter((d) => {
@@ -590,12 +598,21 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 3,
     extraText: 'そのキャラの人気度が恒久+5',
     hintText: '悪の過去が明かされるとき',
-    conditionText: '敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5）',
-    match: (input) =>
-      devsOf(input, 'kanashii_kako')
+    conditionText: '敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5。週に1回まで）',
+    /*
+     * v7.17: 週に1回だけにした。以前は対象ごとに成立を返していたので、
+     * 同じ週に「悲しい過去」を2枚別々の敵へ使うと役が二重に乗っていた。
+     * 掘り下げる過去は週に一つ、という扱いにして、
+     * 複数いるときは人気度がいちばん高い敵を選ぶ
+     */
+    match: (input) => {
+      const targets = devsOf(input, 'kanashii_kako')
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
-        .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy')
-        .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+        .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy');
+      if (targets.length === 0) return [];
+      const chosen = targets.reduce((a, b) => (castPopularity(b) > castPopularity(a) ? b : a));
+      return [{ boundCharIds: [chosen.instance.instanceId] }];
+    },
     // v5.3b: 陣営転向は「改心」など専用カードの役割にし、この役は人気度の強化に変更
     extraChanges: (match) => [{ type: 'permanentPopularityAdd', instanceId: match.boundCharIds[0]!, amount: 5 }],
   },
@@ -1033,10 +1050,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: 'まだあなたほどうまくはできませんが…',
-    conditionText: '師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ',
+    conditionText: '仲間の師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ',
     match: (input) => {
       if (!hasDev(input, 'waza_get')) return [];
-      return input.deadCharacters.some((c) => MENTOR_IDS.includes(c.def.id)) ? [{ boundCharIds: [] }] : [];
+      return deadAllies(input).some((c) => MENTOR_IDS.includes(c.def.id)) ? [{ boundCharIds: [] }] : [];
     },
   },
   {
@@ -1446,14 +1463,21 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 6,
     extraText: '主人公の人気度×2',
     hintText: '父を追いかけ力を解放する',
-    conditionText: '場に「父」がいる状態で、主人公を対象に「能力覚醒」か「真の覚醒」',
+    /*
+     * v7.17: 「場に父がいて主人公が覚醒する」だと、父を序盤に出しただけで
+     * 毎週のように成立してしまい、他の役が霞んでいた。
+     * 越えるからには一度立ちはだかってもらう必要があるので、
+     * 敵に回った父を実際に退場させる週の役に変えた
+     */
+    conditionText: '敵になった「父」を、同じ週に「撃破」「途中離脱」「死亡」のいずれかで退場させる',
     match: (input) => {
       const hero = input.characters.find((c) => c.def.id === 'hero');
-      if (!hero || !input.characters.some((c) => c.def.id === 'chichi')) return [];
-      const awakened = [...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')].some(
-        (d) => d.targetId === hero.instance.instanceId,
+      const father = input.characters.find((c) => c.def.id === 'chichi' && c.instance.faction === 'enemy');
+      if (!hero || !father) return [];
+      const defeated = ['gekiha', 'ridatsu', 'shibou'].some((devId) =>
+        devsOf(input, devId).some((d) => d.targetId === father.instance.instanceId),
       );
-      return awakened ? [{ boundCharIds: [hero.instance.instanceId] }] : [];
+      return defeated ? [{ boundCharIds: [hero.instance.instanceId] }] : [];
     },
   },
   {
@@ -1638,9 +1662,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '先人の圧倒的な力を見よ',
-    conditionText: '場に師匠・父・母のいずれかがいる状態で「大勝利」をプレイ',
+    conditionText: '場に仲間の師匠・父・母のいずれかがいる状態で「大勝利」をプレイ',
     match: (input) =>
-      input.characters.some((c) => MENTOR_IDS.includes(c.def.id)) && hasDev(input, 'dai_shouri')
+      input.characters.some((c) => MENTOR_IDS.includes(c.def.id) && c.instance.faction === 'ally') &&
+      hasDev(input, 'dai_shouri')
         ? [{ boundCharIds: [] }]
         : [],
   },
@@ -1710,9 +1735,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: 'あいつの魂に勝利を捧げる',
-    conditionText: '死亡済みのキャラがいる状態で「大勝利」か「弔い合戦」',
+    conditionText: '味方が死亡している状態で「大勝利」か「弔い合戦」',
     match: (input) =>
-      input.deadCharacters.length > 0 && (hasDev(input, 'dai_shouri') || hasDev(input, 'tomurai_gassen'))
+      deadAllies(input).length > 0 && (hasDev(input, 'dai_shouri') || hasDev(input, 'tomurai_gassen'))
         ? [{ boundCharIds: [] }]
         : [],
   },
@@ -1799,9 +1824,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     hintText: '惨劇の後の一筋の希望',
     // 「夢オチ」は全員がまとめて戻る分だけ人気度がそのまま跳ねるので、この倍率は乗せない。
     // 一人ずつ取り戻す「復活」を選んだときだけの見返りにする。
-    conditionText: '3人以上が死亡している状態で「復活」をプレイ',
+    conditionText: '味方が3人以上死亡している状態で「復活」をプレイ',
     match: (input) =>
-      input.deadCharacters.length >= 3 && hasDev(input, 'fukkatsu') ? [{ boundCharIds: [] }] : [],
+      deadAllies(input).length >= 3 && hasDev(input, 'fukkatsu') ? [{ boundCharIds: [] }] : [],
   },
 
   // ===== 最終回専用役（第25話限定。design_finale.md 6節） =====

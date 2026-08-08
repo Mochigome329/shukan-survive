@@ -102,6 +102,23 @@ const countCombo = (state: RunState, id: string) => state.log.filter((w) => w.co
 const charsIn = (data: GameData, state: RunState, zone: 'dead' | 'waiting') =>
   state.cards.filter((c) => c.zone === zone && data.definitions.get(c.definitionId)?.kind === 'character');
 
+/** 死亡済みの味方（v7.17。弔いの結末は敵の死を数えない） */
+const deadAllies = (data: GameData, state: RunState) =>
+  charsIn(data, state, 'dead').filter((c) => c.faction === 'ally');
+
+/** 場か再登場待ちに敵が残っているか（倒しきれずに終わる結末の条件） */
+const enemyRemains = (data: GameData, state: RunState) =>
+  state.cards.some(
+    (c) =>
+      c.faction === 'enemy' &&
+      (c.zone === 'field' || c.zone === 'waiting') &&
+      data.definitions.get(c.definitionId)?.kind === 'character',
+  );
+
+/** その展開カードを連載を通して何回プレイしたか（合計） */
+const countPlayedTotal = (state: RunState, defIds: readonly string[]) =>
+  state.log.reduce((sum, w) => sum + w.playedDefinitionIds.filter((id) => defIds.includes(id)).length, 0);
+
 /** 連載中に「夢オチ」を使った回数（専用の状態は持たず、週ログから導出する） */
 export function yumeochiCount(state: RunState): number {
   return state.log.filter((w) => w.playedDefinitionIds.includes('yumeochi')).length;
@@ -179,14 +196,14 @@ export const ENDING_CARDS: EndingCard[] = [
     // v7.4b: ユーザー提案。死者を悼んで終わる結末。「再集結」から外した死亡済みキャラの受け皿でもある
     id: 'hakamairi',
     name: '墓参り',
-    conditionText: '死亡済みのキャラがいて、役「かたき討ち」を成立させたことがある',
-    available: (data, state) => charsIn(data, state, 'dead').length > 0 && hasCombo(state, 'katakiuchi'),
+    conditionText: '味方が死亡していて、役「かたき討ち」を成立させたことがある',
+    available: (data, state) => deadAllies(data, state).length > 0 && hasCombo(state, 'katakiuchi'),
     buzzAdd: 6,
     scoreMultiplier: 2,
     charMultiplier: 1,
     finalScoreDelta: 0,
     unresolvedPenaltyMultiplier: 1,
-    description: '弔いを済ませ、静かに幕を引く。週スコア×2、話題性+6、死亡済み1人につきさらに+3',
+    description: '弔いを済ませ、静かに幕を引く。週スコア×2、話題性+6、死亡した味方1人につきさらに+3',
     epilogue: 'ここにお前もいてくれればな',
   },
   {
@@ -219,6 +236,43 @@ export const ENDING_CARDS: EndingCard[] = [
     unresolvedPenaltyMultiplier: 2,
     description: '謎を残したまま幕を引く。未回収の伏線1本につき話題性+3。ただし未回収ペナルティが2倍',
     epilogue: '多くの謎を残したまま、物語は唐突に幕を下ろした。',
+  },
+  {
+    /*
+     * v7.17: ユーザー提案のバッドエンド。
+     * 敵を倒しきれないまま仲間を失って終わる、という結末。
+     * 話題性は出るが、決着をつけていないぶん評価は伸びない
+     */
+    id: 'tsukanoma_no_heiwa',
+    name: 'つかの間の平和',
+    conditionText: '敵が場か再登場待ちに残っていて、味方が2人以上死亡している',
+    available: (data, state) => enemyRemains(data, state) && deadAllies(data, state).length >= 2,
+    bad: true,
+    buzzAdd: 7,
+    scoreMultiplier: 2,
+    charMultiplier: 1,
+    finalScoreDelta: -400,
+    unresolvedPenaltyMultiplier: 1,
+    description: '脅威は去っていない。週スコア×2、話題性+7、死亡した味方1人につきさらに+2。最終評価-400',
+    epilogue: '倒しきれなかった影は、まだどこかで息を潜めている。',
+  },
+  {
+    /*
+     * v7.17: ユーザー提案のバッドエンド。
+     * 破壊と悲劇を重ねてきた連載の行き着く先。積んだ枚数がそのまま条件になる
+     */
+    id: 'kouhai_shita_sekai',
+    name: '荒廃した世界',
+    conditionText: '「大破壊」「悲劇」「敗北」「全滅」を通算5回以上プレイした',
+    available: (_d, state) => countPlayedTotal(state, ['daihakai', 'higeki', 'haiboku', 'zenmetsu']) >= 5,
+    bad: true,
+    buzzAdd: 12,
+    scoreMultiplier: 1.5,
+    charMultiplier: 1,
+    finalScoreDelta: -700,
+    unresolvedPenaltyMultiplier: 1,
+    description: '救えたものは何もなかった。週スコア×1.5、話題性+12。最終評価-700',
+    epilogue: '残されたのは、瓦礫と沈黙だけだった。',
   },
   {
     id: 'yumeochi_end',
@@ -263,7 +317,10 @@ export function endingBuzz(card: EndingCard, state: RunState): number {
     return card.buzzAdd + state.cards.filter((c) => c.zone === 'waiting').length * 4;
   }
   if (card.id === 'hakamairi') {
-    return card.buzzAdd + state.cards.filter((c) => c.zone === 'dead').length * 3;
+    return card.buzzAdd + state.cards.filter((c) => c.zone === 'dead' && c.faction === 'ally').length * 3;
+  }
+  if (card.id === 'tsukanoma_no_heiwa') {
+    return card.buzzAdd + state.cards.filter((c) => c.zone === 'dead' && c.faction === 'ally').length * 2;
   }
   return card.buzzAdd;
 }

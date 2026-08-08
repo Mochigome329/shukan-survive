@@ -196,6 +196,19 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     const def = data.definitions.get(instance.definitionId);
     if (def?.kind === 'character') deadCharacters.push({ instance, def });
   }
+  /*
+   * 弔い・生還の勘定に入れるのは味方の死だけ（v7.17）。
+   * 敵を倒した週に「弔い合戦」の話題性が伸びたり、
+   * 「全員生還」で倒したはずの敵まで戻ってきたりするのは筋が通らない
+   */
+  const deadAllies = deadCharacters.filter((c) => c.instance.faction === 'ally');
+  /*
+   * 「全員生還」で戻すのは、元がこちら側の人間だった者（v7.17）。
+   * 現在の陣営ではなく登場時の陣営で見るのは、裏切って敵として死んだ仲間は
+   * 戻ってきてほしいが、最初から敵だった者は戻ってきてほしくないため。
+   * 戻ったあとに登場時の陣営へ復元する処理（v6.6）とも筋が揃う
+   */
+  const revivableDead = deadCharacters.filter((c) => (c.instance.debutFaction ?? c.instance.faction) === 'ally');
   const recentComboHistory = input.recentComboHistory ?? [];
 
   // 緊張の付与と解放（v5.3のカタルシス）。解放は付与より先に判定し、同週の自演を防ぐ
@@ -332,7 +345,7 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
   const perDeadBuzz = developments.reduce(
     (sum, d) =>
       sum +
-      d.def.effects.reduce((s, e) => s + (e.effect.type === 'buzzPerDead' ? e.effect.amount * deadCharacters.length : 0), 0),
+      d.def.effects.reduce((s, e) => s + (e.effect.type === 'buzzPerDead' ? e.effect.amount * deadAllies.length : 0), 0),
     0,
   );
   const modifierBuzzTotal =
@@ -480,8 +493,9 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
           stateChanges.push({ type: 'releaseStress' });
           break;
         case 'reviveAllDead':
-          // 夢オチ: 死亡済みキャラを全員場に戻す（v5.3）。復活と同様、陣営もデビュー時に戻す（v6.6）
-          for (const dead of deadCharacters) {
+          // 夢オチ: 死亡済みキャラを全員場に戻す（v5.3）。復活と同様、陣営もデビュー時に戻す（v6.6）。
+          // v7.17: 戻すのは元がこちら側だった者だけ。倒した敵まで一緒に生き返るのはおかしい
+          for (const dead of revivableDead) {
             stateChanges.push({ type: 'moveZone', instanceId: dead.instance.instanceId, to: 'field' });
             stateChanges.push(...restoreDebutFactionChanges(input, dead.instance.instanceId));
           }

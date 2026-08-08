@@ -83,7 +83,27 @@ describe('追加カードと役（v5.8）', () => {
     expect(after.stress).toBe(1);
   });
 
-  it('役「父を超える」: 場に父がいる状態で主人公が覚醒すると人気度×2', () => {
+  /*
+   * v7.17: 条件を「場に父がいて主人公が覚醒」から
+   * 「敵に回った父を退場させる」に変えた。
+   * 前者だと父を序盤に出しただけで毎週のように成立し、他の役が霞んでいたため
+   */
+  it('役「父を超える」: 敵になった父を撃破すると主人公の人気度×2', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'chichi', 1, { faction: 'enemy' }),
+      makeInstance(data, 'gekiha', 1),
+    ];
+    const b = previewScore(data, makeState(cards, 12), {
+      cards: ['gekiha#1'],
+      targets: { 'gekiha#1': 'chichi#1' },
+    });
+    expect(applied(b)).toContain('父を超える');
+    // 主人公10×2 + 父11 = 31
+    expect(b.popularityTotal).toBe(31);
+  });
+
+  it('役「父を超える」: 味方のままの父では成立しない', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
       makeInstance(data, 'chichi', 1),
@@ -93,9 +113,7 @@ describe('追加カードと役（v5.8）', () => {
       cards: ['nouryoku_kakusei#1'],
       targets: { 'nouryoku_kakusei#1': 'hero#1' },
     });
-    expect(applied(b)).toContain('父を超える');
-    // 主人公10×2 + 父11 = 31
-    expect(b.popularityTotal).toBe(31);
+    expect(applied(b)).not.toContain('父を超える');
   });
 
   it('役「勇気の発露」: 弱いキャラがいる状態の「人助け」でそのキャラの人気度×3', () => {

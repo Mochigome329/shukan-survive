@@ -2428,7 +2428,7 @@
    "buzzAdd": 3,
    "extraText": "そのキャラの人気度が恒久+5",
    "hintText": "悪の過去が明かされるとき",
-   "conditionText": "敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5）"
+   "conditionText": "敵キャラを対象に「悲しい過去」をプレイ（人気度 恒久+5。週に1回まで）"
   },
   {
    "id": "kaishin_no_monogatari",
@@ -2692,7 +2692,7 @@
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "まだあなたほどうまくはできませんが…",
-   "conditionText": "師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ"
+   "conditionText": "仲間の師匠・父・母のいずれかが死亡済みの状態で「技ゲット」をプレイ"
   },
   {
    "id": "soumatou",
@@ -2981,7 +2981,7 @@
    "buzzAdd": 6,
    "extraText": "主人公の人気度×2",
    "hintText": "父を追いかけ力を解放する",
-   "conditionText": "場に「父」がいる状態で、主人公を対象に「能力覚醒」か「真の覚醒」"
+   "conditionText": "敵になった「父」を、同じ週に「撃破」「途中離脱」「死亡」のいずれかで退場させる"
   },
   {
    "id": "yuuki_no_hatsuro",
@@ -3116,7 +3116,7 @@
    "popularityAdd": 0,
    "buzzAdd": 6,
    "hintText": "先人の圧倒的な力を見よ",
-   "conditionText": "場に師匠・父・母のいずれかがいる状態で「大勝利」をプレイ"
+   "conditionText": "場に仲間の師匠・父・母のいずれかがいる状態で「大勝利」をプレイ"
   },
   {
    "id": "shoushin_to_shukusei",
@@ -3164,7 +3164,7 @@
    "popularityAdd": 0,
    "buzzAdd": 7,
    "hintText": "あいつの魂に勝利を捧げる",
-   "conditionText": "死亡済みのキャラがいる状態で「大勝利」か「弔い合戦」"
+   "conditionText": "味方が死亡している状態で「大勝利」か「弔い合戦」"
   },
   {
    "id": "ame_futte_ji_katamaru",
@@ -3231,7 +3231,7 @@
    "buzzAdd": 6,
    "extraText": "週スコア×3",
    "hintText": "惨劇の後の一筋の希望",
-   "conditionText": "3人以上が死亡している状態で「復活」をプレイ"
+   "conditionText": "味方が3人以上死亡している状態で「復活」をプレイ"
   },
   {
    "id": "densetsu_no_kanketsu",
@@ -3439,13 +3439,13 @@
   {
    "id": "hakamairi",
    "name": "墓参り",
-   "conditionText": "死亡済みのキャラがいて、役「かたき討ち」を成立させたことがある",
+   "conditionText": "味方が死亡していて、役「かたき討ち」を成立させたことがある",
    "buzzAdd": 6,
    "scoreMultiplier": 2,
    "charMultiplier": 1,
    "finalScoreDelta": 0,
    "unresolvedPenaltyMultiplier": 1,
-   "description": "弔いを済ませ、静かに幕を引く。週スコア×2、話題性+6、死亡済み1人につきさらに+3",
+   "description": "弔いを済ませ、静かに幕を引く。週スコア×2、話題性+6、死亡した味方1人につきさらに+3",
    "epilogue": "ここにお前もいてくれればな"
   },
   {
@@ -3473,6 +3473,32 @@
    "unresolvedPenaltyMultiplier": 2,
    "description": "謎を残したまま幕を引く。未回収の伏線1本につき話題性+3。ただし未回収ペナルティが2倍",
    "epilogue": "多くの謎を残したまま、物語は唐突に幕を下ろした。"
+  },
+  {
+   "id": "tsukanoma_no_heiwa",
+   "name": "つかの間の平和",
+   "conditionText": "敵が場か再登場待ちに残っていて、味方が2人以上死亡している",
+   "bad": true,
+   "buzzAdd": 7,
+   "scoreMultiplier": 2,
+   "charMultiplier": 1,
+   "finalScoreDelta": -400,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "脅威は去っていない。週スコア×2、話題性+7、死亡した味方1人につきさらに+2。最終評価-400",
+   "epilogue": "倒しきれなかった影は、まだどこかで息を潜めている。"
+  },
+  {
+   "id": "kouhai_shita_sekai",
+   "name": "荒廃した世界",
+   "conditionText": "「大破壊」「悲劇」「敗北」「全滅」を通算5回以上プレイした",
+   "bad": true,
+   "buzzAdd": 12,
+   "scoreMultiplier": 1.5,
+   "charMultiplier": 1,
+   "finalScoreDelta": -700,
+   "unresolvedPenaltyMultiplier": 1,
+   "description": "救えたものは何もなかった。週スコア×1.5、話題性+12。最終評価-700",
+   "epilogue": "残されたのは、瓦礫と沈黙だけだった。"
   },
   {
    "id": "yumeochi_end",

@@ -148,7 +148,12 @@ describe('デビュー時の陣営の記録と、復活・おかえりでの復�
     expect(after.cards.find((c) => c.instanceId === 'osananajimi#1')!.faction).toBe('enemy');
   });
 
-  it('夢オチ（reviveAllDead）で復帰する全員も、デビュー時の陣営に戻る', () => {
+  /*
+   * v7.17: 「全員生還」で戻るのは登場時に味方だった者だけになった。
+   * 裏切って敵として死んだ仲間（相棒）は戻って陣営も復元されるが、
+   * 最初から敵だった者（ライバル）は戻らない
+   */
+  it('夢オチ（reviveAllDead）で復帰するのは元が味方だった者。復帰時はデビュー時の陣営に戻る', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
       makeInstance(data, 'aibou', 1, { zone: 'dead', faction: 'enemy', debutFaction: 'ally' }),
@@ -157,8 +162,11 @@ describe('デビュー時の陣営の記録と、復活・おかえりでの復�
     ];
     const state = makeState(cards, 10);
     const after = resolveWeek(data, state, { cards: ['yumeochi#1'], targets: {} }).state;
-    expect(after.cards.find((c) => c.instanceId === 'aibou#1')!.faction).toBe('ally');
-    expect(after.cards.find((c) => c.instanceId === 'rival#1')!.faction).toBe('enemy');
+    const aibou = after.cards.find((c) => c.instanceId === 'aibou#1')!;
+    expect(aibou.zone).toBe('field');
+    expect(aibou.faction).toBe('ally');
+    const rival = after.cards.find((c) => c.instanceId === 'rival#1')!;
+    expect(rival.zone).toBe('dead');
   });
 
   it('「おかえり」: 敵陣営になった仲間をデビュー時の陣営へ戻す', () => {
