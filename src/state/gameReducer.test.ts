@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { loadTestData } from '../core/testHelpers';
+import { loadTestData, makeInstance } from '../core/testHelpers';
 import { createRun, startWeek } from '../core/run';
 import { BOSS_BRIEFING_LEAD, gameReducer, initialGameState, type GameAction, type GameState } from './gameReducer';
 
@@ -115,5 +115,78 @@ describe('初回の編集会議で説明を出す（v7.5）', () => {
 
     const second = gameReducer({ ...base, shopTutorialShown: true }, { type: 'proceedFromResult' });
     expect(second.shopTutorialStep).toBeNull();
+  });
+});
+
+describe('陣営を選べるキャラのデビュー選択（v7.18）', () => {
+  function playState(): GameState {
+    const run = createRun(data, 1, { mangaTitle: 'テスト' });
+    run.cards = [
+      makeInstance(data, 'hero', 1, { zone: 'field' }),
+      makeInstance(data, 'heroine', 1, { zone: 'field' }),
+      makeInstance(data, 'rival', 1, { zone: 'field' }),
+      makeInstance(data, 'mascot', 1, { zone: 'bench' }),
+      makeInstance(data, 'unmei_deai', 1, { zone: 'hand' }),
+      makeInstance(data, 'shugyou', 1, { zone: 'hand' }),
+    ];
+    return { ...initialGameState(data), screen: 'play', run };
+  }
+
+  it('陣営を選んだ後に、対象選択が要る別カードを選んでも選び直しを求めない', () => {
+    let state = playState();
+    // 運命的な出会い: 対象はmascotで一意なので自動割当、陣営選択待ちになる
+    state = gameReducer(state, { type: 'tapHandCard', instanceId: 'unmei_deai#1' });
+    expect(state.pendingFactionChoice).toBe('unmei_deai#1');
+
+    state = gameReducer(state, { type: 'chooseFaction', devId: 'unmei_deai#1', faction: 'ally' });
+    expect(state.selection.factionChoices?.['unmei_deai#1']).toBe('ally');
+
+    // 修行: 対象候補が複数（主人公・ヒロイン・ライバル）あるので対象選択待ちになる。
+    // このとき既に選んだ陣営が消えてはいけない
+    state = gameReducer(state, { type: 'tapHandCard', instanceId: 'shugyou#1' });
+    expect(state.pendingTargetDev).toBe('shugyou#1');
+    expect(state.selection.factionChoices?.['unmei_deai#1']).toBe('ally');
+
+    state = gameReducer(state, { type: 'tapCastChar', instanceId: 'hero#1' });
+    expect(state.pendingFactionChoice).toBeNull();
+    expect(state.selection.factionChoices?.['unmei_deai#1']).toBe('ally');
+  });
+});
+
+describe('チュートリアルをスキップした場合、編集会議の説明も出さない（v7.18）', () => {
+  it('タイトルで不要と答えると、以降ずっとtutorialEnabledがfalseのまま', () => {
+    let state: GameState = { ...initialGameState(data), screen: 'setup' };
+    state = gameReducer(state, { type: 'openSetup', withTutorial: false });
+    state = gameReducer(state, { type: 'startRun', seed: 1, mangaTitle: 'テスト', startingCast: ['heroine', 'aibou'] });
+    expect(state.tutorialStep).toBeNull();
+    expect(state.tutorialEnabled).toBe(false);
+  });
+
+  it('スキップを選んでいれば、初回の編集会議でも説明を出さない', () => {
+    let state: GameState = { ...initialGameState(data), screen: 'setup' };
+    state = gameReducer(state, { type: 'openSetup', withTutorial: false });
+    state = gameReducer(state, { type: 'startRun', seed: 1, mangaTitle: 'テスト', startingCast: ['heroine', 'aibou'] });
+    const withResult: GameState = {
+      ...state,
+      screen: 'result',
+      lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    };
+    const afterShop = gameReducer(withResult, { type: 'proceedFromResult' });
+    expect(afterShop.shopTutorialStep).toBeNull();
+    expect(afterShop.shopTutorialShown).toBe(true);
+  });
+
+  it('必要と答えていれば、従来どおり編集会議の説明が出る', () => {
+    let state: GameState = { ...initialGameState(data), screen: 'setup' };
+    state = gameReducer(state, { type: 'openSetup', withTutorial: true });
+    state = gameReducer(state, { type: 'startRun', seed: 1, mangaTitle: 'テスト', startingCast: ['heroine', 'aibou'] });
+    expect(state.tutorialEnabled).toBe(true);
+    const withResult: GameState = {
+      ...state,
+      screen: 'result',
+      lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    };
+    const afterShop = gameReducer(withResult, { type: 'proceedFromResult' });
+    expect(afterShop.shopTutorialStep).toBe(0);
   });
 });

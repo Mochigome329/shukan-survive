@@ -276,28 +276,34 @@ function refreshTargets(
     if (targets[id] && joinsCast(id)) joined.push(targets[id]!);
   }
 
-  // 陣営選択（v6.2）: 対象がすべて解決してから、デビュー対象が陣営を選べるキャラなら選ばせる。
-  // 復活・再登場（reviveSelect/returnSelect）では選び直さない。最初にデビューした時だけの一度きりの選択
+  /*
+   * 陣営選択（v6.2）。復活・再登場（reviveSelect/returnSelect）では選び直さない。
+   * 最初にデビューした時だけの一度きりの選択。
+   *
+   * v7.18: 既に選んだ陣営を引き継ぐ処理を `pending === null`（他の対象選択待ちが無いとき）
+   * に限っていたため、運命的な出会いで陣営を選んだ後に対象選択が要る展開カードを
+   * もう1枚選ぶと、その対象を解決するまでの間 factionChoices が空で返り続け、
+   * 対象解決の瞬間には「選んだ陣営」自体が失われて再度プロンプトが出ていた。
+   * 引き継ぎ自体は毎回行い、新しくプロンプトを出すかどうかだけ pending で絞る
+   */
   let factionPending: string | null = null;
   const factionChoices: Record<string, Faction> = {};
-  if (pending === null) {
-    for (const id of selection.cards) {
-      const def = defOf(state, id);
-      if (def.kind !== 'development') continue;
-      const debutEffect = def.effects.find((e) => e.effect.type === 'debutSelect')?.effect;
-      if (!debutEffect || debutEffect.type !== 'debutSelect') continue;
-      // 陣営が強制指定されたデビュー（悪役会議など）は選択プロンプトを出さない（v6.3）
-      if (debutEffect.faction) continue;
-      const targetId = targets[id];
-      if (!targetId) continue;
-      const targetDef = defOf(state, targetId);
-      if (targetDef.kind !== 'character' || !targetDef.flexFaction) continue;
-      const existing = selection.factionChoices?.[id];
-      if (existing) {
-        factionChoices[id] = existing;
-      } else if (factionPending === null) {
-        factionPending = id;
-      }
+  for (const id of selection.cards) {
+    const def = defOf(state, id);
+    if (def.kind !== 'development') continue;
+    const debutEffect = def.effects.find((e) => e.effect.type === 'debutSelect')?.effect;
+    if (!debutEffect || debutEffect.type !== 'debutSelect') continue;
+    // 陣営が強制指定されたデビュー（悪役会議など）は選択プロンプトを出さない（v6.3）
+    if (debutEffect.faction) continue;
+    const targetId = targets[id];
+    if (!targetId) continue;
+    const targetDef = defOf(state, targetId);
+    if (targetDef.kind !== 'character' || !targetDef.flexFaction) continue;
+    const existing = selection.factionChoices?.[id];
+    if (existing) {
+      factionChoices[id] = existing;
+    } else if (pending === null && factionPending === null) {
+      factionPending = id;
     }
   }
 
@@ -372,6 +378,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         // v7.5: 一枚の要約だけだったのをやめ、画面の各部を順に説明する形にした。
         // 2回目以降はタイトルで「不要」を選べる
         tutorialStep: state.tutorialEnabled ? 0 : null,
+        /*
+         * v7.18: ここを明示せず ...initialGameState(...) 任せにしていたため、
+         * initialGameStateの既定値trueで上書きされ、スキップを選んだこと自体が
+         * このランの間ずっと忘れられていた。tutorialStepは上の行で
+         * 「まだ壊れる前」の値を使って正しく決めていたので気づきにくかったが、
+         * 以降のチュートリアル判定（編集会議など）はこの値を見るたびに
+         * 「有効」扱いに戻ってしまっていた
+         */
+        tutorialEnabled: state.tutorialEnabled,
         actIntro: actStartingAt(run.week)?.act ?? null,
       };
     }
@@ -547,7 +562,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         shopPack: rollPack(state.data, state.run, MAX_PLAYABLE_WEEK),
         shopRerolls: 0,
         lastResult: null,
-        shopTutorialStep: state.shopTutorialShown ? null : 0,
+        // v7.18: タイトルでチュートリアルを不要と答えていたら、編集会議の説明も出さない
+        shopTutorialStep: state.tutorialEnabled && !state.shopTutorialShown ? 0 : null,
         shopTutorialShown: true,
       };
     }
