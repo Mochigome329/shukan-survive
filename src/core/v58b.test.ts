@@ -163,8 +163,16 @@ describe('役の付け替えと追加（v5.8b）', () => {
     expect(applied(b1)).toContain('母は強し');
     expect(b1.popularityTotal).toBe(10 + 9 * 3 - 6); // 緊張1で-6
 
-    const nichijou = [makeInstance(data, 'hero', 1), makeInstance(data, 'haha', 1), makeInstance(data, 'nichijou', 1)];
-    expect(applied(previewScore(data, makeState(nichijou, 12), { cards: ['nichijou#1'], targets: {} }))).toContain('おふくろの味');
+    // v7.25: 「日常回」単独ではなく「日常回」+「骨休め」のAND条件になった
+    const nichijou = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'haha', 1),
+      makeInstance(data, 'nichijou', 1),
+      makeInstance(data, 'honeyasume', 1),
+    ];
+    expect(
+      applied(previewScore(data, makeState(nichijou, 12), { cards: ['nichijou#1', 'honeyasume#1'], targets: {} })),
+    ).toContain('おふくろの味');
   });
 
   it('「昇進と粛清」: 敵幹部と宿敵が揃った状態で敵を死亡させる', () => {

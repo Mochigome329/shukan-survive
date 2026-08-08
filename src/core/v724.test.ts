@@ -125,10 +125,11 @@ describe('俺に任せて先へ・能ある鷹は（v7.24）', () => {
     expect(applied(b)).not.toContain('俺に任せて先へ');
   });
 
-  it('三枚目の覚醒で「能ある鷹は」が成立する', () => {
+  it('三枚目の覚醒で「能ある鷹は」が成立し、恒久+5される（v7.25）', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'sanmaime', 1), makeInstance(data, 'kakusei', 1)];
     const b = score(cards, ['kakusei#1'], { 'kakusei#1': 'sanmaime#1' });
     expect(applied(b)).toContain('能ある鷹は');
+    expect(b.stateChanges).toContainEqual({ type: 'permanentPopularityAdd', instanceId: 'sanmaime#1', amount: 5 });
   });
 
   it('敵になった三枚目の覚醒では成立しない', () => {
@@ -277,15 +278,40 @@ describe('二重スパイ（v7.24）', () => {
   });
 });
 
-describe('サポーター・奪還（v7.24）', () => {
-  it('マスコットがいる状態で日常回だと「サポーター」が成立する', () => {
+describe('サポーター・奪還（v7.24, v7.25）', () => {
+  it('マスコットがいる状態で日常回だと「サポーター」が成立し、マスコットが恒久+3される', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'mascot', 1), makeInstance(data, 'nichijou', 1)];
-    expect(applied(score(cards, ['nichijou#1']))).toContain('サポーター');
+    const b = score(cards, ['nichijou#1']);
+    expect(applied(b)).toContain('サポーター');
+    expect(b.stateChanges).toContainEqual({ type: 'permanentPopularityAdd', instanceId: 'mascot#1', amount: 3 });
   });
 
-  it('母がいる状態で日常回だと「サポーター」と「おふくろの味」が両方成立する', () => {
+  it('母で「サポーター」が成立しても、母は人気度9で不遇の4人には含まれないので恒久加算は無い', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'haha', 1), makeInstance(data, 'nichijou', 1)];
     const b = score(cards, ['nichijou#1']);
+    expect(applied(b)).toContain('サポーター');
+    expect(b.stateChanges.some((c) => c.type === 'permanentPopularityAdd')).toBe(false);
+  });
+
+  /*
+   * v7.25: おふくろの味は「日常回」+「骨休め」のAND条件になったので、
+   * 日常回だけの週ではサポーターしか成立しない（棲み分け）
+   */
+  it('母がいる状態で日常回だけだと「サポーター」のみ成立し、「おふくろの味」は成立しない', () => {
+    const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'haha', 1), makeInstance(data, 'nichijou', 1)];
+    const b = score(cards, ['nichijou#1']);
+    expect(applied(b)).toContain('サポーター');
+    expect(applied(b)).not.toContain('おふくろの味');
+  });
+
+  it('母がいる状態で日常回と骨休めを両方プレイすると「サポーター」と「おふくろの味」が両方成立する', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1),
+      makeInstance(data, 'haha', 1),
+      makeInstance(data, 'nichijou', 1),
+      makeInstance(data, 'honeyasume', 1),
+    ];
+    const b = score(cards, ['nichijou#1', 'honeyasume#1']);
     expect(applied(b)).toContain('サポーター');
     expect(applied(b)).toContain('おふくろの味');
   });

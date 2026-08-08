@@ -1626,9 +1626,14 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 5,
     extraText: 'キャスト全員の人気度が恒久+2',
     hintText: '帰る場所での休息',
-    conditionText: '場に「母」がいる状態で「日常回」か「骨休め」をプレイ',
+    /*
+     * v7.25: 「日常回」か「骨休め」のどちらかでよい条件だと、新設した「サポーター」
+     * （マスコットor母＋日常回）と母のケースで丸ごと重なってしまう、というユーザー指摘。
+     * 両方を同じ週にプレイするAND条件にして棲み分けた
+     */
+    conditionText: '場に「母」がいる状態で「日常回」と「骨休め」を同じ週にプレイ',
     match: (input) =>
-      input.characters.some((c) => c.def.id === 'haha') && (hasDev(input, 'nichijou') || hasDev(input, 'honeyasume'))
+      input.characters.some((c) => c.def.id === 'haha') && hasDev(input, 'nichijou') && hasDev(input, 'honeyasume')
         ? [{ boundCharIds: input.characters.map((c) => c.instance.instanceId) }]
         : [],
     extraChanges: (match) => match.boundCharIds.map((id) => ({ type: 'permanentPopularityAdd', instanceId: id, amount: 2 })),
@@ -2073,14 +2078,21 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
   },
   {
+    /*
+     * v7.25: 人気度の低い脇役（マスコット・三枚目・弱虫・一般人）は、強い役持ちでもないと
+     * 使われにくい、というユーザー指摘。「隠れた才能が明かされる」役なので、その場限りの
+     * 話題性だけでなく恒久的な人気度も伸びるようにした（意地を見せるの+6と並ぶ格の効果）
+     */
     id: 'nouaru_taka_wa',
     name: '能ある鷹は',
     layer: 1,
     phase: 'preScore',
     suppresses: [],
-    cutInTemplate: 'normal',
+    isSetupCombo: true,
+    cutInTemplate: 'setupPayoff',
     popularityAdd: 0,
-    buzzAdd: 4,
+    buzzAdd: 5,
+    extraText: 'そのキャラの人気度が恒久+5',
     hintText: '侮れない実力',
     conditionText: '三枚目を対象に「能力覚醒」か「真の覚醒」をプレイ',
     match: (input) =>
@@ -2088,6 +2100,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'ally' && c.def.id === 'sanmaime')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
+    extraChanges: (match) => [{ type: 'permanentPopularityAdd', instanceId: match.boundCharIds[0]!, amount: 5 }],
   },
   {
     id: 'aun_no_kokyuu',
@@ -2273,6 +2286,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
      * 日常回か骨休めのどちらでも成立）。この役はマスコットも対象に含めるぶん広いので、
      * 母のときは両方の役が同時に成立しうる。それぞれ別の見せ場として意図的に両立させる
      */
+    /*
+     * v7.25: マスコットが支えに回った週は、恒久的な人気度も少し伸ばす（人気度の低い脇役の
+     * 底上げ、ユーザー指摘）。母は元々人気度9でこの4人ほど不遇ではないので対象外にする
+     */
     id: 'supporter',
     name: 'サポーター',
     layer: 1,
@@ -2281,13 +2298,20 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     cutInTemplate: 'normal',
     popularityAdd: 0,
     buzzAdd: 3,
+    extraText: 'マスコットの場合、そのキャラの人気度が恒久+3',
     hintText: '縁の下の力持ち',
     conditionText: '場に「マスコット」か「母」がいる状態で「日常回」をプレイ',
     match: (input) => {
-      const hasSupporter = input.characters.some(
+      const supporter = input.characters.find(
         (c) => c.instance.faction === 'ally' && (c.def.id === 'mascot' || c.def.id === 'haha'),
       );
-      return hasSupporter && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : [];
+      return supporter && hasDev(input, 'nichijou') ? [{ boundCharIds: [supporter.instance.instanceId] }] : [];
+    },
+    extraChanges: (match, input) => {
+      const bound = input.characters.find((c) => c.instance.instanceId === match.boundCharIds[0]);
+      return bound?.def.id === 'mascot'
+        ? [{ type: 'permanentPopularityAdd', instanceId: bound.instance.instanceId, amount: 3 }]
+        : [];
     },
   },
   {

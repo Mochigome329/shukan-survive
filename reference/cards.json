@@ -3096,7 +3096,7 @@
    "buzzAdd": 5,
    "extraText": "キャスト全員の人気度が恒久+2",
    "hintText": "帰る場所での休息",
-   "conditionText": "場に「母」がいる状態で「日常回」か「骨休め」をプレイ"
+   "conditionText": "場に「母」がいる状態で「日常回」と「骨休め」を同じ週にプレイ"
   },
   {
    "id": "haha_wa_tsuyoshi",
@@ -3401,9 +3401,11 @@
    "name": "能ある鷹は",
    "layer": 1,
    "phase": "preScore",
-   "cutInTemplate": "normal",
+   "isSetupCombo": true,
+   "cutInTemplate": "setupPayoff",
    "popularityAdd": 0,
-   "buzzAdd": 4,
+   "buzzAdd": 5,
+   "extraText": "そのキャラの人気度が恒久+5",
    "hintText": "侮れない実力",
    "conditionText": "三枚目を対象に「能力覚醒」か「真の覚醒」をプレイ"
   },
@@ -3521,6 +3523,7 @@
    "cutInTemplate": "normal",
    "popularityAdd": 0,
    "buzzAdd": 3,
+   "extraText": "マスコットの場合、そのキャラの人気度が恒久+3",
    "hintText": "縁の下の力持ち",
    "conditionText": "場に「マスコット」か「母」がいる状態で「日常回」をプレイ"
   },
