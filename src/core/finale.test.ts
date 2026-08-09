@@ -257,10 +257,16 @@ describe('最終回のフェーズ遷移（v5.9）', () => {
     expect(state.screen).toBe('clearedAll');
   });
 
-  it('最終回でノルマ未達なら打ち切りエンドになる', () => {
-    const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'nichijou', 1)];
+  /*
+   * v7.28: 最終回のノルマは廃止した。展開カードを出さない回になり、
+   * プレイヤーが最終回の中でスコアを動かせる手段が結末の選択だけになったので、
+   * そこで打ち切りになるのは理不尽、という整理。必ず完結できる
+   */
+  it('最終回はノルマが無く、素の状態でも打ち切りにならない', () => {
+    const cards = [makeInstance(data, 'hero', 1)];
     const state = makeState(cards, FINALE);
-    const b = previewScore(data, state, { cards: ['nichijou#1'], targets: {} }, 'gojitsudan');
-    expect(b.cleared).toBe(false); // 素の状態ではノルマ7000には届かない
+    const b = previewScore(data, state, { cards: [], targets: {} }, 'gojitsudan');
+    expect(b.quota).toBe(0);
+    expect(b.cleared).toBe(true);
   });
 });

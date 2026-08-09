@@ -15,39 +15,73 @@ import type { GameData } from './validate';
 export const FINALE_MAX_PLAY_CARDS = 5;
 
 /**
- * 最終回の手札に配らないカード（v7.16）。
+ * 中央値ベースの最終回（v7.28）。
  *
- * どれも「この先まだ話が続く」前提の展開で、最終回に出てくると
- * 「今更それ？」と読める。効果の面でも、恒久上昇は「次週以降有効」なので
- * 最終回には一切効かず、伏線を張る系は回収する週がもう無い。
+ * 最終回は展開カードを出さない。結末カードだけを選ぶ回にしたので、
+ * その週の人気度と話題性は「これまでの連載の中央値」から作る。
+ * 積み上げてきた連載の実力がそのままベース点になり、そこへ結末カードを掛ける。
  *
- * ここに入れるのは、抜いても最終回の役がほとんど減らないものだけにしてある。
- * 大ピンチ・敗北・裏切り・闇堕ちは「今更」感はあるものの、
- * 世界の危機／間一髪／絶望／ダークヒーローといったクライマックスの役の素材なので残している。
- *
- * 仕入れたカードとネームストックは、プレイヤーが自分で選んだものなので対象外
- * （抽選で勝手に配られるぶんだけを絞る）。
+ * 平均ではなく中央値なのは、全滅や人気投票のような外れ値の週に
+ * 最終回が引きずられないようにするため。
  */
-export const FINALE_EXCLUDED_DEV_IDS = new Set([
-  // 効果が「次週以降有効」で、最終回には何も起きない
-  'sainou_no_henrin', // 才能の片鱗
-  'mikubirareta_otoko', // 見くびられた男
-  'igai_na_ichimen', // 意外な一面
-  'buki_get', // 武器ゲット
-  'waza_get', // 技ゲット
-  'na_serifu', // 名ゼリフ
-  'kakusareta_kettou', // 隠された血統
-  'katai_kizuna', // 固い絆
-  // 回収する週がもう無いのに伏線を張る
-  'fukusen', // 伏線
-  'yorimichi', // 寄り道
-  'densetsu', // 伝説を聞く
-  'douki_no_kokuhaku', // 動機の告白
-  // これから始まる関係・これから続く時間の話
-  'surechigai', // すれ違い
-  'timeskip', // タイムスキップ
-  'sennou', // 洗脳
-]);
+function median(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
+}
+
+/**
+ * ボス週「人気投票」は話題性を固定1にする特殊ルールなので、母集団から外す（v7.28）。
+ * 連載の実力ではなくルールで作られた数字なので、混ぜると中央値が歪む
+ */
+const POPULARITY_VOTE_WEEK = 16;
+
+export interface FinaleBase {
+  popularity: number;
+  buzz: number;
+}
+
+/**
+ * v7.28より前のセーブには人気度・話題性の記録が無い。
+ * その場合は「スコア = 人気度 × 話題性」の関係から逆算して、
+ * 記録として残っている週スコアの中央値を再現できる組み合わせを作る。
+ * 話題性の代表値をここに置き、人気度はそこから割り戻す
+ */
+const LEGACY_BUZZ_ESTIMATE = 30;
+
+/**
+ * 最終回のベース点。過去週の人気度合計・話題性合計それぞれの中央値。
+ * 記録の無い週（v7.28より前のセーブ）は母集団から外し、
+ * 1週も残らなければ週スコアの中央値から逆算する
+ */
+export function finaleBase(state: RunState): FinaleBase {
+  /*
+   * 最終回そのものは母集団に入れない。
+   * 採点時はまだ記録されていないので影響しないが、採点後（年表の集計など）に
+   * 呼ぶと自分自身を含んでしまい、同じベース点が別の値になってしまう。
+   * ノルマの無い週＝最終回なので、それを目印に外す
+   */
+  const played = state.log.filter((w) => w.week !== POPULARITY_VOTE_WEEK && w.quota > 0);
+  const usable = played.filter((w) => typeof w.popularity === 'number' && typeof w.buzz === 'number');
+  if (usable.length > 0) {
+    return {
+      popularity: Math.floor(median(usable.map((w) => w.popularity!))),
+      buzz: Math.floor(median(usable.map((w) => w.buzz!))),
+    };
+  }
+  const legacyScore = median(played.map((w) => w.score));
+  return {
+    popularity: Math.floor(legacyScore / LEGACY_BUZZ_ESTIMATE),
+    buzz: legacyScore > 0 ? LEGACY_BUZZ_ESTIMATE : 0,
+  };
+}
+
+/** ベース点だけで出る素点。「有終の美」の判定に使う（v7.28） */
+export function finaleBaseScore(state: RunState): number {
+  const base = finaleBase(state);
+  return base.popularity * base.buzz;
+}
 
 /** 完結ボーナス: 1 + 0.1 × 仕込み役の種類数。上限は×2.0 */
 export const COMPLETION_BONUS_PER_COMBO = 0.1;

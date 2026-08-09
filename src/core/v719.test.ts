@@ -11,14 +11,14 @@ function score(cards: ReturnType<typeof makeInstance>[], play: string[], targets
   return computeScore({ data, cards: state.cards, week, selection: { cards: play, targets } });
 }
 
-describe('全滅は単独でも役として成立する（v7.19）', () => {
+describe('全滅は単独でも役として成立する（v7.19、v7.27で全滅エンドを吸収）', () => {
   it('「全滅」を出すだけで役「全滅」が成立する', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'zenmetsu', 1)];
     const b = score(cards, ['zenmetsu#1']);
     expect(applied(b)).toContain('全滅');
   });
 
-  it('「悲しい過去」も揃えると、より強い「全滅エンド」に差し替わる（二重成立しない）', () => {
+  it('「悲しい過去」を重ねても役は「全滅」のまま（v7.27: 上位版「全滅エンド」は廃止し吸収）', () => {
     const cards = [
       makeInstance(data, 'hero', 1),
       makeInstance(data, 'zenmetsu', 1),
@@ -26,8 +26,8 @@ describe('全滅は単独でも役として成立する（v7.19）', () => {
     ];
     const b = score(cards, ['zenmetsu#1', 'kanashii_kako#1'], { 'kanashii_kako#1': 'hero#1' });
     const names = applied(b);
-    expect(names).toContain('全滅エンド');
-    expect(names).not.toContain('全滅');
+    expect(names).toContain('全滅');
+    expect(names).not.toContain('全滅エンド');
   });
 });
 

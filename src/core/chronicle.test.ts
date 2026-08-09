@@ -92,6 +92,16 @@ describe('連載年表の集計（v7.11）', () => {
     expect(all).toHaveLength(3);
   });
 
+  it('ニックネームを付けたキャラは年表にもニックネームで載る（v7.29）', () => {
+    const cards = [
+      makeInstance(data, 'hero', 1, { zone: 'field', nickname: 'ゆうと' }),
+      makeInstance(data, 'heroine', 2, { zone: 'dead' }),
+    ];
+    const c = buildChronicle(data, makeState(cards, 1, { log: [entry({ week: 1, quota: 300, score: 600 })] }));
+    expect(c.cast.alive).toEqual(['ゆうと']);
+    expect(c.cast.dead).toEqual(['ヒロイン']);
+  });
+
   it('グラフの縦軸は突出した週があっても頭打ちになる', () => {
     const run = makeState([], 1, {
       log: [entry({ week: 1, quota: 100, score: 10000 })],

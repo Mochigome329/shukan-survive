@@ -103,7 +103,8 @@ const quotasFileSchema = z.object({
   weeks: z.array(
     z.object({
       week: z.number().int().min(1),
-      quota: z.number().int().positive(),
+      // v7.28: 最終回はノルマ無し（0）。結末を選ぶだけの回なので打ち切り判定をしない
+      quota: z.number().int().nonnegative(),
       boss: z.string().optional(),
       final: z.boolean().optional(),
     }),

@@ -195,6 +195,17 @@ export interface CardInstance {
    * 「洗脳」は数えない（裏切りと違って対立というより支配に近いため）。省略時は0扱い
    */
   betrayalCount?: number;
+  /**
+   * 控え中に付けた呼び名（v7.29、遊び心程度の小機能）。未設定ならdef.nameを表示する。
+   * デビュー・死亡・離脱後も同じCardInstanceが持ち続けるので、一度付ければそのまま出続ける。
+   * 古いセーブには無いことがあるので省略可
+   */
+  nickname?: string;
+}
+
+/** キャラの表示名。ニックネームが設定されていればそちらを優先する（v7.29） */
+export function displayName(def: CardDefinition, instance: CardInstance): string {
+  return instance.nickname ?? def.name;
 }
 
 /** プレイ選択。cardsは手札のinstanceId、targetsは展開カード→対象キャラの割当 */
@@ -367,6 +378,13 @@ export interface WeekLogEntry {
   warningsAfter: number;
   /** 連載年表用の出来事（v6.8）。古いセーブには無いことがあるので省略可 */
   events?: WeekEvent[];
+  /**
+   * その週の人気度合計と話題性合計（v7.28）。
+   * 最終回のベース点を「これまでの中央値」から作るために記録する。
+   * 古いセーブには無いので省略可。欠けている週は中央値の母集団から外す
+   */
+  popularity?: number;
+  buzz?: number;
 }
 
 /** 編集部の要求（v5.2d）: ジャンルごとの「連載として成立しているか」の期限つき要求 */

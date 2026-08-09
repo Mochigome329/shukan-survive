@@ -13,6 +13,7 @@ import {
   redrawLimit,
   resolveWeek,
   returnCharacter,
+  setNickname,
   startWeek,
   validateSelection,
   type CancelReason,
@@ -29,7 +30,7 @@ import {
 import { SETUP_COMBO_IDS } from '../core/combos';
 import type { SavePhase } from '../core/save';
 import type { Act, CardInstance, DemandState, Faction, PlaySelection, RunState, ScoreBreakdown } from '../core/types';
-import { MAX_PLAY_CARDS, MAX_STOCK } from '../core/types';
+import { displayName, MAX_PLAY_CARDS, MAX_STOCK } from '../core/types';
 import { actStartingAt } from '../core/acts';
 import { FINALE_MAX_PLAY_CARDS } from '../core/finale';
 import type { GameData } from '../core/validate';
@@ -128,7 +129,15 @@ export type GameAction =
   | { type: 'openCodex' }
   /** セーブから再開する（v6.8）。中断した画面（週プレイ／編集会議）へ戻る */
   | { type: 'resumeRun'; run: RunState; phase: SavePhase }
-  | { type: 'startRun'; seed: number; mangaTitle: string; startingCast: string[]; startingFactions?: Record<string, Faction> }
+  | {
+      type: 'startRun';
+      seed: number;
+      mangaTitle: string;
+      startingCast: string[];
+      startingFactions?: Record<string, Faction>;
+      /** 主人公・初期共演者候補のニックネーム（v7.29） */
+      startingNicknames?: Record<string, string>;
+    }
   | { type: 'tapHandCard'; instanceId: string }
   | { type: 'tapFieldCard'; instanceId: string }
   | { type: 'tapCastChar'; instanceId: string }
@@ -136,6 +145,8 @@ export type GameAction =
   | { type: 'executeRedraw' }
   | { type: 'toggleStockMode' }
   | { type: 'returnCharacter'; instanceId: string }
+  /** 控えキャラのニックネームを設定・解除する（v7.29）。nullで既定名に戻す */
+  | { type: 'setNickname'; instanceId: string; nickname: string | null }
   | { type: 'toggleMemo' }
   | { type: 'inspectCard'; definitionId: string | null }
   | { type: 'toggleDemandList' }
@@ -353,6 +364,49 @@ function removeCard(state: GameState, instanceId: string): GameState {
   return { ...state, selection, pendingTargetDev: pending, pendingFactionChoice: factionPending, notice: null };
 }
 
+/**
+ * 次の話へ入る（週プレイ画面を開く）。編集会議から進む場合と、
+ * 最終回の前で編集会議そのものを飛ばす場合（v7.28）の両方から呼ぶ共通処理。
+ * ボス週ブリーフィング・幕の変わり目・各種チュートリアルの出し分けをここに集約する
+ */
+function enterWeek(state: GameState, run: RunState): GameState {
+  // 鮮度が初めて下がったとき、一行説明を出す（3.2節）
+  const anyStale = Object.values(run.freshnessByDef).some((f) => f < 1);
+  const showHint = anyStale && !state.freshnessHintShown;
+  // v7.5: どのボス週も5話前にブリーフィングを出す（何が来るか・何を準備すべきか）。
+  // 以前は第8話「合併号」の分だけを1回出していたので、人気投票と新連載攻勢は無警告だった
+  const upcomingBoss = [...state.data.quotas.values()]
+    .filter((q) => q.boss && q.week > run.week && q.week - run.week <= BOSS_BRIEFING_LEAD)
+    .map((q) => q.week)
+    .find((w) => !state.briefedBossWeeks.includes(w));
+  // 幕の変わり目にシーンチェンジを挟む（v5.9）
+  const actStart = actStartingAt(run.week);
+  // 在籍が6人を超えた翌週、出演者を自分で選ぶ場面だと説明する（v6.2）。
+  // それまでは全員自動でハイライトされているので、ここで初めて「選ぶ」操作が必要になる
+  const showHighlightTutorial = rosterOf(state.data, run).length > HIGHLIGHT_LIMIT && !state.highlightTutorialShown;
+  // ルールが変わる週は、その週に入った時点で理由を説明する（v7.3）。
+  // どちらもラン中に1回しか来ない週なので「表示済み」フラグは持たない
+  const quotaEntry = state.data.quotas.get(run.week);
+  const showVoteTutorial = quotaEntry?.boss === '人気投票';
+  const showFinaleTutorial = quotaEntry?.final === true;
+  return {
+    ...state,
+    run,
+    screen: 'play',
+    shopPack: null,
+    actIntro: actStart?.act ?? null,
+    artUpgradeMode: false,
+    freshnessHintShown: state.freshnessHintShown || showHint,
+    bossBriefingWeek: upcomingBoss ?? null,
+    briefedBossWeeks: upcomingBoss ? [...state.briefedBossWeeks, upcomingBoss] : state.briefedBossWeeks,
+    showHighlightTutorial,
+    highlightTutorialShown: state.highlightTutorialShown || showHighlightTutorial,
+    showVoteTutorial,
+    showFinaleTutorial,
+    notice: showHint ? '同じ展開の連発は読者に飽きられる（鮮度低下）。数週休ませると回復する' : null,
+  };
+}
+
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case 'openSetup':
@@ -369,6 +423,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           mangaTitle: action.mangaTitle,
           startingCast: action.startingCast,
           startingFactions: action.startingFactions,
+          startingNicknames: action.startingNicknames,
         }),
       );
       return {
@@ -473,12 +528,22 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (!state.run || state.screen !== 'play') return state;
       try {
         const run = returnCharacter(state.data, state.run, action.instanceId);
-        const name = state.data.definitions.get(
-          run.cards.find((c) => c.instanceId === action.instanceId)!.definitionId,
-        )?.name;
+        const instance = run.cards.find((c) => c.instanceId === action.instanceId)!;
+        const def = state.data.definitions.get(instance.definitionId);
+        const name = def && displayName(def, instance);
         return { ...state, run, notice: `「${name}」が再登場した` };
       } catch (e) {
         return withNotice(state, e instanceof Error ? e.message : '再登場できません');
+      }
+    }
+
+    case 'setNickname': {
+      if (!state.run || state.screen !== 'play') return state;
+      try {
+        const run = setNickname(state.data, state.run, action.instanceId, action.nickname);
+        return { ...state, run, notice: null };
+      } catch (e) {
+        return withNotice(state, e instanceof Error ? e.message : 'ニックネームを設定できません');
       }
     }
 
@@ -562,6 +627,14 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (!state.run || !state.lastResult) return state;
       if (state.lastResult.outcome === 'cancelled') return { ...state, screen: 'cancelled' };
       if (state.run.week > MAX_PLAYABLE_WEEK) return { ...state, screen: 'clearedAll' };
+      /*
+       * v7.28: 最終回の前の編集会議は飛ばす。カードは仕入れられず、
+       * キャラも展開もベース点（中央値）に置き換わって出番が無いので、開いても選べることが無い
+       */
+      if (state.data.quotas.get(state.run.week)?.final) {
+        const run = startWeek(state.data, state.run);
+        return { ...enterWeek(state, run), lastResult: null };
+      }
       // 継続なら編集会議（12節）へ。カードパックを提示する。
       // 初回だけ「この画面で何ができるか」を説明する（v7.5）
       return {
@@ -578,6 +651,10 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
 
     case 'buyShopCard': {
       if (!state.run || state.screen !== 'shop') return state;
+      // v7.28: 最終回の前の編集会議ではカードを仕入れられない（出番が無いまま終わるため）
+      if (state.data.quotas.get(state.run.week)?.final) {
+        return withNotice(state, '最終回は結末を選ぶだけなので、カードは仕入れられません');
+      }
       if (state.run.funds < PACK_PRICE) return withNotice(state, '原稿料が足りません');
       if (!state.shopPack?.includes(action.definitionId)) return state;
       const run = buyCard(state.data, state.run, action.definitionId);
@@ -621,9 +698,9 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       if (!state.run || state.screen !== 'shop') return state;
       if (state.run.funds < ART_UPGRADE_PRICE) return withNotice(state, '原稿料が足りません');
       const run = upgradeArt(state.data, state.run, action.instanceId);
-      const name = state.data.definitions.get(
-        state.run.cards.find((c) => c.instanceId === action.instanceId)!.definitionId,
-      )?.name;
+      const instance = state.run.cards.find((c) => c.instanceId === action.instanceId)!;
+      const targetDef = state.data.definitions.get(instance.definitionId);
+      const name = targetDef && displayName(targetDef, instance);
       return { ...state, run, artUpgradeMode: false, notice: `「${name}」の作画を強化した（人気度+5）` };
     }
 
@@ -641,41 +718,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'leaveShop': {
       if (!state.run) return state;
       const run = startWeek(state.data, state.run);
-      // 鮮度が初めて下がったとき、一行説明を出す（3.2節）
-      const anyStale = Object.values(run.freshnessByDef).some((f) => f < 1);
-      const showHint = anyStale && !state.freshnessHintShown;
-      // v7.5: どのボス週も5話前にブリーフィングを出す（何が来るか・何を準備すべきか）。
-      // 以前は第8話「合併号」の分だけを1回出していたので、人気投票と新連載攻勢は無警告だった
-      const upcomingBoss = [...state.data.quotas.values()]
-        .filter((q) => q.boss && q.week > run.week && q.week - run.week <= BOSS_BRIEFING_LEAD)
-        .map((q) => q.week)
-        .find((w) => !state.briefedBossWeeks.includes(w));
-      // 幕の変わり目にシーンチェンジを挟む（v5.9）
-      const actStart = actStartingAt(run.week);
-      // 在籍が6人を超えた翌週、出演者を自分で選ぶ場面だと説明する（v6.2）。
-      // それまでは全員自動でハイライトされているので、ここで初めて「選ぶ」操作が必要になる
-      const showHighlightTutorial = rosterOf(state.data, run).length > HIGHLIGHT_LIMIT && !state.highlightTutorialShown;
-      // ルールが変わる週は、その週に入った時点で理由を説明する（v7.3）。
-      // どちらもラン中に1回しか来ない週なので「表示済み」フラグは持たない
-      const quotaEntry = state.data.quotas.get(run.week);
-      const showVoteTutorial = quotaEntry?.boss === '人気投票';
-      const showFinaleTutorial = quotaEntry?.final === true;
-      return {
-        ...state,
-        run,
-        screen: 'play',
-        shopPack: null,
-        actIntro: actStart?.act ?? null,
-        artUpgradeMode: false,
-        freshnessHintShown: state.freshnessHintShown || showHint,
-        bossBriefingWeek: upcomingBoss ?? null,
-        briefedBossWeeks: upcomingBoss ? [...state.briefedBossWeeks, upcomingBoss] : state.briefedBossWeeks,
-        showHighlightTutorial,
-        highlightTutorialShown: state.highlightTutorialShown || showHighlightTutorial,
-        showVoteTutorial,
-        showFinaleTutorial,
-        notice: showHint ? '同じ展開の連発は読者に飽きられる（鮮度低下）。数週休ませると回復する' : null,
-      };
+      return enterWeek(state, run);
     }
 
     case 'toggleHighlight': {

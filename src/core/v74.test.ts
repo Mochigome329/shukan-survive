@@ -160,17 +160,14 @@ describe('最終回まわりの見直し（v7.4b）', () => {
     expect(endingBuzz(endingById('gojitsudan')!, state)).toBeLessThan(endingBuzz(endingById('saishuuketsu')!, state));
   });
 
-  it('最終回の「日常回」は「取り戻した日々」になり、「不穏な日常」を抑制する', () => {
-    const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'nichijou', 1)];
-    const b = score(cards, { cards: ['nichijou#1'] }, FINALE);
-    expect(b.combos.find((c) => c.comboId === 'torimodoshita_hibi')?.status).toBe('applied');
-    expect(b.combos.find((c) => c.comboId === 'fuon_na_nichijou')?.status).toBe('suppressed');
-  });
-
-  it('最終回でなければ従来どおり「不穏な日常」のまま', () => {
+  /*
+   * v7.28: 最終回で展開カードを出さなくなったので、「取り戻した日々」
+   * （最終回の日常回を「不穏な日常」から奪い返す役）は成立しようがなくなり廃止した。
+   * 通常週の「不穏な日常」は従来どおり
+   */
+  it('「不穏な日常」は第17話以降の通常週で従来どおり成立する', () => {
     const cards = [makeInstance(data, 'hero', 1), makeInstance(data, 'nichijou', 1)];
     const b = score(cards, { cards: ['nichijou#1'] }, 20);
-    expect(b.combos.find((c) => c.comboId === 'torimodoshita_hibi')).toBeUndefined();
     expect(b.combos.find((c) => c.comboId === 'fuon_na_nichijou')?.status).toBe('applied');
   });
 });

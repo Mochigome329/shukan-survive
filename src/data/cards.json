@@ -1213,11 +1213,19 @@
       "act": "kyu",
       "rare": true,
       "soloOnly": false,
-      "effects": [],
+      "effects": [
+        {
+          "timing": "endWeek",
+          "effect": {
+            "type": "permanentPopularityAll",
+            "amount": 2
+          }
+        }
+      ],
       "descriptions": {
-        "internal": "第10話以降。話題性+8の大技",
+        "internal": "第10話以降。話題性+8の大技。キャスト全員の人気度を恒久+2",
         "hidden": "作品タイトルの意味が明かされる、その一回のために連載はある",
-        "revealed": "みんな大好き。第10話以降のみ使用可能。話題性+8"
+        "revealed": "みんな大好き。第10話以降のみ使用可能。話題性+8、キャスト全員の人気度が恒久+2"
       }
     },
     {

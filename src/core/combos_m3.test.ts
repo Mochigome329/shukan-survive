@@ -171,17 +171,12 @@ describe('仕込み役（7.4節、M3）', () => {
 });
 
 describe('リスク役と連続週役（7.5節、M3）', () => {
-  it('全滅エンド: 全滅+悲しい過去で週スコア×4', () => {
+  it('全滅: 単独でも週スコア×4（v7.27で全滅エンドを吸収）', () => {
     const b = score(
-      [
-        makeInstance(data, 'hero', 1),
-        makeInstance(data, 'heroine', 1),
-        makeInstance(data, 'zenmetsu', 1),
-        makeInstance(data, 'kanashii_kako', 1),
-      ],
-      { cards: ['zenmetsu#1', 'kanashii_kako#1'], targets: { 'kanashii_kako#1': 'hero#1' } },
+      [makeInstance(data, 'hero', 1), makeInstance(data, 'heroine', 1), makeInstance(data, 'zenmetsu', 1)],
+      { cards: ['zenmetsu#1'] },
     );
-    expect(b.combos.find((c) => c.comboId === 'zenmetsu_end')?.status).toBe('applied');
+    expect(b.combos.find((c) => c.comboId === 'zenmetsu_yaku')?.status).toBe('applied');
     expect(b.weekMultiplier).toBe(4);
   });
 

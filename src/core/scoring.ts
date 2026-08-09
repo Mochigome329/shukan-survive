@@ -31,7 +31,7 @@ import {
   TRAINING_BONUS_PER_FLAG,
   TRAINING_FLAG_MAX,
 } from './types';
-import { HIGHLIGHT_LIMIT, OFF_STAGE_POPULARITY_RATE, PROTAGONIST_ID } from './types';
+import { displayName, HIGHLIGHT_LIMIT, OFF_STAGE_POPULARITY_RATE, PROTAGONIST_ID } from './types';
 import type { GameData } from './validate';
 
 export interface ScoreInput {
@@ -69,6 +69,11 @@ export interface ScoreInput {
     charMultiplier: number;
     popularityAdd: number;
   };
+  /**
+   * 最終回のベース点（v7.28）。人気度・話題性それぞれの過去週の中央値。
+   * 指定すると、その週は場のキャストと展開カードではなくこの数値から採点する
+   */
+  finaleBase?: { popularity: number; buzz: number };
   /** 完結ボーナス倍率（v5.9）。最終回のみ1以外になる */
   completionBonus?: number;
   /** 通算で成立させた仕込み役の種類数（v5.9） */
@@ -247,6 +252,7 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     weekScore: 0,
     quota: quotaEntry.quota,
     isFinale: quotaEntry.final ?? false,
+    finaleBaseScore: input.finaleBase ? input.finaleBase.popularity * input.finaleBase.buzz : 0,
     setupComboCount: input.setupComboCount ?? 0,
   };
   const evaluation = combosDisabled
@@ -281,13 +287,17 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     if (instance.flags.training > 0) {
       stateChanges.push({ type: 'consumeTrainingFlags', instanceId: instance.instanceId, count: instance.flags.training });
     }
-    // 結末カードの効果はキャラ単位の乗算役に上乗せする（v5.9）
-    const ending = input.finaleEnding;
+    /*
+     * 結末カードの効果はキャラ単位の乗算役に上乗せする（v5.9）。
+     * v7.28: 中央値ベースの最終回では、結末カードはキャスト個々ではなく
+     * ベース点に対して掛ける（下の rawPopularity）。ここで二重に乗せないよう外す
+     */
+    const ending = input.finaleBase ? undefined : input.finaleEnding;
     const multiplier = (charMultipliers.get(instance.instanceId) ?? 1) * (ending?.charMultiplier ?? 1);
     const temporary = temporaryPopularity + (ending?.popularityAdd ?? 0);
     return {
       instanceId: instance.instanceId,
-      name: def.name,
+      name: displayName(def, instance),
       basePopularity: base,
       permanentBonus: permanent,
       temporaryBonus: temporary,
@@ -308,8 +318,21 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     if (def?.kind !== 'character') return sum;
     return sum + Math.floor((def.popularity + instance.permanentPopularityBonus) * OFF_STAGE_POPULARITY_RATE);
   }, 0);
-  const rawPopularity =
-    characterDetails.reduce((sum, c) => sum + c.total, 0) + comboPopularityAdd + offStagePopularity;
+  /*
+   * 最終回は展開カードを出さないので、場のキャストの合計ではなく
+   * 「これまでの人気度の中央値」をベースにする（v7.28）。
+   * 結末カードの効果は、キャスト個々ではなくベース点に対して掛ける:
+   * 　charMultiplier（新世代の物語×2）はベースへの乗算、
+   * 　popularityAdd（後日談+10）は「全員に+10」なので出演人数ぶんを足す。
+   * 役の人気度加算（王道など）と緊張の低下は通常週と同じように効かせる
+   */
+  const finaleBase = input.finaleBase;
+  const ending = input.finaleEnding;
+  const rawPopularity = finaleBase
+    ? finaleBase.popularity * (ending?.charMultiplier ?? 1) +
+      (ending?.popularityAdd ?? 0) * characters.length +
+      comboPopularityAdd
+    : characterDetails.reduce((sum, c) => sum + c.total, 0) + comboPopularityAdd + offStagePopularity;
   const stressPenalty =
     effectiveStress > 0 ? -Math.min(rawPopularity - 1, effectiveStress * STRESS_POPULARITY_PENALTY) : 0;
   const popularityTotal = Math.max(1, rawPopularity + stressPenalty);
@@ -345,8 +368,12 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     };
   });
 
-  // 8. 役と期間効果による話題性加算（鮮度を掛けない別枠）
-  const buzzTotal = developmentDetails.reduce((sum, d) => sum + d.effective, 0);
+  /*
+   * 8. 役と期間効果による話題性加算（鮮度を掛けない別枠）。
+   * 最終回は展開カードを出さないので、カード由来のぶんを
+   * 「これまでの話題性の中央値」に置き換える（v7.28）
+   */
+  const buzzTotal = finaleBase ? finaleBase.buzz : developmentDetails.reduce((sum, d) => sum + d.effective, 0);
   const comboBuzzTotal = evaluation.applied.reduce((sum, e) => sum + comboBuzzOf(e.def, comboInput), 0);
   // 解放したぶんの話題性（カタルシス、v5.3）
   const releaseBuzz = stressReleased * STRESS_RELEASE_BUZZ;
@@ -562,10 +589,17 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     if (entry.def.extraChanges) stateChanges.push(...entry.def.extraChanges(entry.match, comboInput));
   }
 
-  const cleared = quotaBypassed || finalScore >= quotaEntry.quota;
+  /*
+   * v7.28: 最終回にノルマは無い（quotas.json で0）。
+   * 展開カードを出さない回になったので、プレイヤーが最終回の中でスコアを動かせる手段は
+   * 結末の選択だけになる。そこで打ち切りになるのは理不尽なので、必ず完結できるようにした。
+   * スコアは最終評価にだけ反映される
+   */
+  const noQuota = quotaEntry.quota <= 0;
+  const cleared = quotaBypassed || noQuota || finalScore >= quotaEntry.quota;
   // 神回（第3層）は次週の原稿料+2（7.5節）
   const kamikaiBonus = postCombos.some((e) => e.def.id === 'kamikai') ? 2 : 0;
-  const fee = cleared && !quotaBypassed ? calcFee(finalScore, quotaEntry.quota) + kamikaiBonus : 0;
+  const fee = cleared && !quotaBypassed && !noQuota ? calcFee(finalScore, quotaEntry.quota) + kamikaiBonus : 0;
 
   return {
     characters: characterDetails,

@@ -163,3 +163,17 @@ describe('computeScore（v5.2: キャスト常駐）', () => {
     expect(b2.cleared).toBe(true);
   });
 });
+
+describe('ニックネーム（v7.29）', () => {
+  it('ニックネームを付けたキャラは明細のnameがニックネームになる', () => {
+    const state = makeState([makeInstance(data, 'hero', 1, { nickname: 'ゆうと' }), makeInstance(data, 'nichijou', 1)]);
+    const b = computeScore({ data, cards: state.cards, week: 1, selection: { cards: ['nichijou#1'], targets: {} } });
+    expect(b.characters.find((c) => c.instanceId === 'hero#1')!.name).toBe('ゆうと');
+  });
+
+  it('ニックネームが無ければ従来どおりdef.nameのまま', () => {
+    const state = makeState([makeInstance(data, 'hero', 1), makeInstance(data, 'nichijou', 1)]);
+    const b = computeScore({ data, cards: state.cards, week: 1, selection: { cards: ['nichijou#1'], targets: {} } });
+    expect(b.characters.find((c) => c.instanceId === 'hero#1')!.name).toBe('主人公');
+  });
+});

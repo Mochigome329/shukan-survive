@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ENDING_CARDS, FINALE_EXCLUDED_DEV_IDS } from './finale';
+import { ENDING_CARDS } from './finale';
 import { resolveWeek, startWeek } from './run';
 import { computeScore } from './scoring';
 import { loadTestData, makeInstance, makeState } from './testHelpers';
@@ -101,36 +101,34 @@ describe('闇堕ちでも裏切り系の役が成立する（v7.16）', () => {
   });
 });
 
-describe('最終回の手札から「今更」なカードを外す（v7.16）', () => {
-  const devsOfHand = (state: ReturnType<typeof makeState>) =>
-    state.hand.map((id) => state.cards.find((c) => c.instanceId === id)!.definitionId);
-
-  /** 除外候補ばかりを積んだデッキ */
-  const stuffedDeck = () => [
+/*
+ * v7.28: 最終回は展開カードを出さない回になったので、
+ * 「今更なカードを抽選から外す」（v7.16）という対症療法ごと不要になった。
+ * 手札が配られないこと自体をここで固定する
+ */
+describe('最終回は手札を配らない（v7.28、v7.16の除外リストを置き換え）', () => {
+  const deck = () => [
     makeInstance(data, 'hero', 1),
-    ...[...FINALE_EXCLUDED_DEV_IDS].map((id, i) => makeInstance(data, id, i + 1, { zone: 'activeDeck' })),
     makeInstance(data, 'battle', 90, { zone: 'activeDeck' }),
     makeInstance(data, 'dai_shouri', 91, { zone: 'activeDeck' }),
+    makeInstance(data, 'nichijou', 92, { zone: 'activeDeck' }),
   ];
 
-  it('最終回では除外カードが手札に来ない', () => {
-    const state = startWeek(data, makeState(stuffedDeck(), FINALE_WEEK, { hand: [] }));
-    const drawn = devsOfHand(state);
-    expect(drawn.length).toBeGreaterThan(0);
-    expect(drawn.filter((id) => FINALE_EXCLUDED_DEV_IDS.has(id))).toEqual([]);
+  it('最終回は手札が空になる', () => {
+    const state = startWeek(data, makeState(deck(), FINALE_WEEK, { hand: [] }));
+    expect(state.hand).toEqual([]);
   });
 
-  it('通常週は今までどおり全部が抽選対象', () => {
-    const state = startWeek(data, makeState(stuffedDeck(), 20, { hand: [] }));
-    expect(devsOfHand(state).some((id) => FINALE_EXCLUDED_DEV_IDS.has(id))).toBe(true);
-  });
-
-  it('自分で仕入れた／ストックしたカードは最終回でも手札に入る（選んだのは本人なので）', () => {
+  it('仕入れ・ストックがあっても最終回では配られない', () => {
     const state = startWeek(
       data,
-      makeState(stuffedDeck(), FINALE_WEEK, { hand: [], guaranteedNextHand: ['buki_get#4'], stockedIds: ['fukusen#9'] }),
+      makeState(deck(), FINALE_WEEK, { hand: [], guaranteedNextHand: ['battle#90'], stockedIds: ['nichijou#92'] }),
     );
-    expect(state.hand).toContain('buki_get#4');
-    expect(state.hand).toContain('fukusen#9');
+    expect(state.hand).toEqual([]);
+  });
+
+  it('通常週は今までどおり手札が配られる', () => {
+    const state = startWeek(data, makeState(deck(), 20, { hand: [] }));
+    expect(state.hand.length).toBeGreaterThan(0);
   });
 });

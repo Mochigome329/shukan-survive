@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { availableServices, ART_UPGRADE_AMOUNT, ART_UPGRADE_PRICE, PACK_PRICE } from '../core/shop';
+import { displayName } from '../core/types';
 import { SHOP_REROLL_LIMIT, type GameAction, type GameState } from '../state/gameReducer';
 import { playPurchase } from './audio';
 import { SoundToggle } from './SoundToggle';
@@ -101,6 +102,13 @@ export function ShopScreen({ state, dispatch }: Props) {
   const shopTutorial = state.shopTutorialStep !== null ? SHOP_TUTORIAL_STEPS[state.shopTutorialStep] : undefined;
   useTutorialHighlight(shopTutorial?.target);
 
+  /*
+   * v7.28: 第24話のあとの編集会議ではカードを仕入れられない。
+   * 最終回は展開カードを出さず、キャストもベース点（中央値）に置き換わるので、
+   * キャラも展開も出番が無いまま連載が終わってしまう。サービスの依頼だけ残す
+   */
+  const isFinaleNext = data.quotas.get(run.week)?.final ?? false;
+
   return (
     <div className="screen shop-screen" data-tutorial-target={shopTutorial?.target}>
       <header className="play-header">
@@ -120,7 +128,9 @@ export function ShopScreen({ state, dispatch }: Props) {
 
       {state.notice && <div className="notice notice-shop">{state.notice}</div>}
       <p className="shop-lead">
-        次の話（第{run.week}話・ノルマ{data.quotas.get(run.week)?.quota ?? '-'}）に向けて補強できる。
+        {isFinaleNext
+          ? `次はいよいよ最終回（第${run.week}話）。結末を選ぶだけの回なのでカードは仕入れられない。`
+          : `次の話（第${run.week}話・ノルマ${data.quotas.get(run.week)?.quota ?? '-'}）に向けて補強できる。`}
       </p>
 
       {state.artUpgradeMode ? (
@@ -139,7 +149,7 @@ export function ShopScreen({ state, dispatch }: Props) {
                   dispatch({ type: 'upgradeArtTarget', instanceId: c.instanceId });
                 }}
               >
-                <span className="shop-item-name">{def.name}</span>
+                <span className="shop-item-name">{displayName(def, c)}</span>
                 <span className="shop-item-value">
                   人気 {def.kind === 'character' ? def.popularity + c.permanentPopularityBonus : 0}
                   {' → '}
@@ -155,6 +165,7 @@ export function ShopScreen({ state, dispatch }: Props) {
         </div>
       ) : (
         <div className="shop-items">
+          {!isFinaleNext && (
           <div className="shop-group shop-group-pack">
           {pack.map((defId) => {
             const def = data.definitions.get(defId)!;
@@ -198,6 +209,7 @@ export function ShopScreen({ state, dispatch }: Props) {
             </button>
           )}
           </div>
+          )}
 
           {/* v7.5b: チュートリアルで「仕入れ」と「サービス」を別々に指せるよう、束ねてある */}
           <div className="shop-group shop-group-service">

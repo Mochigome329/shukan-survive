@@ -413,8 +413,9 @@ describe('resolveWeek（6.2節、v5.2の警告制とデビュー制）', () => {
     expect(result.breakdown.finalScore).toBe(620);
     expect(result.outcome).toBe('continue');
     expect(result.state.warnings).toBe(0);
-    // 620/300 = 2.07倍 → 基本3+超過分2。神回はノルマ3倍(900)に届かず不成立（v6.1）
-    expect(result.breakdown.fee).toBe(5);
+    // v7.26: ノルマ引き上げ（役18種追加による難易度低下の是正）で第1話は300→360に変更
+    // 620/360 = 1.72倍 → 基本3+超過分1。神回はノルマ3倍(1080)に届かず不成立（v6.1）
+    expect(result.breakdown.fee).toBe(4);
     expect(result.state.comboUsage.oncePerRun).toContain('hissatsu_hatsuhirou');
     // 修行フラグ付与・鮮度低下（種類単位）・未使用は登録されない
     expect(result.state.cards.find((c) => c.instanceId === 'hero#1')!.flags.training).toBe(1);

@@ -9,7 +9,7 @@ describe('buildGameData（14.4節）', () => {
     const data = buildGameData(cardsJson, quotasJson, tutorialJson);
     expect(data.definitions.size).toBe(cardsJson.characters.length + cardsJson.developments.length);
     expect(data.totalWeeks).toBe(25);
-    expect(data.quotas.get(1)!.quota).toBe(300);
+    expect(data.quotas.get(1)!.quota).toBe(360); // v7.26: ノルマ引き上げ（300→360）
     expect(data.quotas.get(8)!.boss).toBe('合併号');
     expect(data.tutorialHands.size).toBe(0); // v5.2: 固定配札は廃止
   });

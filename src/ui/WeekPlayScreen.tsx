@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { castOf, HIGHLIGHT_LIMIT, previewScore, redrawLimit, rosterOf, validateSelection } from '../core/run';
-import { MAX_STOCK, MAX_WARNINGS, OFF_STAGE_POPULARITY_RATE } from '../core/types';
+import { displayName, MAX_STOCK, MAX_WARNINGS, OFF_STAGE_POPULARITY_RATE } from '../core/types';
 import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gameReducer';
 import { playFlip, playWrite } from './audio';
 import { CardView } from './CardView';
@@ -217,6 +217,8 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
   const quotaEntry = data.quotas.get(run.week)!;
   const byId = new Map(run.cards.map((c) => [c.instanceId, c]));
   const defOf = (id: string) => data.definitions.get(byId.get(id)!.definitionId)!;
+  // 控えキャラのニックネーム編集ポップアップ（v7.29）。単なる画面内UI状態なので保存対象には含めない
+  const [editingNickname, setEditingNickname] = useState<{ instanceId: string; draft: string } | null>(null);
 
   // ボス週の事前ブリーフィング（v7.5）: 対象週の情報と、ボスごとの説明文を組み立てる
   const briefingEntry = state.bossBriefingWeek !== null ? data.quotas.get(state.bossBriefingWeek) : undefined;
@@ -227,8 +229,16 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
       : null;
 
   const validity = validateSelection(data, run, state.selection);
+  /*
+   * v7.28: 選択中の結末カードをプレビューにも渡す。
+   * 以前は渡しておらず、結末を選んでも予想スコアが変わらなかった。
+   * 最終回が「結末を選ぶだけの回」になった今、ここが反映されないと
+   * 唯一の選択の結果が確定するまで分からないことになる
+   */
   const preview =
-    validity.ok && !state.pendingTargetDev && !state.pendingFactionChoice ? previewScore(data, run, state.selection) : null;
+    validity.ok && !state.pendingTargetDev && !state.pendingFactionChoice
+      ? previewScore(data, run, state.selection, state.selectedEnding)
+      : null;
   const redrawsLeft = redrawLimit(run) - run.redrawsUsed;
 
   const cast = castOf(data, run);
@@ -262,7 +272,9 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
   const pendingTargetKind = pendingDef?.kind === 'development' ? pendingDef.target : null;
   // 陣営を選べるキャラのデビュー待ち（v6.2）: 対象として決まったキャラの名前を表示する
   const factionPendingTargetId = state.pendingFactionChoice ? state.selection.targets[state.pendingFactionChoice] : null;
-  const factionPendingName = factionPendingTargetId ? defOf(factionPendingTargetId).name : null;
+  const factionPendingName = factionPendingTargetId
+    ? displayName(defOf(factionPendingTargetId), byId.get(factionPendingTargetId)!)
+    : null;
   const fieldIds = state.selection.cards;
   const handIds = run.hand.filter((id) => !fieldIds.includes(id));
 
@@ -297,7 +309,14 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
         <div className="header-main-row">
           <span className="week-badge">第{run.week}話</span>
           <span className="quota">
-            ノルマ <strong>{quotaEntry.quota}</strong>
+            {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回で、打ち切られない） */}
+            {quotaEntry.final ? (
+              <strong>完結</strong>
+            ) : (
+              <>
+                ノルマ <strong>{quotaEntry.quota}</strong>
+              </>
+            )}
             {quotaEntry.boss && <em className="boss-label">{quotaEntry.boss}</em>}
           </span>
           <span className={`warning-meter ${run.warnings > 0 ? 'warning-active' : ''}`} title="打ち切り警告">
@@ -321,7 +340,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
        */}
       {quotaEntry.final ? (
         <div className="boss-calendar boss-calendar-now">
-          ★ 最終回。プレイは5枚まで、再登場待ちは全員戻せる。総集編と宴会は描けない
+          ★ 最終回。展開カードは出さず、結末だけを選ぶ。人気度と話題性はこれまでの連載の中央値になる
         </div>
       ) : (
         quotaEntry.boss && (
@@ -429,11 +448,21 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
                   data-sfx="skip"
                   className={`bench-chip ${highlight ? 'bench-chip-highlight' : ''} ${targetedBy.has(c.instanceId) ? 'bench-chip-targeted' : ''}`}
                   onClick={() => {
+                    /*
+                     * v7.29: 対象待ちが無いときの控えタップは、以前は何も起きなかった
+                     * （tapCastCharはrosterOfに無い控えを黙って無視する）。
+                     * その“死んでいるタップ”をニックネーム編集に転用する。
+                     * 対象待ち中は今まで通りデビュー対象の割当のまま
+                     */
+                    if (!state.pendingTargetDev) {
+                      setEditingNickname({ instanceId: c.instanceId, draft: c.nickname ?? '' });
+                      return;
+                    }
                     playFlip();
                     dispatch({ type: 'tapCastChar', instanceId: c.instanceId });
                   }}
                 >
-                  {def.name}
+                  {displayName(def, c)}
                   {def.kind === 'character' && ` ${def.popularity + c.permanentPopularityBonus}`}
                   {targetedBy.has(c.instanceId) && ' ◀デビュー'}
                 </button>
@@ -457,7 +486,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
                     dispatch({ type: 'tapCastChar', instanceId: c.instanceId });
                   }}
                 >
-                  {def.name}
+                  {displayName(def, c)}
                   {def.kind === 'character' && ` ${def.popularity + c.permanentPopularityBonus}`}
                   {targetedBy.has(c.instanceId) && ' ◀復帰'}
                 </button>
@@ -481,7 +510,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
                     dispatch({ type: 'tapCastChar', instanceId: c.instanceId });
                   }}
                 >
-                  {def.name}
+                  {displayName(def, c)}
                   {targetedBy.has(c.instanceId) && ' ◀復活'}
                 </button>
               );
@@ -543,6 +572,8 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
 
       {quotaEntry.final && <EndingPicker state={state} dispatch={dispatch} />}
 
+      {/* v7.28: 最終回は展開カードを出さないので、場と手札は出さない */}
+      {!quotaEntry.final && (
       <section className="field">
         {fieldIds.length === 0 ? (
           <p className="field-empty">手札から展開カードを選んで「今週の話」を作ろう（0〜4枚）</p>
@@ -561,7 +592,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
                   permanentBuzz={run.permanentBuzzByDef[def.id] ?? 0}
                   freshness={run.freshnessByDef[def.id] ?? 1}
 
-                  targetName={targetId ? defOf(targetId).name : undefined}
+                  targetName={targetId ? displayName(defOf(targetId), byId.get(targetId)!) : undefined}
                   onTap={() => {
                     playFlip();
                     dispatch({ type: 'tapFieldCard', instanceId: id });
@@ -572,6 +603,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
           </div>
         )}
       </section>
+      )}
 
       {preview && preview.combos.length > 0 && (
         <div className="combo-preview">
@@ -600,7 +632,10 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
                 （人気{preview.popularityTotal} × 話題{Number.isInteger(preview.buzzApplied) ? preview.buzzApplied : preview.buzzApplied.toFixed(1)}）
               </small>
             </span>
-            <span>{preview.cleared ? `ノルマ +${preview.finalScore - preview.quota}` : `あと${preview.quota - preview.finalScore}`}</span>
+            {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回なので打ち切られない） */}
+            {!quotaEntry.final && (
+              <span>{preview.cleared ? `ノルマ +${preview.finalScore - preview.quota}` : `あと${preview.quota - preview.finalScore}`}</span>
+            )}
           </div>
         ) : (
           <div className="preview-line preview-hint">
@@ -609,7 +644,9 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
               : state.pendingFactionChoice
                 ? '陣営を選ぶとスコアが出ます'
                 : validity.ok
-                  ? 'スコア = キャスト人気 × 話題性'
+                  ? quotaEntry.final
+                    ? '結末を選ぶとスコアが出ます'
+                    : 'スコア = キャスト人気 × 話題性'
                   : (validity as { reason: string }).reason}
           </div>
         )}
@@ -623,10 +660,11 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
             dispatch({ type: 'confirmPlay' });
           }}
         >
-          今週の話を確定
+          {quotaEntry.final ? 'この結末で完結させる' : '今週の話を確定'}
         </button>
       </section>
 
+      {!quotaEntry.final && (
       <section className="hand">
         <div className="hand-toolbar">
           <span className="hand-label">手札（展開）</span>
@@ -684,6 +722,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
           {handIds.length === 0 && <p className="hand-empty">（すべて場に出ています）</p>}
         </div>
       </section>
+      )}
 
       {inspected && (
         <div className="overlay" onClick={() => dispatch({ type: 'inspectCard', definitionId: null })}>
@@ -705,6 +744,46 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
           </div>
         </div>
       )}
+
+      {editingNickname &&
+        (() => {
+          const inst = byId.get(editingNickname.instanceId);
+          const def = inst ? data.definitions.get(inst.definitionId) : undefined;
+          if (!inst || !def) return null;
+          return (
+            <div className="overlay" onClick={() => setEditingNickname(null)}>
+              <div className="popup" onClick={(e) => e.stopPropagation()}>
+                <h2 className="popup-title">ニックネームを設定</h2>
+                <p className="title-confirm-text">「{def.name}」の呼び方を変えられる。空にすると既定の名前に戻る</p>
+                <input
+                  className="setup-title-input"
+                  value={editingNickname.draft}
+                  maxLength={8}
+                  onChange={(e) => setEditingNickname({ ...editingNickname, draft: e.target.value })}
+                />
+                <div className="title-confirm-buttons">
+                  <button
+                    type="button"
+                    className="small-btn"
+                    onClick={() => {
+                      dispatch({
+                        type: 'setNickname',
+                        instanceId: editingNickname.instanceId,
+                        nickname: editingNickname.draft.trim() || null,
+                      });
+                      setEditingNickname(null);
+                    }}
+                  >
+                    決定
+                  </button>
+                  <button type="button" className="small-btn ghost" onClick={() => setEditingNickname(null)}>
+                    やめる
+                  </button>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
       {state.actIntro && (
         <ActIntro act={state.actIntro} week={run.week} onDismiss={() => dispatch({ type: 'dismissActIntro' })} />

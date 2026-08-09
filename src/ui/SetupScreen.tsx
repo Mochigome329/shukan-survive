@@ -26,6 +26,8 @@ export function SetupScreen({ state, dispatch }: Props) {
   const [cast, setCast] = useState<string[]>(() => choices.slice(0, STARTING_CAST_PICKS));
   // flexFactionの共演者だけ、開始時の陣営を選べる（v6.7）。未選択なら既定の陣営のまま
   const [factionChoices, setFactionChoices] = useState<Record<string, Faction>>({});
+  // 主人公・共演者候補のニックネーム（v7.29）。定義ID単位、空欄なら既定名のまま
+  const [nicknames, setNicknames] = useState<Record<string, string>>({});
 
   const toggleCast = (defId: string) => {
     setCast((prev) => {
@@ -46,6 +48,7 @@ export function SetupScreen({ state, dispatch }: Props) {
       mangaTitle: title.trim() || '無題の新連載',
       startingCast: cast,
       startingFactions: factionChoices,
+      startingNicknames: nicknames,
     });
   };
 
@@ -72,9 +75,18 @@ export function SetupScreen({ state, dispatch }: Props) {
       </p>
       <p className="setup-hint">選ばなかったキャラは控えに回り、「新キャラ登場」でデビューさせられる</p>
       {protagonist?.kind === 'character' && (
-        <div className="cast-choice cast-choice-fixed">
-          <span className="cast-choice-name">{protagonist.name}</span>
-          <span className="cast-choice-meta">人気 {protagonist.popularity} / 主人公は固定</span>
+        <div className="cast-choice-wrap">
+          <div className="cast-choice cast-choice-fixed">
+            <span className="cast-choice-name">{protagonist.name}</span>
+            <span className="cast-choice-meta">人気 {protagonist.popularity} / 主人公は固定</span>
+          </div>
+          <input
+            className="cast-nickname-input"
+            placeholder="呼び名（任意）"
+            maxLength={8}
+            value={nicknames[PROTAGONIST_ID] ?? ''}
+            onChange={(e) => setNicknames((prev) => ({ ...prev, [PROTAGONIST_ID]: e.target.value }))}
+          />
         </div>
       )}
       <div className="cast-choice-list">
@@ -95,6 +107,13 @@ export function SetupScreen({ state, dispatch }: Props) {
                   人気 {def.popularity} / {faction === 'ally' ? '仲間' : '敵'}
                 </span>
               </button>
+              <input
+                className="cast-nickname-input"
+                placeholder="呼び名（任意）"
+                maxLength={8}
+                value={nicknames[defId] ?? ''}
+                onChange={(e) => setNicknames((prev) => ({ ...prev, [defId]: e.target.value }))}
+              />
               {selected && def.flexFaction && (
                 <div className="cast-choice-faction">
                   <button

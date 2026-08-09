@@ -746,6 +746,26 @@ button {
 }
 
 /*
+ * v7.29: チュートリアル中だけ、ハイライトする範囲を狭く・低く見せる（説明の箱との釣り合い調整）。
+ * pack/serviceの手順はカードが縦に並ぶぶん、週プレイ画面の対象（横スクロール1行など）より
+ * ずっと背が高く、useTutorialHighlightが実測した高さから箱のmax-heightを逆算する都合で
+ * 箱が極端に潰れて見えることがあった。data-tutorial-target属性が付くのはその手順の表示中だけなので、
+ * 通常のショップ閲覧には一切影響しない
+ */
+.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
+.shop-screen[data-tutorial-target='service'] .shop-group-service {
+  max-width: min(300px, 86vw);
+  margin: 0 auto;
+}
+
+/* 説明文はチュートリアル本文側で語っているので、ハイライト中だけ重複行を畳んで縦を詰める */
+.shop-screen[data-tutorial-target='pack'] .shop-group-pack .shop-item-desc,
+.shop-screen[data-tutorial-target='pack'] .shop-group-pack .shop-item-note,
+.shop-screen[data-tutorial-target='service'] .shop-group-service .shop-item-desc {
+  display: none;
+}
+
+/*
  * 説明の箱はハイライト（z-index:11）よりさらに前面に置く。
  * オーバーレイの暗幕（.overlay の既定）は常に出したままにする——
  * これで対象の部位（不透明な背景を持つ）と説明の箱の両方が暗幕の上に浮いて見え、
@@ -769,14 +789,16 @@ button {
  * 寄せた先の空きに収まるよう、箱の高さを実測値で抑える（v7.15）。
  * 変数は useTutorialHighlight が出す。24px はオーバーレイの余白20pxに
  * ハイライトとの間隔を少し足したもの。
- * 変数が無いとき（対象なしの手順）は 78vh のまま
+ * 変数が無いとき（対象なしの手順）は 78vh のまま。
+ * v7.29: ハイライト対象が画面をはみ出すほど背が高いと計算結果が負になり、
+ * 箱が実質0まで潰れることがあったため、下限200px（タイトル+本文数行+ボタンが収まる高さ）を保証する
  */
 .tutorial-overlay.tutorial-box-bottom .tutorial-box {
-  max-height: min(78vh, calc(100vh - var(--tutorial-target-bottom, 0px) - 36px));
+  max-height: min(78vh, max(200px, calc(100vh - var(--tutorial-target-bottom, 0px) - 36px)));
 }
 
 .tutorial-overlay.tutorial-box-top .tutorial-box {
-  max-height: min(78vh, calc(var(--tutorial-target-top, 100vh) - 36px));
+  max-height: min(78vh, max(200px, calc(var(--tutorial-target-top, 100vh) - 36px)));
 }
 
 .tutorial-box h2 {
@@ -1506,6 +1528,18 @@ button {
   font-size: 10px;
   padding: 4px 6px;
   color: var(--ink);
+  background: #fff;
+}
+
+/* v7.29: 主人公・初期共演者候補のニックネーム入力（任意） */
+.cast-nickname-input {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 11px;
+  font-family: inherit;
+  padding: 5px 6px;
+  border: 1.5px solid #b3a894;
+  border-radius: 4px;
   background: #fff;
 }
 

@@ -6,7 +6,8 @@
  * 得点計算には一切関与しない、事後の集計専用。
  */
 import { actStartingAt, type ActInfo } from './acts';
-import { MAX_WARNINGS, type CardInstance, type RunState, type WeekEvent, type WeekLogEntry } from './types';
+import { finaleBaseScore } from './finale';
+import { displayName, MAX_WARNINGS, type CardInstance, type RunState, type WeekEvent, type WeekLogEntry } from './types';
 import type { GameData } from './validate';
 
 /** グラフの縦軸の上限。突出した週で他が潰れないよう、達成度4.0で頭打ちにする */
@@ -70,17 +71,25 @@ export interface Chronicle {
 }
 
 export function buildChronicle(data: GameData, run: RunState): Chronicle {
+  /*
+   * v7.28: 最終回にノルマは無いので、ノルマに対する達成度が出せない。
+   * 代わりに「その連載の平常運転（ベース点）の何倍を出したか」を達成度として使う。
+   * 「有終の美」（ベース点の3倍）と同じ物差しなので、年表の見えかたと役の基準が揃う
+   */
+  const baseScore = finaleBaseScore(run);
   const weeks: ChronicleWeek[] = run.log.map((entry: WeekLogEntry) => {
     const quotaEntry = data.quotas.get(entry.week);
     const events = entry.events ?? [];
     const boss = quotaEntry?.boss ?? null;
     const final = quotaEntry?.final ?? false;
-    // ノルマ0は想定していないが、割り算を守っておく
-    const ratio = entry.quota > 0 ? entry.score / entry.quota : 0;
+    // 最終回はベース点を分母にする。通常週はノルマ（割り算は念のため守る）
+    const denominator = final ? baseScore : entry.quota;
+    const ratio = denominator > 0 ? entry.score / denominator : 0;
     return {
       week: entry.week,
       score: entry.score,
-      quota: entry.quota,
+      // 最終回はノルマの代わりにベース点を並べる（v7.28）
+      quota: final ? baseScore : entry.quota,
       cleared: entry.cleared,
       warningsAfter: entry.warningsAfter,
       events,
@@ -105,7 +114,10 @@ export function buildChronicle(data: GameData, run: RunState): Chronicle {
   const ratioCap = Math.max(RATIO_CAP_MIN, Math.min(RATIO_CAP_MAX, maxRatio));
 
   const isChar = (c: CardInstance) => data.definitions.get(c.definitionId)?.kind === 'character';
-  const nameOf = (c: CardInstance) => data.definitions.get(c.definitionId)?.name ?? c.definitionId;
+  const nameOf = (c: CardInstance) => {
+    const def = data.definitions.get(c.definitionId);
+    return def ? displayName(def, c) : c.definitionId;
+  };
   // 控え（bench）は一度も登場していないので、年表の「出た者たち」には載せない
   const cast: ChronicleCast = {
     alive: run.cards.filter((c) => isChar(c) && c.zone === 'field').map(nameOf),

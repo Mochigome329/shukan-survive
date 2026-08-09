@@ -1,5 +1,6 @@
 import { COMBO_REGISTRY } from '../core/combos';
 import { returnableCharacters } from '../core/run';
+import { displayName } from '../core/types';
 import type { GameAction, GameState } from '../state/gameReducer';
 
 interface Props {
@@ -19,8 +20,11 @@ const MODIFIER_NAMES: Record<string, string> = {
 export function SerialMemo({ state, dispatch }: Props) {
   const run = state.run!;
   const data = state.data;
-  const nameOf = (instanceId: string) =>
-    data.definitions.get(run.cards.find((c) => c.instanceId === instanceId)!.definitionId)?.name ?? instanceId;
+  const nameOf = (instanceId: string) => {
+    const instance = run.cards.find((c) => c.instanceId === instanceId)!;
+    const def = data.definitions.get(instance.definitionId);
+    return def ? displayName(def, instance) : instanceId;
+  };
 
   const flagged = run.cards.filter((c) => c.flags.love || c.flags.training > 0);
   const waiting = run.cards.filter((c) => c.zone === 'waiting');

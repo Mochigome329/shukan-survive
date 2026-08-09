@@ -1,4 +1,4 @@
-import type { CardDefinition, CardInstance, CardTag } from '../core/types';
+import { displayName, type CardDefinition, type CardInstance, type CardTag } from '../core/types';
 
 interface CardViewProps {
   instance: CardInstance;
@@ -64,7 +64,7 @@ export function CardView({ instance, def, onTap, permanentBuzz = 0, freshness = 
         </span>
       )}
       {def.rare && <span className="card-rare">レア</span>}
-      <span className="card-name">{def.name}</span>
+      <span className="card-name">{displayName(def, instance)}</span>
       {/* v7.6b: 数値・陣営・修行フラグを1行にまとめ、カードの縦を1段ぶん詰める */}
       <span className="card-meta">
         <span className="card-value">

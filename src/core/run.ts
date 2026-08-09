@@ -11,7 +11,7 @@ import {
   endingBuzz,
   endingById,
   endingPopularityAdd,
-  FINALE_EXCLUDED_DEV_IDS,
+  finaleBase,
   FINALE_MAX_PLAY_CARDS,
 } from './finale';
 import { createDemands, updateDemands, DEMAND_REWARD_FEE } from './demands';
@@ -30,20 +30,22 @@ import type {
   WeekEvent,
   WeekLogEntry,
 } from './types';
-import { HAND_SIZE, HIGHLIGHT_LIMIT, MAX_PLAY_CARDS, MAX_STOCK, MAX_WARNINGS, PROTAGONIST_ID, REDRAWS_PER_WEEK } from './types';
+import { displayName, HAND_SIZE, HIGHLIGHT_LIMIT, MAX_PLAY_CARDS, MAX_STOCK, MAX_WARNINGS, PROTAGONIST_ID, REDRAWS_PER_WEEK } from './types';
 export { HIGHLIGHT_LIMIT, PROTAGONIST_ID };
 import type { GameData } from './validate';
 
 /**
  * 初期デッキからカード実体を生成する。キャラは場に常駐、展開は抽選プールへ。
  * startingCastが指定された場合、そのキャラを場に、残りのキャラを控えにする（v5.2d）。
- * startingFactionsで、flexFactionキャラの開始時陣営を指定できる（v6.7）。省略時は既定の陣営のまま
+ * startingFactionsで、flexFactionキャラの開始時陣営を指定できる（v6.7）。省略時は既定の陣営のまま。
+ * startingNicknamesで、主人公・初期共演者候補にニックネームを付けられる（v7.29）。省略時は既定名のまま
  */
 export function createInitialDeck(
   data: GameData,
   startingCast?: readonly string[],
   startingFactions?: Readonly<Record<string, Faction>>,
   runSeed?: number,
+  startingNicknames?: Readonly<Record<string, string>>,
 ): CardInstance[] {
   /*
    * 可変枠（v7.13）。固定枠だけだと初期デッキが10枚7種類しかなく、
@@ -81,6 +83,8 @@ export function createInitialDeck(
         zone: def.kind === 'character' ? (onField ? 'field' : 'bench') : 'activeDeck',
         // 場からスタートするキャラは、その時点でもう「デビュー済み」（v6.6）。控えは実際にデビューするまでnull
         debutFaction: def.kind === 'character' && onField ? faction : null,
+        // セットアップ画面で付けたニックネーム（v7.29）。控えに回っても持ち続ける
+        nickname: def.kind === 'character' ? startingNicknames?.[entry.definitionId]?.trim() || undefined : undefined,
       });
     }
   }
@@ -103,6 +107,8 @@ export interface RunOptions {
   startingCast?: string[];
   /** 開始時共演者（flexFactionのみ）の陣営選択（v6.7）。省略時は既定の陣営のまま */
   startingFactions?: Record<string, Faction>;
+  /** 主人公・初期共演者候補のニックネーム（v7.29）。定義ID単位。省略時は既定名のまま */
+  startingNicknames?: Readonly<Record<string, string>>;
 }
 
 export function createRun(data: GameData, runSeed: number, options: RunOptions): RunState {
@@ -110,7 +116,7 @@ export function createRun(data: GameData, runSeed: number, options: RunOptions):
     runSeed,
     mangaTitle: options.mangaTitle,
     week: 1,
-    cards: createInitialDeck(data, options.startingCast, options.startingFactions, runSeed),
+    cards: createInitialDeck(data, options.startingCast, options.startingFactions, runSeed, options.startingNicknames),
     hand: [],
     redrawsUsed: 0,
     foreshadowTokens: 0,
@@ -232,17 +238,20 @@ export function startWeek(data: GameData, state: RunState): RunState {
     return next.zone === 'hand' || next.zone === 'selected' ? { ...next, zone: 'activeDeck' as const } : next;
   });
   /*
-   * 最終回は「この先まだ話が続く」前提の展開を抽選から外す（v7.16）。
-   * 仕入れたカードとストックは自分で選んだものなので、確定枠としてそのまま配る
+   * v7.28: 最終回は展開カードを出さない。結末カードだけを選ぶ回にしたので手札を配らない。
+   * その週の人気度・話題性は、これまでの中央値（finaleBase）から作る。
+   *
+   * 結末と展開が噛み合わない（「結婚式」なのに手札の都合で「大破壊」を出す等）という
+   * ユーザー指摘への対応。以前の v7.16 は、噛み合わないカードを抽選から外して
+   * 和らげる対症療法だったが、選択そのものを無くすことで根本的に解消した。
+   * ハイライト（出演枠）は最終回でも決める必要があるので、手札だけを空にして先へ進む
    */
   const isFinale = data.quotas.get(state.week)?.final ?? false;
   const playable = cards.filter((c) => c.zone === 'activeDeck' && isDevelopment(data, c));
-  // 抽選の対象。確定枠（仕入れ・ストック）はここで絞らず、あとで別に足す
-  const pool = playable.filter((c) => !(isFinale && FINALE_EXCLUDED_DEV_IDS.has(c.definitionId)));
   const playableIds = new Set(playable.map((c) => c.instanceId));
 
-  // ボス週「合併号」は手札が2枚少ない（10節）
-  const handSize = data.quotas.get(state.week)?.boss === '合併号' ? HAND_SIZE - 2 : HAND_SIZE;
+  // ボス週「合併号」は手札が2枚少ない（10節）。最終回は手札そのものを配らない（v7.28）
+  const handSize = isFinale ? 0 : data.quotas.get(state.week)?.boss === '合併号' ? HAND_SIZE - 2 : HAND_SIZE;
 
   // 確定枠: 仕入れたカード → ストックの順（重複と紛失を除く）
   const forced: string[] = [];
@@ -250,10 +259,12 @@ export function startWeek(data: GameData, state: RunState): RunState {
     if (playableIds.has(id) && !forced.includes(id) && forced.length < handSize) forced.push(id);
   }
 
-  const rest = pool.filter((c) => !forced.includes(c.instanceId));
+  const rest = playable.filter((c) => !forced.includes(c.instanceId));
   const remaining = handSize - forced.length;
   let handIds: string[];
-  if (rest.length <= remaining) {
+  if (remaining <= 0) {
+    handIds = forced;
+  } else if (rest.length <= remaining) {
     handIds = [...forced, ...rest.map((c) => c.instanceId)];
   } else {
     const rng = drawRng(state.runSeed, state.week, 0);
@@ -348,6 +359,20 @@ export function returnCharacter(data: GameData, state: RunState, instanceId: str
       ? [...current, instanceId]
       : current;
   return { ...next, highlightIds, returnUsedThisWeek: true };
+}
+
+/**
+ * キャラのニックネームを設定・変更・解除する（v7.29、遊び心程度の小機能）。
+ * nullか空文字（トリム後）で既定名（def.name）に戻す
+ */
+export function setNickname(data: GameData, state: RunState, instanceId: string, nickname: string | null): RunState {
+  const target = state.cards.find((c) => c.instanceId === instanceId);
+  if (!target) throw new Error(`カードが見つかりません: ${instanceId}`);
+  if (data.definitions.get(target.definitionId)?.kind !== 'character') {
+    throw new Error('ニックネームを設定できるのはキャラのみです');
+  }
+  const trimmed = nickname?.trim() || undefined;
+  return { ...state, cards: state.cards.map((c) => (c.instanceId === instanceId ? { ...c, nickname: trimmed } : c)) };
 }
 
 /** その週に使える描き直し回数（「速筆」を依頼していれば+1。v5.5） */
@@ -555,6 +580,8 @@ function finaleScoreInput(data: GameData, state: RunState, endingId?: string | n
   if (!data.quotas.get(state.week)?.final) return {};
   const card = endingId ? endingById(endingId) : undefined;
   return {
+    // 最終回は展開カードを出さず、これまでの中央値をベース点にする（v7.28）
+    finaleBase: finaleBase(state),
     completionBonus: completionBonus(state),
     setupComboIds: state.setupComboHistory,
     finaleEnding: card
@@ -759,7 +786,8 @@ export function resolveWeek(
   // 「同じ週に敵化してから死亡した」ようなケースも順番どおりに残せる
   const nameOf = (instanceId: string) => {
     const inst = state.cards.find((c) => c.instanceId === instanceId);
-    return inst ? (data.definitions.get(inst.definitionId)?.name ?? null) : null;
+    const def = inst ? data.definitions.get(inst.definitionId) : undefined;
+    return inst && def ? displayName(def, inst) : null;
   };
   const events: WeekEvent[] = [];
   for (const change of breakdown.stateChanges) {
@@ -793,6 +821,9 @@ export function resolveWeek(
       cleared: breakdown.cleared,
       warningsAfter: warnings,
       events,
+      // 最終回のベース点（中央値）の母集団になる（v7.28）
+      popularity: breakdown.popularityTotal,
+      buzz: breakdown.buzzApplied,
     },
   ];
 
@@ -807,6 +838,17 @@ export function resolveWeek(
     outcome = 'cancelled';
     cancelReason = 'warnings';
   }
+  /*
+   * v7.28: 最終回は打ち切られない。ノルマを廃止したので未達では止まらないが、
+   * 期限切れの編集部の要求による警告だけは残っていたので、ここで塞ぐ。
+   * 現状は要求の期限が第16話までなので最終回に期限切れは起きないが、
+   * 「最終回は必ず完結できる」をデータの都合ではなくルールとして保証する
+   */
+  if (quotaEntry?.final) {
+    outcome = 'continue';
+    cancelReason = undefined;
+  }
+
   const demandFee = demandUpdate.achieved.length * DEMAND_REWARD_FEE + demandUpdate.earlyBonusFee;
   if (demandUpdate.failed.length > 0) log[log.length - 1]!.warningsAfter = demandWarnings;
 

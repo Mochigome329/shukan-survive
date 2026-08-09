@@ -58,6 +58,11 @@ export interface ComboMatchInput {
   quota: number;
   /** 最終回かどうか（最終回専用役が参照する、v5.9） */
   isFinale: boolean;
+  /**
+   * 最終回のベース点（人気度の中央値 × 話題性の中央値、v7.28）。
+   * 通常週は0。「有終の美」がノルマの代わりの基準として使う
+   */
+  finaleBaseScore: number;
   /** 通算で成立させた仕込み役の種類数（完結ボーナスと「伝説の完結」に使う、v5.9） */
   setupComboCount: number;
 }
@@ -107,6 +112,28 @@ export interface ComboDefinition {
   match: (input: ComboMatchInput) => ComboMatch[];
 }
 
+/**
+ * 「有終の美」の判定倍率（v7.28）。
+ * 最終回のノルマ廃止で「ノルマの2倍」が使えなくなったので、
+ * その連載自身のベース点（人気度・話題性の中央値の積）の3倍を代わりの基準にする。
+ * 結末カードの倍率（最大×4）と完結ボーナス（最大×2）が乗れば届く水準。
+ * finale.ts が combos.ts を参照しているため、循環参照を避けてこちらに置いてある
+ */
+export const YUUSHUU_NO_BI_RATIO = 3;
+
+/**
+ * 「有終の美」の絶対下限（v7.29、gpt-5.6-solのシミュレーション分析に基づく修正）。
+ * ベース点の3倍という相対条件だけだと、ベース点そのものが低い（弱い）連載ほど
+ * 結末カードの定額加算（後日談の「キャスト全員+10」等）が相対的に大きく効いてしまい、
+ * 「弱い連載ほど有終の美を取りやすい」という逆転現象が数式上確実に起きる
+ * （後日談の場合、比率 = 完結ボーナス × (1+10N/人気度) × (1+3/話題性) で、
+ * 人気度・話題性が低いほど単調に増える）。相対条件はそのまま残し、
+ * 絶対点の下限をAND条件で足して歯止めをかける。
+ * 閾値10,000はシミュレーション実測（best戦略のP10が16,329）を踏まえた初期値で、
+ * 大規模な再計測をしたら見直す想定
+ */
+export const YUUSHUU_NO_BI_MIN_SCORE = 10000;
+
 const hasDev = (input: ComboMatchInput, defId: string) => input.developments.some((d) => d.def.id === defId);
 const devsOf = (input: ComboMatchInput, defId: string) => input.developments.filter((d) => d.def.id === defId);
 const countDev = (input: ComboMatchInput, defId: string) => devsOf(input, defId).length;
@@ -137,6 +164,13 @@ const betrayalDevs = (input: ComboMatchInput) => [
     return !!target && target.def.id !== PROTAGONIST_ID;
   }),
 ];
+
+/**
+ * 敵側から仲間へ戻す系の役が見る発動カード（v7.27）。
+ * 「裏切り」を敵キャラに使う（寝返らせる）のと同じ効果を、「おかえり」（元の陣営へ戻す）
+ * でも出せるようにした。「あの頃みたいに」「あなたと共に」「勘違いするな」で使う
+ */
+const comebackDevs = (input: ComboMatchInput) => [...devsOf(input, 'uragiri'), ...devsOf(input, 'okaeri')];
 
 /**
  * 「主役級ではない」キャラ（v5.8b、v6.6でマスコットを追加）。
@@ -179,6 +213,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     // 抑制指定は死んでいたため外した（残すのは「平和な日常」だけ）
     suppresses: ['heiwa_na_nichijou'],
     cutInTemplate: 'normal',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '日常が壊れる瞬間に物語は大きく動く',
@@ -205,6 +240,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '新しい仲間と困難を乗り越えはじめる',
@@ -221,6 +257,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'dododo',
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '序盤の敗北はその後の成長の約束',
@@ -295,6 +332,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '自分でも知らなかった力に触れる',
@@ -370,6 +408,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['heiwa_na_nichijou'],
     cutInTemplate: 'shock',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '平和な日々が壊されるとき',
@@ -384,6 +423,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'dododo',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: '戦いの中で力が目を覚ます',
@@ -397,6 +437,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: '何気ない時に見せるその素顔',
@@ -410,6 +451,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: '強大な敵に挑む',
@@ -430,6 +472,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 0,
     // 話題性 = 2×本数 + 寝かせた週数の合計（長く引っ張った伏線ほど盛り上がる、v5.3）
@@ -449,6 +492,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '信頼している者の裏切り',
@@ -466,6 +510,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['shougeki_no_uragiri'],
     cutInTemplate: 'emotion',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: 'そのキャラの人気度が恒久+4',
@@ -489,6 +534,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['shougeki_no_uragiri'],
     cutInTemplate: 'shock',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     // v7.2: 嫉妬心・あの頃みたいに・勘違いするなと同じ6に統一（ヒロインの絶望/あなたと共にだけ8のまま特別扱い）。
     // スコア最大化だけを考えるとヒロインを裏切らせるのが常に正解になってしまうのを避けるため、
@@ -511,6 +557,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['shougeki_no_uragiri'],
     cutInTemplate: 'shock',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     // v7.2: ヒロインの裏切り絡みだけは意図的に他の裏切り専用役（6）より高い8のまま。
     // 「誰を裏切らせても等しく報われる」よりも「ヒロインの裏切りは特別」を優先したユーザー判断
@@ -537,9 +584,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 6,
     extraText: 'そのキャラの人気度が恒久+4',
     hintText: 'またお前と同じ側に立てる',
-    conditionText: '敵の「幼なじみ」か「相棒」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）',
+    conditionText: '敵の「幼なじみ」か「相棒」を対象に「裏切り」か「おかえり」をプレイ（仲間へ戻る。人気度 恒久+4、v7.27）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      comebackDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy' && (c.def.id === 'osananajimi' || c.def.id === 'aibou'))
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -559,9 +606,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 8,
     extraText: '緊張を全解放',
     hintText: '離れていた時間の分だけ想いは募る',
-    conditionText: '敵の「ヒロイン」を対象に「裏切り」をプレイ（仲間へ戻る。緊張を全解放、v6.6）',
+    conditionText: '敵の「ヒロイン」を対象に「裏切り」か「おかえり」をプレイ（仲間へ戻る。緊張を全解放、v7.27）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      comebackDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy' && c.def.id === 'heroine')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -574,13 +621,14 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: 'そのキャラの人気度が恒久+4',
     hintText: 'お前を倒すのはこの俺だ',
-    conditionText: '敵の「ライバル」を対象に「裏切り」をプレイ（仲間へ戻る。人気度 恒久+4、v6.6）',
+    conditionText: '敵の「ライバル」を対象に「裏切り」か「おかえり」をプレイ（仲間へ戻る。人気度 恒久+4、v7.27）',
     match: (input) =>
-      devsOf(input, 'uragiri')
+      comebackDevs(input)
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy' && c.def.id === 'rival')
         .map((c) => ({ boundCharIds: [c.instance.instanceId] })),
@@ -645,6 +693,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '闇に落ちたヒーロー',
@@ -664,6 +713,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'don',
     popularityAdd: 10,
     buzzAdd: 0,
     hintText: '鍛錬＆バトルの王道展開',
@@ -682,6 +732,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'katsu',
     popularityAdd: 15,
     buzzAdd: 0,
     hintText: '宿命の二人が拳を交えるとき',
@@ -701,6 +752,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     oncePerCharacter: true,
     cutInTemplate: 'normal',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 3,
     extraText: '敵キャラの人気度が恒久+5',
@@ -733,6 +785,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     oncePerRun: true,
     cutInTemplate: 'normal',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 2,
     extraText: '以後このラン、バトルの話題性が恒久+1',
@@ -748,7 +801,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
-    sfxId: 'horori',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: '名の通りの禁じ手',
@@ -822,6 +875,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     scoreMultiplier: 3,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 0,
     extraText: '週スコア×3',
@@ -866,6 +920,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: 'まさかの帰還',
@@ -895,6 +950,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 3,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'interrobang',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度×3',
@@ -919,6 +975,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 0,
     extraText: 'そのキャラの人気度×2',
@@ -938,6 +995,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 0,
     extraText: 'その敵キャラの人気度×2',
@@ -960,6 +1018,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     oncePerCharacter: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 4,
     extraText: 'そのキャラの人気度が恒久+8',
@@ -985,6 +1044,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '長く戦ってきた相手との決着',
@@ -1011,6 +1071,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '負けた相手に勝つまでの道のり',
@@ -1028,6 +1089,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '格上を食う大金星',
@@ -1047,6 +1109,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: 'まだあなたほどうまくはできませんが…',
@@ -1077,6 +1140,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '過去の断片と明かされる真相',
@@ -1124,6 +1188,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度が恒久+6',
@@ -1146,6 +1211,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: 'みんなで総力戦',
@@ -1159,6 +1225,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: '荒削りな才が戦いの中できらめく',
@@ -1172,6 +1239,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: '手に入れた武器は使ってこそ',
@@ -1185,6 +1253,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度が恒久+3',
@@ -1205,6 +1274,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度が恒久+3',
@@ -1225,6 +1295,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'waiwai',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '語られた伝承の先に宝を探し当てる',
@@ -1243,6 +1314,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['souryoku_no_kesshuu', 'souryokusen_combo'],
     cutInTemplate: 'shock',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 10,
     hintText: '最後にぶつける総力戦',
@@ -1287,6 +1359,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '困っている人を放っておけない',
@@ -1300,6 +1373,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '強くなって見返してやる！',
@@ -1314,6 +1388,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'dododo',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '因縁結ぶ戦い',
@@ -1327,6 +1402,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '寄り道の先の出会い',
@@ -1350,6 +1426,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'dododo',
     popularityAdd: 0,
     buzzAdd: 7,
     extraText: '緊張+1',
@@ -1368,6 +1445,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 9,
     hintText: 'クライマックスに訪れる危機',
@@ -1384,6 +1462,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     scoreMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 0,
     extraText: '週スコア×2',
@@ -1404,6 +1483,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['souryokusen_combo'],
     cutInTemplate: 'normal',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '積み上げてきたキャラが力を合わせる',
@@ -1441,6 +1521,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'don',
     popularityAdd: 20,
     buzzAdd: 0,
     hintText: '命運駆けた戦いの前に最後の鍛錬',
@@ -1459,6 +1540,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: '主人公の人気度×2',
@@ -1488,6 +1570,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     charMultiplier: 3,
     cutInTemplate: 'emotion',
+    sfxId: 'jiin',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度×3',
@@ -1506,6 +1589,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'jiin',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: '警戒されていないからこその大活躍',
@@ -1522,6 +1606,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: 'ここは一度拳を収めよう',
@@ -1562,6 +1647,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     scoreMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: '週スコア×2',
@@ -1579,6 +1665,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 9,
     hintText: '極端から極端へひっくり返る',
@@ -1593,6 +1680,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 10,
     hintText: '溜めに溜めたストレスの解放',
@@ -1606,6 +1694,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '落ちる寸前で掴む手',
@@ -1664,6 +1753,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '先人の圧倒的な力を見よ',
@@ -1681,6 +1771,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '上位者に与えられる死',
@@ -1704,6 +1795,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['ippanjin_no_shiten'],
     cutInTemplate: 'shock',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 8,
     extraText: '緊張+1',
@@ -1721,6 +1813,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'dododo',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '巻き込まれる側から描く脅威',
@@ -1737,6 +1830,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: 'あいつの魂に勝利を捧げる',
@@ -1805,6 +1899,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     charMultiplier: 3,
     cutInTemplate: 'shock',
+    sfxId: 'dokidoki',
     popularityAdd: 0,
     buzzAdd: 4,
     extraText: 'そのキャラの人気度×3',
@@ -1823,6 +1918,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     scoreMultiplier: 3,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: '週スコア×3',
@@ -1843,6 +1939,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     scoreMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 8,
     extraText: '週スコア×2',
@@ -1857,27 +1954,12 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'emotion',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '多くの仲間と結末を迎える',
     conditionText: '最終回にキャストが5人以上いる',
     match: (input) => (input.isFinale && input.characters.length >= 5 ? [{ boundCharIds: [] }] : []),
-  },
-  {
-    // v7.4b: ユーザー提案。最終回の日常回が「不穏な日常」（第17話以降の日常回）に
-    // 吸われてしまうのを、最終回専用の役で上書きする。戦いが終わったあとの日常は不穏ではない
-    id: 'torimodoshita_hibi',
-    name: '取り戻した日々',
-    layer: 1,
-    phase: 'preScore',
-    suppresses: ['fuon_na_nichijou', 'heiwa_na_nichijou', 'kankyuu'],
-    cutInTemplate: 'emotion',
-    sfxId: 'waiwai',
-    popularityAdd: 0,
-    buzzAdd: 9,
-    hintText: '何でもない日常を取り戻す',
-    conditionText: '最終回に「日常回」をプレイ',
-    match: (input) => (input.isFinale && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'yuushuu_no_bi',
@@ -1886,12 +1968,25 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'postScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 0,
     extraText: '年表に「伝説の最終回」として記録される',
     hintText: '記録に残る最終回を迎える',
-    conditionText: '最終回でノルマを2倍以上超える',
-    match: (input) => (input.isFinale && input.weekScore >= input.quota * 2 ? [{ boundCharIds: [] }] : []),
+    /*
+     * v7.28: 最終回のノルマを廃止したので「ノルマの2倍」が使えなくなった。
+     * 代わりに、その連載自身のベース点（人気度・話題性の中央値の積）の3倍を基準にする。
+     * 結末カードの倍率（最大×4）と完結ボーナス（最大×2）が乗れば届く水準。
+     * v7.29: 相対条件だけだと弱い連載が有利になる逆転現象があったため、絶対点の下限も併せて課す
+     */
+    conditionText: `最終回で、それまでの連載の平常運転（中央値）の3倍以上、かつ${YUUSHUU_NO_BI_MIN_SCORE.toLocaleString()}点以上のスコアを出す`,
+    match: (input) =>
+      input.isFinale &&
+      input.finaleBaseScore > 0 &&
+      input.weekScore >= input.finaleBaseScore * YUUSHUU_NO_BI_RATIO &&
+      input.weekScore >= YUUSHUU_NO_BI_MIN_SCORE
+        ? [{ boundCharIds: [] }]
+        : [],
   },
 
   // ===== リスク役（7.5節、M3） =====
@@ -1900,40 +1995,22 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
      * v7.19: 「全滅」だけで成立する役。他の役はどれも複数条件の組み合わせだが、
      * 全滅は1枚出すだけで今週のキャストを丸ごと失う代償が既に大きいので、
      * それ単独でピーキーな一手として報われていい、というユーザー判断による例外。
-     * 「悲しい過去」まで揃えた「全滅エンド」のほうが上位なので、そちらが出るときは
-     * こちらを抑制する（suppresses経由。全滅エンド側にIDを追加）
+     * v7.27: 「悲しい過去」を重ねた上位版「全滅エンド」（週スコア×4）は、
+     * 名前が紛らわしいというユーザー指摘で廃止し、この役へ吸収。週スコアは常に×4になった
      */
     id: 'zenmetsu_yaku',
     name: '全滅',
     layer: 1,
     phase: 'preScore',
     suppresses: [],
-    scoreMultiplier: 2,
-    cutInTemplate: 'shock',
-    popularityAdd: 0,
-    buzzAdd: 8,
-    extraText: '週スコア×2（キャストは全滅する）',
-    hintText: '守るべきものすら失う',
-    conditionText: '「全滅」をプレイする（それだけで成立）',
-    match: (input) => (hasDev(input, 'zenmetsu') ? [{ boundCharIds: [] }] : []),
-  },
-  {
-    id: 'zenmetsu_end',
-    name: '全滅エンド',
-    layer: 1,
-    phase: 'preScore',
-    suppresses: ['zenmetsu_yaku'],
     scoreMultiplier: 4,
     cutInTemplate: 'shock',
     popularityAdd: 0,
-    buzzAdd: 0,
+    buzzAdd: 8,
     extraText: '週スコア×4（キャストは全滅する）',
-    hintText: '全てを失ったあとの悲しい余韻',
-    conditionText: '「全滅」+ いずれかのキャラを対象とする「悲しい過去」',
-    match: (input) =>
-      hasDev(input, 'zenmetsu') && devsOf(input, 'kanashii_kako').some((d) => !!d.targetId)
-        ? [{ boundCharIds: [] }]
-        : [],
+    hintText: 'すべてを失う',
+    conditionText: '「全滅」をプレイする（それだけで成立）',
+    match: (input) => (hasDev(input, 'zenmetsu') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'sankaku_kankei',
@@ -1968,6 +2045,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'gogogo',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: '大切な人を失った慟哭',
@@ -1994,11 +2072,12 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: ['dark_hero', 'dokoku'],
     cutInTemplate: 'shock',
+    sfxId: 'dododo',
     charMultiplier: 2,
     popularityAdd: 0,
     buzzAdd: 9,
     extraText: '主人公の人気度×2',
-    hintText: '怒りに我を忘れた主人公',
+    hintText: '悲しみに我を忘れる',
     conditionText: '仲間のヒロインか相棒の死亡・自己犠牲と同じ週に、主人公を対象に「闇堕ち」をプレイ',
     match: (input) => {
       const hero = input.characters.find((c) => c.def.id === 'hero');
@@ -2022,7 +2101,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     sfxId: 'horori',
     popularityAdd: 0,
     buzzAdd: 5,
-    hintText: '積み上げてきたものが消えていく',
+    hintText: '大切な過去の消失',
     conditionText: '仲間のヒロイン・相棒・幼なじみのいずれかを対象に「記憶喪失」をプレイ',
     match: (input) =>
       devsOf(input, 'kioku_soushitsu')
@@ -2049,7 +2128,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     sfxId: 'jiin',
     popularityAdd: 0,
     buzzAdd: 7,
-    hintText: '一度失ったものを取り戻す',
+    hintText: 'なくした過去を取り戻す',
     conditionText: '記憶を失ったヒロイン・相棒・幼なじみのいずれかを対象に「おかえり」をプレイ',
     match: (input) =>
       devsOf(input, 'okaeri')
@@ -2067,9 +2146,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 6,
-    hintText: '仲間を逃がすための一手',
+    hintText: '仲間を逃がす決死の一手',
     conditionText: '相棒か三枚目を対象に「自己犠牲」をプレイ',
     match: (input) =>
       devsOf(input, 'jiko_gisei')
@@ -2090,10 +2170,11 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 5,
     extraText: 'そのキャラの人気度が恒久+5',
-    hintText: '侮れない実力',
+    hintText: '実は侮れない実力',
     conditionText: '三枚目を対象に「能力覚醒」か「真の覚醒」をプレイ',
     match: (input) =>
       [...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')]
@@ -2109,9 +2190,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'baan',
     popularityAdd: 0,
     buzzAdd: 2,
-    hintText: '言葉なしで通じ合うコンビ',
+    hintText: '言葉なしで通じ合うバディ',
     conditionText: '場に「相棒」がいる状態で「バトル」をプレイ',
     match: (input) =>
       input.characters.some((c) => c.def.id === 'aibou') && hasDev(input, 'battle') ? [{ boundCharIds: [] }] : [],
@@ -2123,6 +2205,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'waiwai',
     popularityAdd: 0,
     buzzAdd: 3,
     hintText: 'いつも一緒に悪だくみ',
@@ -2140,9 +2223,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'waiwai',
     popularityAdd: 0,
     buzzAdd: 3,
-    hintText: '互いに高め合う',
+    hintText: '互いに高め合う関係性',
     conditionText: '場に「相棒」か「三枚目」がいる状態で「修行」をプレイ',
     match: (input) => {
       const hasPartner = input.characters.some(
@@ -2160,10 +2244,11 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: 'そのキャラの人気度×2',
-    hintText: '力には代償がつきまとう',
+    hintText: '禁忌の力に覚醒する',
     conditionText: '同じキャラを対象に「禁断の力」と「能力覚醒」か「真の覚醒」をプレイ',
     match: (input) => {
       const kindanTargets = new Set(devsOf(input, 'kindan_no_chikara').map((d) => d.targetId).filter((id): id is string => !!id));
@@ -2181,9 +2266,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     suppresses: [],
     isSetupCombo: true,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'zawazawa',
     popularityAdd: 0,
     buzzAdd: 7,
-    hintText: '制御できない力を宿した武器',
+    hintText: '禁忌の力を宿した武器',
     conditionText: '同じキャラを対象に「禁断の力」と「武器ゲット」をプレイ',
     match: (input) => {
       const kindanTargets = new Set(devsOf(input, 'kindan_no_chikara').map((d) => d.targetId).filter((id): id is string => !!id));
@@ -2200,9 +2286,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'zawazawa',
     popularityAdd: 0,
     buzzAdd: 7,
-    hintText: '敵が力に飲まれていく',
+    hintText: '力に飲まれる強敵',
     conditionText: '敵キャラを対象に「禁断の力」「能力覚醒」「真の覚醒」のいずれかをプレイ',
     match: (input) => {
       const targets = [...devsOf(input, 'kindan_no_chikara'), ...devsOf(input, 'nouryoku_kakusei'), ...devsOf(input, 'kakusei')]
@@ -2221,6 +2308,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     isSetupCombo: true,
     charMultiplier: 2,
     cutInTemplate: 'setupPayoff',
+    sfxId: 'katsu',
     popularityAdd: 0,
     buzzAdd: 6,
     extraText: 'マスコットとヒロインの人気度×2',
@@ -2250,6 +2338,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'shock',
+    sfxId: 'don',
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: '何度目の寝返りだ',
@@ -2269,9 +2358,10 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'waiwai',
     popularityAdd: 0,
     buzzAdd: 2,
-    hintText: 'たまにはゆるく',
+    hintText: 'たまには友人とゆるく',
     conditionText: '場に「相棒」か「三枚目」がいる状態で「骨休め」をプレイ',
     match: (input) => {
       const hasPartner = input.characters.some(
@@ -2296,10 +2386,11 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'normal',
+    sfxId: 'waiwai',
     popularityAdd: 0,
     buzzAdd: 3,
     extraText: 'マスコットの場合、そのキャラの人気度が恒久+3',
-    hintText: '縁の下の力持ち',
+    hintText: '日常を支える温かさ',
     conditionText: '場に「マスコット」か「母」がいる状態で「日常回」をプレイ',
     match: (input) => {
       const supporter = input.characters.find(
@@ -2321,6 +2412,7 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     phase: 'preScore',
     suppresses: [],
     cutInTemplate: 'setupPayoff',
+    sfxId: 'bang2',
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '大切な人を取り戻す',

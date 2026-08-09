@@ -224,3 +224,69 @@ describe('セーブから再開すると、チュートリアルの選択が忘�
     expect(resumed.shopTutorialShown).toBe(true);
   });
 });
+
+/** 第`week`話の読者アンケート結果画面（continue）の状態を作る */
+function atResultBefore(week: number, over: Partial<GameState> = {}): GameState {
+  const run = { ...createRun(data, 1, { mangaTitle: 'テスト' }), week };
+  return {
+    ...initialGameState(data),
+    screen: 'result',
+    run,
+    lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    ...over,
+  };
+}
+
+describe('第24話後の編集会議は飛ばす（v7.28）', () => {
+  /*
+   * 最終回は展開カードを出さず、キャストもベース点（中央値）に置き換わるので、
+   * 仕入れたキャラも展開も出番が無いまま連載が終わる。会議を開いても選べることが無いので飛ばす
+   */
+  it('次が最終回（第25話）なら、編集会議を経由せず直接プレイ画面へ入る', () => {
+    const next = gameReducer(atResultBefore(25), { type: 'proceedFromResult' });
+    expect(next.screen).toBe('play');
+    expect(next.shopPack).toBeNull();
+    expect(next.run!.week).toBe(25);
+    // startWeekが呼ばれ、最終回なので手札は空になっている
+    expect(next.run!.hand).toEqual([]);
+  });
+
+  it('次が最終回でなければ、今までどおり編集会議へ行く', () => {
+    const next = gameReducer(atResultBefore(20), { type: 'proceedFromResult' });
+    expect(next.screen).toBe('shop');
+    expect(next.shopPack).not.toBeNull();
+  });
+
+  it('最終回直行でも、通常の編集会議通過（leaveShop）と同じフィールドが揃う', () => {
+    const viaFinaleSkip = gameReducer(atResultBefore(25), { type: 'proceedFromResult' });
+    const viaShop = gameReducer(atShopBefore(25), { type: 'leaveShop' });
+    expect(viaFinaleSkip.showFinaleTutorial).toBe(viaShop.showFinaleTutorial);
+    expect(viaFinaleSkip.showFinaleTutorial).toBe(true);
+  });
+});
+
+/** 控えキャラを1枚持った状態でplay画面に入っているGameStateを作る */
+function atPlayWithBenchChar(): GameState {
+  const run = { ...createRun(data, 1, { mangaTitle: 'テスト' }), cards: [makeInstance(data, 'heroine', 1, { zone: 'bench' })] };
+  return { ...initialGameState(data), screen: 'play', run };
+}
+
+describe('ニックネーム（v7.29）', () => {
+  it('setNicknameで対象のCardInstanceが更新される', () => {
+    const next = gameReducer(atPlayWithBenchChar(), { type: 'setNickname', instanceId: 'heroine#1', nickname: 'ゆき' });
+    expect(next.run!.cards.find((c) => c.instanceId === 'heroine#1')!.nickname).toBe('ゆき');
+  });
+
+  it('nullで既定名に戻す（undefinedになる）', () => {
+    const named = gameReducer(atPlayWithBenchChar(), { type: 'setNickname', instanceId: 'heroine#1', nickname: 'ゆき' });
+    const cleared = gameReducer(named, { type: 'setNickname', instanceId: 'heroine#1', nickname: null });
+    expect(cleared.run!.cards.find((c) => c.instanceId === 'heroine#1')!.nickname).toBeUndefined();
+  });
+
+  it('不正なinstanceIdならnoticeが立ち、状態は変わらない', () => {
+    const before = atPlayWithBenchChar();
+    const next = gameReducer(before, { type: 'setNickname', instanceId: 'nope#1', nickname: 'ゆき' });
+    expect(next.notice).toBeTruthy();
+    expect(next.run).toBe(before.run);
+  });
+});

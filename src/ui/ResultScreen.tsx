@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { COMBO_REGISTRY } from '../core/combos';
 import { COMPLETION_BONUS_CAP, COMPLETION_BONUS_PER_COMBO } from '../core/finale';
 import type { ComboScoreDetail } from '../core/types';
-import { MAX_WARNINGS } from '../core/types';
+import { displayName, MAX_WARNINGS } from '../core/types';
 import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gameReducer';
 import { playCheer, playCutinNote } from './audio';
 import { addDiscovered, getDiscovered } from './discovery';
@@ -134,7 +134,9 @@ export function ResultScreen({ state, dispatch }: Props) {
     .map((c) => {
       const instance = run.cards.find((x) => x.instanceId === c.instanceId);
       const def = instance ? state.data.definitions.get(instance.definitionId) : undefined;
-      return def?.kind === 'character' ? { instanceId: c.instanceId, name: def.name, popularity: def.popularity } : null;
+      return def?.kind === 'character' && instance
+        ? { instanceId: c.instanceId, name: displayName(def, instance), popularity: def.popularity }
+        : null;
     })
     .filter((x): x is { instanceId: string; name: string; popularity: number } => x !== null)
     // 同じキャラが複数の効果で戻る場合があるので重複を落とす
@@ -226,7 +228,8 @@ export function ResultScreen({ state, dispatch }: Props) {
             {b.completionBonus > 1 && <strong className="score-multiplier"> × {b.completionBonus}</strong>}
           </span>
           <ScoreCounter target={b.finalScore} instant={done && skipped.current} />
-          <span className="score-quota">ノルマ {b.quota}</span>
+          {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回で、打ち切られない） */}
+          <span className="score-quota">{b.quota > 0 ? `ノルマ ${b.quota}` : '完結'}</span>
         </div>
       )}
 
