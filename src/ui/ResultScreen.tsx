@@ -53,6 +53,18 @@ function comboEffectText(combo: ComboScoreDetail): string {
   return parts.join(' / ');
 }
 
+/*
+ * 役の鮮度が下がっているときの但し書き（v7.31）。
+ * 加算が黙って目減りすると「なぜ先週より低いのか」が分からないので、
+ * 同じ役を続けたせいだと分かる言葉を添える。
+ * 加算を持たない役（乗算だけの神回など）には鮮度が効かないので出さない
+ */
+function comboFreshnessNote(combo: ComboScoreDetail): string | null {
+  if (combo.status !== 'applied' || combo.freshness >= 1) return null;
+  if (combo.popularityAdd === 0 && combo.buzzAdd === 0) return null;
+  return `見飽きられ ×${combo.freshness.toFixed(1)}`;
+}
+
 /**
  * 演出のテンポ（v7.3でスピードアップ）。
  * カットインのスラム演出自体は0.28秒（styles.cssの`cutin-slam`）なので、
@@ -192,8 +204,21 @@ export function ResultScreen({ state, dispatch }: Props) {
     }
   };
 
-  const stampText = b.quotaBypassed ? '判定免除' : cancelled ? '打ち切り決定' : cleared ? '連載継続' : '打ち切り警告';
-  const stampClass = cancelled ? 'stamp-ng' : cleared || b.quotaBypassed ? 'stamp-ok' : 'stamp-warn';
+  /*
+   * v7.31: 最終回はノルマ判定をしないので「連載継続」では意味が通らない。
+   * ノルマ0なら cleared が常に true になり、完結したのに
+   * 「連載継続」のスタンプが押されていた
+   */
+  const stampText = isFinaleWeek
+    ? '完結'
+    : b.quotaBypassed
+      ? '判定免除'
+      : cancelled
+        ? '打ち切り決定'
+        : cleared
+          ? '連載継続'
+          : '打ち切り警告';
+  const stampClass = isFinaleWeek ? 'stamp-ok' : cancelled ? 'stamp-ng' : cleared || b.quotaBypassed ? 'stamp-ok' : 'stamp-warn';
 
   return (
     <div className="screen result-screen" onClick={skip}>
@@ -205,6 +230,7 @@ export function ResultScreen({ state, dispatch }: Props) {
             <span className="combo-banner-name">
               {c.name}
               {newDiscoveries.has(c.comboId) && <em className="new-discovery">図鑑登録!</em>}
+              {comboFreshnessNote(c) && <em className="combo-stale">{comboFreshnessNote(c)}</em>}
             </span>
             <span className="combo-banner-effect">{comboEffectText(c)}</span>
           </div>
@@ -306,7 +332,9 @@ export function ResultScreen({ state, dispatch }: Props) {
               )}
               {applied.map((c) => (
                 <div key={c.comboId} className="breakdown-row breakdown-combo">
-                  <span>役「{c.name}」</span>
+                  <span>
+                    役「{c.name}」{comboFreshnessNote(c) && <em className="combo-stale">{comboFreshnessNote(c)}</em>}
+                  </span>
                   <span>{comboEffectText(c)}</span>
                 </div>
               ))}
@@ -368,6 +396,7 @@ export function ResultScreen({ state, dispatch }: Props) {
             <span className="cutin-label">{newDiscoveries.has(cutIn.comboId) ? '役 初成立' : '成立'}</span>
             <span className={nameClass(cutIn.name)}>{cutIn.name}</span>
             <span className="cutin-effect">{comboEffectText(cutIn)}</span>
+            {comboFreshnessNote(cutIn) && <span className="cutin-stale">{comboFreshnessNote(cutIn)}</span>}
             {cutIn.extraText && <span className="cutin-extra">{cutIn.extraText}</span>}
             {newDiscoveries.has(cutIn.comboId) && <span className="cutin-codex">役図鑑に登録</span>}
           </div>

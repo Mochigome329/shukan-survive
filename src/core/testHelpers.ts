@@ -46,6 +46,7 @@ export function makeState(cards: CardInstance[], week = 1, overrides: Partial<Ru
     stress: 0,
     warnings: 0,
     freshnessByDef: {},
+    comboFreshness: {},
     modifiers: [],
     pendingFreshnessPenalty: 0,
     returnUsedThisWeek: false,

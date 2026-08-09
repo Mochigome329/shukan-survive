@@ -2632,14 +2632,17 @@ export function toComboDetail(
   entry: ComboEntry,
   status: 'applied' | 'suppressed' | 'notApplied',
   input: ComboMatchInput,
+  /** 役の鮮度（v7.31）。加算だけに掛かる。省略時は初出扱い */
+  freshness = 1,
 ): ComboScoreDetail {
   const applied = status === 'applied';
   return {
     comboId: entry.def.id,
     name: entry.def.name,
     status,
-    popularityAdd: applied ? entry.def.popularityAdd : 0,
-    buzzAdd: applied ? comboBuzzOf(entry.def, input) : 0,
+    freshness,
+    popularityAdd: applied ? Math.round(entry.def.popularityAdd * freshness) : 0,
+    buzzAdd: applied ? Math.round(comboBuzzOf(entry.def, input) * freshness * 10) / 10 : 0,
     scoreMultiplier: applied ? (entry.def.scoreMultiplier ?? 1) : 1,
     charMultiplier: applied ? (entry.def.charMultiplier ?? 1) : 1,
     cutInTemplate: entry.def.cutInTemplate,

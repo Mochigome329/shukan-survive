@@ -31,7 +31,19 @@ import type {
   WeekEvent,
   WeekLogEntry,
 } from './types';
-import { displayName, HAND_SIZE, HIGHLIGHT_LIMIT, MAX_PLAY_CARDS, MAX_STOCK, MAX_WARNINGS, PROTAGONIST_ID, REDRAWS_PER_WEEK } from './types';
+import {
+  COMBO_FRESHNESS_DECAY,
+  COMBO_FRESHNESS_MIN,
+  COMBO_FRESHNESS_RECOVERY,
+  displayName,
+  HAND_SIZE,
+  HIGHLIGHT_LIMIT,
+  MAX_PLAY_CARDS,
+  MAX_STOCK,
+  MAX_WARNINGS,
+  PROTAGONIST_ID,
+  REDRAWS_PER_WEEK,
+} from './types';
 export { HIGHLIGHT_LIMIT, PROTAGONIST_ID };
 import type { GameData } from './validate';
 
@@ -131,6 +143,7 @@ export function createRun(data: GameData, runSeed: number, options: RunOptions):
     stress: 0,
     warnings: 0,
     freshnessByDef: {},
+    comboFreshness: {},
     modifiers: [],
     pendingFreshnessPenalty: 0,
     returnUsedThisWeek: false,
@@ -571,6 +584,7 @@ export function previewScore(data: GameData, state: RunState, selection: PlaySel
     comboUsage: state.comboUsage,
     permanentBuzzByDef: state.permanentBuzzByDef,
     freshnessByDef: state.freshnessByDef,
+    comboFreshness: state.comboFreshness ?? {},
     foreshadowTokens: state.foreshadowTokens,
     foreshadowWeeks: state.foreshadowWeeks,
     stress: state.stress,
@@ -723,6 +737,23 @@ export function resolveWeek(
     }
   }
 
+  /*
+   * 8b. 役の鮮度を更新（v7.31）。展開カードの鮮度と同じく、
+   * 今週成立した役は下がり、成立しなかった役は戻る。
+   * 「宴会で全回復」の対象にはしない——あれは描くネタの仕切り直しであって、
+   * 読者が同じ役どころを見飽きた事実まで無かったことにはならない
+   */
+  const appliedComboIds = breakdown.combos.filter((c) => c.status === 'applied').map((c) => c.comboId);
+  const comboFreshness: Record<string, number> = {};
+  const knownCombos = new Set([...Object.keys(state.comboFreshness ?? {}), ...appliedComboIds]);
+  for (const comboId of knownCombos) {
+    const current = state.comboFreshness?.[comboId] ?? 1;
+    const next = appliedComboIds.includes(comboId)
+      ? Math.max(COMBO_FRESHNESS_MIN, current - COMBO_FRESHNESS_DECAY)
+      : Math.min(1, current + COMBO_FRESHNESS_RECOVERY);
+    if (next < 1) comboFreshness[comboId] = next;
+  }
+
   // 9. 期間効果の残り週数を更新（5.3節）。再使用時は残り期間を更新し、延長加算はしない
   const modifiers: ActiveModifier[] = state.modifiers
     .map((m) => ({ ...m, remaining: m.remaining - 1 }))
@@ -839,8 +870,16 @@ export function resolveWeek(
     },
   ];
 
-  // 編集部の要求（v5.2d）: 達成なら原稿料ボーナス、期限切れなら読者が離れて警告+1
-  const demandUpdate = updateDemands(campaignOf(data, state).demands, state, { log, cards, data }, state.week);
+  /*
+   * 編集部の要求（v5.2d）: 達成なら原稿料ボーナス、期限切れなら読者が離れて警告+1。
+   * v7.31: 最終回では判定そのものを回さない。以前は期限切れを警告に積んだうえで
+   * 下の quotaEntry.final で打ち切りだけを塞いでいたため、完結した回のリザルトに
+   * 「読者が離れた — 未達（警告+1）」が並び、ノルマがまだあるように見えていた。
+   * 最終回は結末を選ぶだけの回なので、要求の締切も原稿料も関係ない
+   */
+  const demandUpdate = quotaEntry?.final
+    ? { demands: state.demands, achieved: [], failed: [], earlyBonusFee: 0 }
+    : updateDemands(campaignOf(data, state).demands, state, { log, cards, data }, state.week);
   let demandWarnings = warnings;
   for (const _failed of demandUpdate.failed) {
     void _failed;
@@ -911,6 +950,7 @@ export function resolveWeek(
     funds: state.funds + breakdown.fee + demandFee,
     warnings: demandWarnings,
     freshnessByDef,
+    comboFreshness,
     modifiers,
     pendingFreshnessPenalty: freshnessPenaltyNextWeek,
     setupComboHistory,

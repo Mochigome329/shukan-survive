@@ -155,6 +155,14 @@ const GENERIC_GOOD = ['今週も面白かった', '来週も読みます', '単�
 const GENERIC_MID = ['まあまあかな', '悪くはないけど…', '安定して読める'];
 const GENERIC_BAD = ['そろそろ大きな動きがほしい', '今週はちょっと停滞気味', '打ち切られないか心配', '展開が読めてしまう'];
 
+/**
+ * 最終回で「積み上げが実った」とみなす倍率のしきい値（v7.31）。
+ * 完結ボーナス×結末カード倍率×週スコア倍率。仕込み役をそれなりに集めて
+ * 結末カードの倍率が乗れば届く程度の値で、通常連載・短期連載の
+ * どちらでも同じ物差しとして使える（完結ボーナスの伸び方だけが幕構成で変わる）
+ */
+const FINALE_GOOD_REWARD = 2;
+
 const templateOf = (comboId: string): CutInTemplate =>
   COMBO_REGISTRY.find((c) => c.id === comboId)?.cutInTemplate ?? 'normal';
 
@@ -170,6 +178,19 @@ function pick(rng: Rng, pool: string[], used: Set<string>, excludeNextWeek: bool
 }
 
 const GENERIC_FINALE = ['最終回、最高でした', '単行本出たら買う', 'これが読みたかった', '有終の美すぎる', '完結おめでとう'];
+/**
+ * 最終回だが、積み上げてきたものがそれほど実らなかったとき（v7.31）。
+ * 最終回にノルマは無いので「打ち切られないか心配」のような
+ * 連載が続く前提の声を出してはいけない。物足りなさは物足りなさとして、
+ * ちゃんと完結した回の感想として書く
+ */
+const GENERIC_FINALE_MID = [
+  'きれいにまとまってた',
+  'もう少し読みたかったな',
+  '駆け足だった気もする',
+  'お疲れさまでした',
+  'ここで終わりか……',
+];
 
 /**
  * 読者の声を2〜3件返す（同じ週は常に同じ内容になるようシード固定）。
@@ -192,17 +213,32 @@ export function pickVoices(breakdown: ScoreBreakdown, runSeed: number, week: num
   }
 
   const ratio = breakdown.quota > 0 ? breakdown.finalScore / breakdown.quota : 0;
-  const genericPool = isEnding
-    ? ratio >= 1
+  /*
+   * v7.31: 最終回とそれ以外の「連載が終わる週」を分ける。
+   * v7.28 で最終回のノルマを 0 にした結果、上の ratio が常に 0 になり、
+   * isEnding=true の分岐が必ず GENERIC_BAD（「打ち切られないか心配」）へ落ちていた。
+   * どれだけ高得点で完結しても打ち切り寸前の声が出る、という状態だった。
+   *
+   * 最終回はノルマが無いので達成度では測れない。代わりに
+   * 「積み上げてきたものが結末で実ったか」＝完結ボーナス（仕込み役の種類数）×
+   * 結末カードと週スコアの倍率で見る。打ち切りエンド（finaleEnding が無い）は
+   * 従来どおり GENERIC_BAD でよい
+   */
+  const isFinale = breakdown.finaleEnding !== null;
+  const finaleReward = breakdown.completionBonus * breakdown.endingMultiplier * breakdown.weekMultiplier;
+  const genericPool = isFinale
+    ? finaleReward >= FINALE_GOOD_REWARD
       ? GENERIC_FINALE
-      : GENERIC_BAD
-    : breakdown.quotaBypassed
-      ? GENERIC_MID
-      : ratio >= 1.5
-        ? GENERIC_GOOD
-        : ratio >= 1
-          ? [...GENERIC_GOOD, ...GENERIC_MID]
-          : GENERIC_BAD;
+      : GENERIC_FINALE_MID
+    : isEnding
+      ? GENERIC_BAD
+      : breakdown.quotaBypassed
+        ? GENERIC_MID
+        : ratio >= 1.5
+          ? GENERIC_GOOD
+          : ratio >= 1
+            ? [...GENERIC_GOOD, ...GENERIC_MID]
+            : GENERIC_BAD;
   while (voices.length < 3) {
     const v = pick(rng, genericPool, used, isEnding);
     if (!v) break;

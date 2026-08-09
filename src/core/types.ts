@@ -260,7 +260,11 @@ export interface ComboScoreDetail {
   comboId: string;
   name: string;
   status: 'applied' | 'suppressed' | 'notApplied';
+  /** 役の鮮度（v7.31）。1.0 なら初出。popularityAdd/buzzAdd には適用済み */
+  freshness: number;
+  /** 鮮度適用後の人気度加算 */
   popularityAdd: number;
+  /** 鮮度適用後の話題性加算 */
   buzzAdd: number;
   /** 週スコア乗算（覚醒×3など。適用されたときのみ1以外） */
   scoreMultiplier: number;
@@ -435,6 +439,11 @@ export interface RunState {
   warnings: number;
   /** 展開の種類ごとの鮮度 0.25〜1.0（未登録は1.0。v5.2d） */
   freshnessByDef: Record<string, number>;
+  /**
+   * 役ごとの鮮度 0.4〜1.0（未登録は1.0。v7.31）。
+   * 古いセーブには無いので読み出し側は `?? {}` で受ける（save.ts の migrate で補う）
+   */
+  comboFreshness?: Record<string, number>;
   /** 進行中の期間効果（5.3節、M3） */
   modifiers: ActiveModifier[];
   /** 次週の開始時に適用する鮮度低下（夢オチ、M3） */
@@ -491,6 +500,21 @@ export const TRAINING_FLAG_MAX = 2;
 export const TRAINING_BONUS_PER_FLAG = 3;
 /** 鮮度の下限（3.1節）。これ以上は下がらない */
 export const FRESHNESS_MIN = 0.25;
+/*
+ * 役の鮮度（v7.31）。展開カードの鮮度と同じ考え方を役にも入れる。
+ *
+ * 場にライバルや相棒を出しておくと、あとは毎週「バトル」を選ぶだけで
+ * 「ライバル対決」（人気+15）や「阿吽の呼吸」（話題+2）が延々と成立し続け、
+ * 週ごとに何を描くか考える意味が薄れていた。同じ役を繰り返すほど
+ * 人気度・話題性の加算が目減りし、しばらく描かなければ戻る。
+ *
+ * カードの鮮度（-0.25 / 下限0.25）より緩いのは、役は「狙って組むもの」で、
+ * 一度組んだ形をすぐ捨てさせると連載としての一貫性が失われるため。
+ * 4回目で下限に達し、そこからは半分弱の効果で成立し続ける
+ */
+export const COMBO_FRESHNESS_MIN = 0.4;
+export const COMBO_FRESHNESS_DECAY = 0.2;
+export const COMBO_FRESHNESS_RECOVERY = 0.2;
 /** 今週の話に出演させられるキャラの上限（v6.0） */
 export const HIGHLIGHT_LIMIT = 6;
 /** 出演していない在籍キャラが人気度に寄与する割合（v6.1） */

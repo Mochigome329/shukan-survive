@@ -829,13 +829,16 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
         <div className="overlay" onClick={() => dispatch({ type: 'dismissFinaleTutorial' })}>
           <div className="explain-box">
             <h2>最終回の描き方</h2>
+            {/* v7.31: 「展開カードを5枚描ける」という v7.27 までの説明が残っていた。
+                v7.28 で最終回は手札を配らなくなっている（run.ts の handSize）ので、実物と合わせる */}
             <p className="explain-formula">
-              最終回はルールが変わる。<strong>展開カードは5枚</strong>まで描け、
-              <strong>再登場待ちは全員戻せる</strong>（総集編と宴会だけは描けない）。
+              最終回は<strong>展開カードを出さない</strong>。人気度と話題性は
+              <strong>これまでの連載の中央値</strong>になり、ノルマも無い（打ち切られない）。
             </p>
             <p className="explain-formula">
-              確定の前に<strong>結末カード</strong>が提示される。これまでの連載内容で
+              代わりに<strong>結末カード</strong>が提示される。これまでの連載内容で
               <strong>選べる結末が変わり</strong>、1枚だけ選ぶ。週スコアの倍率や未回収の伏線の扱いも結末ごとに違う。
+              <strong>再登場待ちは全員戻せる</strong>。
             </p>
             <p className="explain-formula">
               さらに、連載中に成立させた<strong>仕込み役の種類数</strong>だけ完結ボーナス倍率が上がる（最大×2.0）。

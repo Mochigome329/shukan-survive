@@ -68,7 +68,14 @@ function migrate(data: SaveData): SaveData | null {
    * 手で書き換えられた不正な文字列も入りうる。ここで一度だけ通常連載へ寄せておけば、
    * 以降どこで run.mode を読んでも安全になる
    */
-  return { ...data, run: { ...data.run, mode: normalizeMode(data.run.mode) } };
+  /*
+   * v7.31: 役の鮮度を補う。古いセーブには無いので、読んだ時点で
+   * 「全部の役が初出」＝空オブジェクトとして扱う（続きから遊んでも損をしない）
+   */
+  return {
+    ...data,
+    run: { ...data.run, mode: normalizeMode(data.run.mode), comboFreshness: data.run.comboFreshness ?? {} },
+  };
 }
 
 /** 最低限の形チェック。壊れたJSONを読み込んでゲームが崩壊するのを防ぐ */

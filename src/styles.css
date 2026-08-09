@@ -1357,6 +1357,34 @@ button {
   vertical-align: middle;
 }
 
+/*
+ * 役の鮮度が下がっているときの但し書き（v7.31）。
+ * 「図鑑登録!」と同じ位置に出るが、あちらは嬉しい報せなので反転した色地、
+ * こちらは減点の説明なので枠線だけの控えめな見た目にして取り違えを防ぐ
+ */
+.combo-stale {
+  font-style: normal;
+  font-size: 10px;
+  font-weight: 700;
+  color: #8a7f6d;
+  border: 1px solid #cfc4b0;
+  border-radius: 3px;
+  padding: 0 4px;
+  margin-left: 6px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.cutin-stale {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8a7f6d;
+}
+
+.cutin-shock .cutin-stale {
+  color: #c4a9a3;
+}
+
 .cutin-codex {
   font-size: 11px;
   font-weight: 800;

@@ -25,6 +25,7 @@ import type {
   StateChange,
 } from './types';
 import {
+  COMBO_FRESHNESS_MIN,
   FRESHNESS_MIN,
   STRESS_POPULARITY_PENALTY,
   STRESS_RELEASE_BUZZ,
@@ -50,6 +51,8 @@ export interface ScoreInput {
   permanentBuzzByDef?: Record<string, number>;
   /** 定義ID単位の鮮度（v5.2d）。未登録は1.0 */
   freshnessByDef?: Record<string, number>;
+  /** 役ID単位の鮮度（v7.31）。未登録は1.0。役の人気度・話題性加算にだけ掛かる */
+  comboFreshness?: Record<string, number>;
   /** 所持している伏線トークン（役「伏線回収」の効果量） */
   foreshadowTokens?: number;
   /** 伏線を張った話数（寝かせた週数のボーナス、v5.3） */
@@ -268,10 +271,18 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
   const evaluation = combosDisabled
     ? { applied: [], suppressed: [], notApplied: [], weekMultiplier: 1 }
     : evaluateCombos(comboInput, comboUsage);
+  /*
+   * 役の鮮度（v7.31）。同じ役を繰り返すほど人気度・話題性の加算が目減りする。
+   * 乗算役（scoreMultiplier/charMultiplier）には掛けない——倍率を端数にすると
+   * 「覚醒×3」のような読み札がそのまま読めなくなるため、加算だけを対象にする
+   */
+  const comboFreshness = input.comboFreshness ?? {};
+  const freshOf = (comboId: string): number =>
+    Math.min(1, Math.max(COMBO_FRESHNESS_MIN, comboFreshness[comboId] ?? 1));
   const combos: ComboScoreDetail[] = [
-    ...evaluation.applied.map((e) => toComboDetail(e, 'applied', comboInput)),
-    ...evaluation.suppressed.map((e) => toComboDetail(e, 'suppressed', comboInput)),
-    ...evaluation.notApplied.map((e) => toComboDetail(e, 'notApplied', comboInput)),
+    ...evaluation.applied.map((e) => toComboDetail(e, 'applied', comboInput, freshOf(e.def.id))),
+    ...evaluation.suppressed.map((e) => toComboDetail(e, 'suppressed', comboInput, freshOf(e.def.id))),
+    ...evaluation.notApplied.map((e) => toComboDetail(e, 'notApplied', comboInput, freshOf(e.def.id))),
   ];
 
   // 1〜3. 基礎人気度 + 恒久/一時補正（修行フラグ消費） → キャラ単位の乗算役
@@ -318,7 +329,10 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
   });
 
   // 4〜5. 全キャラ合計 + 人気度への加算役（王道・ライバル対決）− 緊張による一時低下
-  const comboPopularityAdd = evaluation.applied.reduce((sum, e) => sum + e.def.popularityAdd, 0);
+  const comboPopularityAdd = evaluation.applied.reduce(
+    (sum, e) => sum + Math.round(e.def.popularityAdd * freshOf(e.def.id)),
+    0,
+  );
   // 出演していない在籍キャラも、連載に居続けている分だけ半分の人気度で効く（v6.1）。
   // 修行フラグは消費せず、キャラ乗算役や役の条件にも関わらない
   const onStage = new Set(characters.map((c) => c.instance.instanceId));
@@ -384,7 +398,11 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
    * 「これまでの話題性の中央値」に置き換える（v7.28）
    */
   const buzzTotal = finaleBase ? finaleBase.buzz : developmentDetails.reduce((sum, d) => sum + d.effective, 0);
-  const comboBuzzTotal = evaluation.applied.reduce((sum, e) => sum + comboBuzzOf(e.def, comboInput), 0);
+  // 話題性は小数を許すが、明細の表示と合わせて0.1刻みに丸める（v7.31）
+  const comboBuzzTotal = evaluation.applied.reduce(
+    (sum, e) => sum + Math.round(comboBuzzOf(e.def, comboInput) * freshOf(e.def.id) * 10) / 10,
+    0,
+  );
   // 解放したぶんの話題性（カタルシス、v5.3）
   const releaseBuzz = stressReleased * STRESS_RELEASE_BUZZ;
   // 弔い合戦: 死亡済み1人につき加算（v5.8b）
@@ -416,7 +434,7 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     ? []
     : evaluatePostScoreCombos({ ...comboInput, weekScore: finalScore }, comboUsage);
   for (const entry of postCombos) {
-    combos.push(toComboDetail(entry, 'applied', comboInput));
+    combos.push(toComboDetail(entry, 'applied', comboInput, freshOf(entry.def.id)));
   }
 
   // カード効果を状態変化リストへ（6.1節の発動段階に従い、適用はresolveWeekが行う）

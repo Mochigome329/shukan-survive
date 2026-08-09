@@ -819,6 +819,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
          * 第1話（序）から飛ぶと第4話（短期の破）でも「第一幕」の見出しが残っていた
          */
         actIntro: actStartingAtIn(campaignOf(state.data, run).acts, week)?.act ?? null,
+        /*
+         * v7.31: 飛んだ先の週の説明も出す。actIntro と同じ理由で、
+         * デバッグで最終回へ飛ぶと最終回チュートリアルだけが出ず、
+         * 文言の確認に通しプレイが要る状態だった
+         */
+        showFinaleTutorial: quotaAt(state.data, run, week)?.final === true,
+        showVoteTutorial: quotaAt(state.data, run, week)?.boss === '人気投票',
         notice: `第${week}話へジャンプした（デバッグ）`,
       };
     }
