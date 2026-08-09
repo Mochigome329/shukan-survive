@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gameReducer';
+import { totalWeeksOf } from '../core/campaign';
+import { type GameAction, type GameState } from '../state/gameReducer';
 
 interface Props {
   state: GameState;
@@ -20,6 +21,9 @@ export function DebugPanel({ state, dispatch }: Props) {
 
   if (!state.run) return null;
 
+  // 話数の上限は連載の長さで変わる（v7.30）
+  const lastWeek = totalWeeksOf(state.data, state.run);
+
   const candidates = cardQuery
     ? [...state.data.definitions.values()].filter((d) => d.name.includes(cardQuery) || d.id.includes(cardQuery)).slice(0, 12)
     : [];
@@ -36,7 +40,7 @@ export function DebugPanel({ state, dispatch }: Props) {
             <input
               type="number"
               min={1}
-              max={MAX_PLAYABLE_WEEK}
+              max={lastWeek}
               value={weekInput}
               onChange={(e) => setWeekInput(e.target.value)}
             />
@@ -48,7 +52,7 @@ export function DebugPanel({ state, dispatch }: Props) {
             </button>
           </div>
           <div className="debug-row">
-            <button type="button" onClick={() => dispatch({ type: 'debugJumpWeek', week: MAX_PLAYABLE_WEEK })}>
+            <button type="button" onClick={() => dispatch({ type: 'debugJumpWeek', week: lastWeek })}>
               最終回へ
             </button>
             <button type="button" onClick={() => dispatch({ type: 'debugFillSetupCombos' })}>

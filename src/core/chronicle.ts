@@ -5,7 +5,8 @@
  * 同じ数字を2か所で別々に計算すると必ずずれるので、ここに集約する。
  * 得点計算には一切関与しない、事後の集計専用。
  */
-import { actStartingAt, type ActInfo } from './acts';
+import { actStartingAtIn, type ActInfo } from './acts';
+import { campaignOf } from './campaign';
 import { finaleBaseScore } from './finale';
 import { displayName, MAX_WARNINGS, type CardInstance, type RunState, type WeekEvent, type WeekLogEntry } from './types';
 import type { GameData } from './validate';
@@ -76,9 +77,10 @@ export function buildChronicle(data: GameData, run: RunState): Chronicle {
    * 代わりに「その連載の平常運転（ベース点）の何倍を出したか」を達成度として使う。
    * 「有終の美」（ベース点の3倍）と同じ物差しなので、年表の見えかたと役の基準が揃う
    */
+  const campaign = campaignOf(data, run);
   const baseScore = finaleBaseScore(run);
   const weeks: ChronicleWeek[] = run.log.map((entry: WeekLogEntry) => {
-    const quotaEntry = data.quotas.get(entry.week);
+    const quotaEntry = campaign.quotas.get(entry.week);
     const events = entry.events ?? [];
     const boss = quotaEntry?.boss ?? null;
     const final = quotaEntry?.final ?? false;
@@ -98,7 +100,7 @@ export function buildChronicle(data: GameData, run: RunState): Chronicle {
       boss,
       final,
       quiet: events.length === 0 && entry.cleared && !boss && !final,
-      actStart: actStartingAt(entry.week),
+      actStart: actStartingAtIn(campaign.acts, entry.week),
     };
   });
 

@@ -3,7 +3,8 @@
  * カードパック（3枚提示・1枚選択・価格2）、作画強化、恒久サービスを扱う。
  * v5.6: カードの提示は幕タグと直近の展開に応じた重み付き抽選にする（design_story_types.md）。
  */
-import { actOfWeek } from './acts';
+import { actOfWeekIn } from './acts';
+import { campaignOf } from './campaign';
 import { pendingDemandHints } from './demands';
 import { mulberry32, hashSeed, weightedSample } from './rng';
 import type { Act, CardInstance, RunState } from './types';
@@ -230,10 +231,17 @@ export function rollPack(data: GameData, state: RunState, maxWeek: number, rerol
       ? hashSeed(state.runSeed, 'shop', state.week, state.shopPurchases, 'reroll', reroll)
       : hashSeed(state.runSeed, 'shop', state.week, state.shopPurchases),
   );
-  const currentAct = actOfWeek(state.week);
+  const campaign = campaignOf(data, state);
+  const currentAct = actOfWeekIn(campaign.acts, state.week);
   const boosted = followUpBoostedIds(data, state);
   // 期限が近い編集部の要求があれば、その手立てになるカードを回す（v7.16）
-  const hints = pendingDemandHints(state.demands, state.week);
+  const hints = pendingDemandHints(
+    campaign.demands,
+    state.demands,
+    state.week,
+    campaign.balance.hintBoostWeeks,
+    campaign.balance.hintForceWeeks,
+  );
   const hintBoost = new Set(hints.boost);
 
   const weightOf = (id: string) => {

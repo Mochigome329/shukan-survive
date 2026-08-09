@@ -32,10 +32,14 @@ import {
   TRAINING_FLAG_MAX,
 } from './types';
 import { displayName, HIGHLIGHT_LIMIT, OFF_STAGE_POPULARITY_RATE, PROTAGONIST_ID } from './types';
+import { normalizeMode, type CampaignMode } from './campaign';
+import { actOfWeekIn } from './acts';
 import type { GameData } from './validate';
 
 export interface ScoreInput {
   data: GameData;
+  /** 連載の長さ（v7.30）。幕の区切りとノルマ表がこれで変わる。省略時は通常連載 */
+  mode?: CampaignMode;
   /** ラン中の全カード実体（キャストと展開の検索に使う） */
   cards: readonly CardInstance[];
   week: number;
@@ -190,10 +194,13 @@ function restoreDebutFactionChanges(input: ScoreInput, targetId: string): StateC
  */
 export function computeScore(input: ScoreInput): ScoreBreakdown {
   const { data, week } = input;
+  // 幕の区切りとノルマ表はキャンペーン（連載の長さ）で変わる（v7.30）
+  const campaign = data.campaigns[normalizeMode(input.mode)];
+  const act = actOfWeekIn(campaign.acts, week);
   const comboUsage = input.comboUsage ?? { oncePerRun: [], perCharacter: {} };
   const permanentBuzzByDef = input.permanentBuzzByDef ?? {};
   const { characters, developments } = resolvePlayed(input);
-  const quotaEntry = data.quotas.get(week);
+  const quotaEntry = campaign.quotas.get(week);
   if (!quotaEntry) throw new Error(`第${week}話のノルマが定義されていません`);
 
   const stateChanges: StateChange[] = [];
@@ -251,9 +258,12 @@ export function computeScore(input: ScoreInput): ScoreBreakdown {
     layer1ComboIds: [],
     weekScore: 0,
     quota: quotaEntry.quota,
+    act,
     isFinale: quotaEntry.final ?? false,
     finaleBaseScore: input.finaleBase ? input.finaleBase.popularity * input.finaleBase.buzz : 0,
     setupComboCount: input.setupComboCount ?? 0,
+    legendaryCompletionCombos: campaign.balance.legendaryCompletionCombos,
+    yuushuuMinScore: campaign.balance.yuushuuMinScore,
   };
   const evaluation = combosDisabled
     ? { applied: [], suppressed: [], notApplied: [], weekMultiplier: 1 }

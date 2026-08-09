@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { COMBO_REGISTRY } from '../core/combos';
-import { COMPLETION_BONUS_CAP, COMPLETION_BONUS_PER_COMBO } from '../core/finale';
+import { COMPLETION_BONUS_CAP } from '../core/finale';
 import type { ComboScoreDetail } from '../core/types';
 import { displayName, MAX_WARNINGS } from '../core/types';
-import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gameReducer';
+import { campaignOf, totalWeeksOf } from '../core/campaign';
+import { type GameAction, type GameState } from '../state/gameReducer';
 import { playCheer, playCutinNote } from './audio';
 import { addDiscovered, getDiscovered } from './discovery';
 import { SfxMark } from './SfxMark';
@@ -111,7 +112,7 @@ export function ResultScreen({ state, dispatch }: Props) {
   const playedWeek = run.week - 1;
   const cleared = b.cleared;
   const cancelled = result.outcome === 'cancelled';
-  const isLastImplemented = !cancelled && run.week > MAX_PLAYABLE_WEEK;
+  const isLastImplemented = !cancelled && run.week > totalWeeksOf(state.data, run);
 
   const applied = b.combos.filter((c) => c.status === 'applied');
   const suppressed = b.combos.filter((c) => c.status !== 'applied');
@@ -144,7 +145,7 @@ export function ResultScreen({ state, dispatch }: Props) {
 
   // 最終回だけ、完結ボーナスの元になった仕込み役を1つずつ積み上げて見せる（v6.3、design_finale.md 7節）。
   // b.setupComboIds はこの週の完結ボーナス計算に使われた「これまでの」仕込み役（今週分の新規成立は含まない）
-  const isFinaleWeek = state.data.quotas.get(playedWeek)?.final ?? false;
+  const isFinaleWeek = campaignOf(state.data, run).quotas.get(playedWeek)?.final ?? false;
   const bonusCombos = isFinaleWeek
     ? b.setupComboIds.map((id) => COMBO_REGISTRY.find((c) => c.id === id)).filter((c): c is (typeof COMBO_REGISTRY)[number] => !!c)
     : [];
@@ -177,7 +178,10 @@ export function ResultScreen({ state, dispatch }: Props) {
   const bonusStep = step > cutInSteps && step <= bonusCutInSteps ? step - cutInSteps : null;
   const bonusCutIn = bonusStep ? bonusCombos[bonusStep - 1]! : null;
   const bonusRunningTotal = bonusStep
-    ? Math.min(COMPLETION_BONUS_CAP, Math.round((1 + COMPLETION_BONUS_PER_COMBO * bonusStep) * 10) / 10)
+    ? Math.min(
+        COMPLETION_BONUS_CAP,
+        Math.round((1 + campaignOf(state.data, run).balance.completionBonusPerCombo * bonusStep) * 10) / 10,
+      )
     : null;
   const showScore = step >= bonusCutInSteps + 1;
 

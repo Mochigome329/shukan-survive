@@ -1,12 +1,13 @@
 /** テストとシミュレーションで共有するヘルパー */
 import cardsJson from '../data/cards.json';
 import quotasJson from '../data/quotas.json';
+import quotasShortJson from '../data/quotas-short.json';
 import tutorialJson from '../data/tutorial.json';
 import { buildGameData, type GameData } from './validate';
 import type { CardInstance, RunState } from './types';
 
 export function loadTestData(): GameData {
-  return buildGameData(cardsJson, quotasJson, tutorialJson);
+  return buildGameData(cardsJson, quotasJson, tutorialJson, quotasShortJson);
 }
 
 /**

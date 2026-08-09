@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { markPlayed } from './playHistory';
 import { initialCastChoices, PROTAGONIST_ID, STARTING_CAST_PICKS } from '../core/run';
 import type { Faction } from '../core/types';
+import type { CampaignMode } from '../core/campaign';
 import type { GameAction, GameState } from '../state/gameReducer';
 import { playPico } from './audio';
 
@@ -28,6 +29,8 @@ export function SetupScreen({ state, dispatch }: Props) {
   const [factionChoices, setFactionChoices] = useState<Record<string, Faction>>({});
   // 主人公・共演者候補のニックネーム（v7.29）。定義ID単位、空欄なら既定名のまま
   const [nicknames, setNicknames] = useState<Record<string, string>>({});
+  // 連載の長さ（v7.30）。既定は通常連載
+  const [mode, setMode] = useState<CampaignMode>('long');
 
   const toggleCast = (defId: string) => {
     setCast((prev) => {
@@ -49,6 +52,7 @@ export function SetupScreen({ state, dispatch }: Props) {
       startingCast: cast,
       startingFactions: factionChoices,
       startingNicknames: nicknames,
+      mode,
     });
   };
 
@@ -69,6 +73,29 @@ export function SetupScreen({ state, dispatch }: Props) {
           おまかせ
         </button>
       </div>
+
+      <p className="setup-label">連載の長さ</p>
+      <div className="setup-mode-row">
+        {(['long', 'short'] as const).map((m) => {
+          const campaign = data.campaigns[m];
+          return (
+            <button
+              key={m}
+              type="button"
+              className={`setup-mode ${mode === m ? 'setup-mode-selected' : ''}`}
+              onClick={() => setMode(m)}
+            >
+              <span className="setup-mode-name">{campaign.label}</span>
+              <span className="setup-mode-meta">全{campaign.totalWeeks}話</span>
+            </button>
+          );
+        })}
+      </div>
+      <p className="setup-hint">
+        {mode === 'short'
+          ? '短期連載は全13話。三幕の流れはそのままに、ひと通り遊べる長さに詰めてある'
+          : '通常連載は全25話。じっくり仕込みを積み上げて完結を目指す'}
+      </p>
 
       <p className="setup-label">
         第1話の共演者（{cast.length}/{STARTING_CAST_PICKS}）

@@ -8,7 +8,7 @@
  * - 連載の内容に応じて選べる「結末カード」が提示され、1枚だけ選ぶ
  */
 import { SETUP_COMBO_IDS } from './combos';
-import type { RunState } from './types';
+import type { RunState, WeekLogEntry } from './types';
 import type { GameData } from './validate';
 
 /** 最終回のプレイ上限（通常は4枚） */
@@ -32,10 +32,24 @@ function median(values: number[]): number {
 }
 
 /**
- * ボス週「人気投票」は話題性を固定1にする特殊ルールなので、母集団から外す（v7.28）。
- * 連載の実力ではなくルールで作られた数字なので、混ぜると中央値が歪む
+ * 中央値の母集団に入れてよい週か（v7.30）。
+ *
+ * 外すのは2種類。
+ * - **最終回そのもの**: 採点時はまだ記録されていないので影響しないが、
+ *   採点後（年表の集計）に呼ぶと自分自身を数えてベース点がずれる
+ * - **ボス週「人気投票」**: 話題性を固定1にする特殊ルールなので、
+ *   連載の実力ではなくルールで作られた数字になり、混ぜると中央値が歪む
+ *
+ * v7.30より前のログには週種別（final / boss）が無い。その頃は通常連載しか無かったので、
+ * 話数とノルマから通常連載として推定する（第16話＝人気投票、ノルマ0＝最終回）
  */
-const POPULARITY_VOTE_WEEK = 16;
+const LEGACY_POPULARITY_VOTE_WEEK = 16;
+
+function countsTowardBase(w: WeekLogEntry): boolean {
+  const hasWeekKind = w.final !== undefined || w.boss !== undefined;
+  if (hasWeekKind) return !w.final && w.boss !== '人気投票';
+  return w.week !== LEGACY_POPULARITY_VOTE_WEEK && w.quota > 0;
+}
 
 export interface FinaleBase {
   popularity: number;
@@ -56,13 +70,7 @@ const LEGACY_BUZZ_ESTIMATE = 30;
  * 1週も残らなければ週スコアの中央値から逆算する
  */
 export function finaleBase(state: RunState): FinaleBase {
-  /*
-   * 最終回そのものは母集団に入れない。
-   * 採点時はまだ記録されていないので影響しないが、採点後（年表の集計など）に
-   * 呼ぶと自分自身を含んでしまい、同じベース点が別の値になってしまう。
-   * ノルマの無い週＝最終回なので、それを目印に外す
-   */
-  const played = state.log.filter((w) => w.week !== POPULARITY_VOTE_WEEK && w.quota > 0);
+  const played = state.log.filter(countsTowardBase);
   const usable = played.filter((w) => typeof w.popularity === 'number' && typeof w.buzz === 'number');
   if (usable.length > 0) {
     return {
@@ -83,12 +91,15 @@ export function finaleBaseScore(state: RunState): number {
   return base.popularity * base.buzz;
 }
 
-/** 完結ボーナス: 1 + 0.1 × 仕込み役の種類数。上限は×2.0 */
-export const COMPLETION_BONUS_PER_COMBO = 0.1;
+/**
+ * 完結ボーナス: 1 + （1種あたりの倍率）× 仕込み役の種類数。上限は×2.0。
+ * 1種あたりの倍率はキャンペーンごと（通常0.1で10種＝上限 / 短期0.25で4種＝上限、v7.30）。
+ * 短期は13話しかなく仕込み役が中央値2種しか溜まらない実測なので、上限に届く水準へ寄せている
+ */
 export const COMPLETION_BONUS_CAP = 2.0;
 
-export function completionBonus(state: RunState): number {
-  const raw = 1 + COMPLETION_BONUS_PER_COMBO * state.setupComboHistory.length;
+export function completionBonus(state: RunState, perCombo: number): number {
+  const raw = 1 + perCombo * state.setupComboHistory.length;
   return Math.min(COMPLETION_BONUS_CAP, Math.round(raw * 10) / 10);
 }
 

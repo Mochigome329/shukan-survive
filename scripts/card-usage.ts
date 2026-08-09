@@ -6,6 +6,7 @@
  */
 import cardsJson from '../src/data/cards.json';
 import quotasJson from '../src/data/quotas.json';
+import quotasShortJson from '../src/data/quotas-short.json';
 import tutorialJson from '../src/data/tutorial.json';
 import { buildGameData } from '../src/core/validate';
 import { castOf, createRun, previewScore, resolveWeek, rosterOf, startWeek } from '../src/core/run';
@@ -27,7 +28,7 @@ function argValue(name: string, fallback: number): number {
 
 const runs = argValue('runs', 30);
 const weeks = 25;
-const data = buildGameData(cardsJson, quotasJson, tutorialJson);
+const data = buildGameData(cardsJson, quotasJson, tutorialJson, quotasShortJson);
 
 /**
  * simulator.ts の findBestSafePlay と同じ方針（キャストを失う自滅プレイは除外）に加えて、
@@ -113,7 +114,7 @@ for (let r = 0; r < runs; r++) {
     }
 
     let endingId: string | null = null;
-    if (data.quotas.get(w)?.final) {
+    if (data.campaigns.long.quotas.get(w)?.final) {
       let bestScore = -1;
       for (const card of offeredEndings(data, state)) {
         const score = previewScore(data, state, selection, card.id).finalScore;

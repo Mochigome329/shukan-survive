@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { availableServices, ART_UPGRADE_AMOUNT, ART_UPGRADE_PRICE, PACK_PRICE } from '../core/shop';
 import { displayName } from '../core/types';
+import { campaignOf } from '../core/campaign';
 import { SHOP_REROLL_LIMIT, type GameAction, type GameState } from '../state/gameReducer';
 import { playPurchase } from './audio';
 import { SoundToggle } from './SoundToggle';
@@ -107,7 +108,8 @@ export function ShopScreen({ state, dispatch }: Props) {
    * 最終回は展開カードを出さず、キャストもベース点（中央値）に置き換わるので、
    * キャラも展開も出番が無いまま連載が終わってしまう。サービスの依頼だけ残す
    */
-  const isFinaleNext = data.quotas.get(run.week)?.final ?? false;
+  const campaign = campaignOf(data, run);
+  const isFinaleNext = campaign.quotas.get(run.week)?.final ?? false;
 
   return (
     <div className="screen shop-screen" data-tutorial-target={shopTutorial?.target}>
@@ -130,7 +132,7 @@ export function ShopScreen({ state, dispatch }: Props) {
       <p className="shop-lead">
         {isFinaleNext
           ? `次はいよいよ最終回（第${run.week}話）。結末を選ぶだけの回なのでカードは仕入れられない。`
-          : `次の話（第${run.week}話・ノルマ${data.quotas.get(run.week)?.quota ?? '-'}）に向けて補強できる。`}
+          : `次の話（第${run.week}話・ノルマ${campaign.quotas.get(run.week)?.quota ?? '-'}）に向けて補強できる。`}
       </p>
 
       {state.artUpgradeMode ? (

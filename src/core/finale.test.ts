@@ -32,7 +32,7 @@ const applied = (b: { combos: { name: string; status: string }[] }) =>
 
 describe('最終回の固有ルール（v5.9）', () => {
   it('第25話は最終回として定義されている', () => {
-    expect(data.quotas.get(FINALE)?.final).toBe(true);
+    expect(data.campaigns.long.quotas.get(FINALE)?.final).toBe(true);
   });
 
   it('プレイ上限が5枚に増える', () => {
@@ -75,13 +75,23 @@ describe('最終回の固有ルール（v5.9）', () => {
 });
 
 describe('完結ボーナス（v5.9）', () => {
-  it('仕込み役の種類数×0.1で増え、×2.0で頭打ちになる', () => {
+  it('通常連載は仕込み役の種類数×0.1で増え、×2.0で頭打ちになる', () => {
     const withSetups = (n: number) =>
       ({ setupComboHistory: Array.from({ length: n }, (_, i) => `s${i}`) }) as unknown as RunState;
-    expect(completionBonus(withSetups(0))).toBe(1);
-    expect(completionBonus(withSetups(5))).toBe(1.5);
-    expect(completionBonus(withSetups(10))).toBe(2);
-    expect(completionBonus(withSetups(20))).toBe(COMPLETION_BONUS_CAP);
+    const per = data.campaigns.long.balance.completionBonusPerCombo;
+    expect(completionBonus(withSetups(0), per)).toBe(1);
+    expect(completionBonus(withSetups(5), per)).toBe(1.5);
+    expect(completionBonus(withSetups(10), per)).toBe(2);
+    expect(completionBonus(withSetups(20), per)).toBe(COMPLETION_BONUS_CAP);
+  });
+
+  it('短期連載は0.25/種で、4種で頭打ちになる（v7.30）', () => {
+    const withSetups = (n: number) =>
+      ({ setupComboHistory: Array.from({ length: n }, (_, i) => `s${i}`) }) as unknown as RunState;
+    const per = data.campaigns.short.balance.completionBonusPerCombo;
+    expect(completionBonus(withSetups(2), per)).toBe(1.5);
+    expect(completionBonus(withSetups(4), per)).toBe(2);
+    expect(completionBonus(withSetups(10), per)).toBe(COMPLETION_BONUS_CAP);
   });
 
   it('最終回のスコアに完結ボーナスが掛かる', () => {

@@ -1,9 +1,10 @@
 /**
  * データファイルのZod検証（設計書 14.4節）。
- * cards.json / quotas.json / tutorial.json を起動時に検証し、
+ * cards.json / quotas.json / quotas-short.json / tutorial.json を起動時に検証し、
  * 不正な定義は開発画面で明示的に停止させる。
  */
 import { z } from 'zod';
+import { buildCampaign, type Campaign, type CampaignMode } from './campaign';
 import type { CardDefinition } from './types';
 
 const genreTagSchema = z.enum(['battle']);
@@ -129,14 +130,18 @@ export interface QuotaEntry {
 /** 検証済みデータ一式。コア関数はすべてこれを引数で受け取る（環境非依存） */
 export interface GameData {
   definitions: ReadonlyMap<string, CardDefinition>;
-  quotas: ReadonlyMap<number, QuotaEntry>;
+  /**
+   * 連載の長さごとの定義（v7.30）。
+   * 話数・幕・要求・カード解放週・バランス値はここから引く。
+   * 旧 `quotas` / `totalWeeks` は「どの連載の話か」を持てないので廃止した
+   */
+  campaigns: Readonly<Record<CampaignMode, Campaign>>;
   initialDeck: readonly { definitionId: string; count: number; start?: 'field' | 'bench' }[];
   /** 初期デッキの可変枠の候補（v7.13） */
   starterPool: readonly string[];
   /** 可変枠から引く枚数（v7.13） */
   starterSlots: number;
   tutorialHands: ReadonlyMap<number, readonly string[]>;
-  totalWeeks: number;
 }
 
 export class DataValidationError extends Error {
@@ -146,16 +151,39 @@ export class DataValidationError extends Error {
   }
 }
 
+/** ノルマ表を検証済みの Map に畳む。話数の重複・欠番はここで検出する */
+function toQuotaMap(weeks: readonly QuotaEntry[], file: string, issues: string[]): ReadonlyMap<number, QuotaEntry> {
+  const map = new Map<number, QuotaEntry>();
+  for (const entry of weeks) {
+    if (map.has(entry.week)) issues.push(`${file}: 話数が重複しています: ${entry.week}`);
+    map.set(entry.week, entry);
+  }
+  for (let w = 1; w <= weeks.length; w++) {
+    if (!map.has(w)) issues.push(`${file}: 第${w}話のノルマがありません`);
+  }
+  if (!weeks.some((e) => e.final)) issues.push(`${file}: 最終回（final: true）がありません`);
+  return map;
+}
+
 /** JSONデータを検証してGameDataを組み立てる。不正ならDataValidationErrorを投げる */
-export function buildGameData(cardsJson: unknown, quotasJson: unknown, tutorialJson: unknown): GameData {
+export function buildGameData(
+  cardsJson: unknown,
+  quotasJson: unknown,
+  tutorialJson: unknown,
+  quotasShortJson: unknown,
+): GameData {
   const issues: string[] = [];
 
   const cards = cardsFileSchema.safeParse(cardsJson);
   const quotas = quotasFileSchema.safeParse(quotasJson);
+  const quotasShort = quotasFileSchema.safeParse(quotasShortJson);
   const tutorial = tutorialFileSchema.safeParse(tutorialJson);
-  if (!cards.success || !quotas.success || !tutorial.success) {
+  if (!cards.success || !quotas.success || !quotasShort.success || !tutorial.success) {
     if (!cards.success) issues.push(...cards.error.issues.map((i) => `cards.json: ${i.path.join('.')} ${i.message}`));
     if (!quotas.success) issues.push(...quotas.error.issues.map((i) => `quotas.json: ${i.path.join('.')} ${i.message}`));
+    if (!quotasShort.success) {
+      issues.push(...quotasShort.error.issues.map((i) => `quotas-short.json: ${i.path.join('.')} ${i.message}`));
+    }
     if (!tutorial.success) issues.push(...tutorial.error.issues.map((i) => `tutorial.json: ${i.path.join('.')} ${i.message}`));
     throw new DataValidationError(issues);
   }
@@ -202,15 +230,10 @@ export function buildGameData(cardsJson: unknown, quotasJson: unknown, tutorialJ
     }
   }
 
-  const quotaMap = new Map<number, QuotaEntry>();
-  for (const entry of quotas.data.weeks) {
-    if (quotaMap.has(entry.week)) issues.push(`quotas.json: 話数が重複しています: ${entry.week}`);
-    quotaMap.set(entry.week, entry);
-  }
+  const quotaMap = toQuotaMap(quotas.data.weeks, 'quotas.json', issues);
+  const quotaMapShort = toQuotaMap(quotasShort.data.weeks, 'quotas-short.json', issues);
   const totalWeeks = quotas.data.weeks.length;
-  for (let w = 1; w <= totalWeeks; w++) {
-    if (!quotaMap.has(w)) issues.push(`quotas.json: 第${w}話のノルマがありません`);
-  }
+  const totalWeeksShort = quotasShort.data.weeks.length;
 
   // チュートリアル固定配札のinstanceIdが初期デッキから生成される実体と一致するか
   const validInstanceIds = new Set<string>();
@@ -233,11 +256,13 @@ export function buildGameData(cardsJson: unknown, quotasJson: unknown, tutorialJ
 
   return {
     definitions,
-    quotas: quotaMap,
+    campaigns: {
+      long: buildCampaign('long', quotaMap, totalWeeks),
+      short: buildCampaign('short', quotaMapShort, totalWeeksShort),
+    },
     initialDeck: cards.data.initialDeck,
     starterPool,
     starterSlots,
     tutorialHands,
-    totalWeeks,
   };
 }

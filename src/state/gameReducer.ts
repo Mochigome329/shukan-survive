@@ -31,14 +31,18 @@ import { SETUP_COMBO_IDS } from '../core/combos';
 import type { SavePhase } from '../core/save';
 import type { Act, CardInstance, DemandState, Faction, PlaySelection, RunState, ScoreBreakdown } from '../core/types';
 import { displayName, MAX_PLAY_CARDS, MAX_STOCK } from '../core/types';
-import { actStartingAt } from '../core/acts';
+import { actStartingAtIn } from '../core/acts';
+import { campaignOf, quotaAt, totalWeeksOf, type CampaignMode } from '../core/campaign';
 import { FINALE_MAX_PLAY_CARDS } from '../core/finale';
 import type { GameData } from '../core/validate';
 
-/** 実装範囲は最終回（第25話）まで。第25話をクリアすると完結 */
+/**
+ * 通常連載の最終話。UIの既定値（run がまだ無いタイトル画面など）にだけ使う。
+ * ラン中の話数上限は連載の長さで変わるので totalWeeksOf(data, run) を使うこと（v7.30）
+ */
 export const MAX_PLAYABLE_WEEK = 25;
 
-/** ボス週のブリーフィングを何話前に出すか（v7.5） */
+/** ボス週のブリーフィングを何話前に出すか（v7.5）。実際の値はキャンペーンごと（v7.30） */
 export const BOSS_BRIEFING_LEAD = 5;
 /** 初回チュートリアルのステップ数（WeekPlayScreenのTUTORIAL_STEPSと揃える） */
 export const TUTORIAL_STEP_COUNT = 8;
@@ -137,6 +141,8 @@ export type GameAction =
       startingFactions?: Record<string, Faction>;
       /** 主人公・初期共演者候補のニックネーム（v7.29） */
       startingNicknames?: Record<string, string>;
+      /** 連載の長さ（v7.30）。省略時は通常連載（全25話） */
+      mode?: CampaignMode;
     }
   | { type: 'tapHandCard'; instanceId: string }
   | { type: 'tapFieldCard'; instanceId: string }
@@ -344,7 +350,7 @@ function tryAddCard(state: GameState, instanceId: string): GameState {
     return withNotice(state, `「${def.name}」は第${def.unlockWeek}話以降のみプレイできます`);
   }
   // 最終回はプレイ上限が5枚に増える（11節、v5.9）
-  const playLimit = state.data.quotas.get(state.run!.week)?.final ? FINALE_MAX_PLAY_CARDS : MAX_PLAY_CARDS;
+  const playLimit = quotaAt(state.data, state.run!, state.run!.week)?.final ? FINALE_MAX_PLAY_CARDS : MAX_PLAY_CARDS;
   if (selection.cards.length >= playLimit) {
     return withNotice(state, `プレイできるのは${playLimit}枚までです`);
   }
@@ -375,18 +381,19 @@ function enterWeek(state: GameState, run: RunState): GameState {
   const showHint = anyStale && !state.freshnessHintShown;
   // v7.5: どのボス週も5話前にブリーフィングを出す（何が来るか・何を準備すべきか）。
   // 以前は第8話「合併号」の分だけを1回出していたので、人気投票と新連載攻勢は無警告だった
-  const upcomingBoss = [...state.data.quotas.values()]
-    .filter((q) => q.boss && q.week > run.week && q.week - run.week <= BOSS_BRIEFING_LEAD)
+  const campaign = campaignOf(state.data, run);
+  const upcomingBoss = [...campaign.quotas.values()]
+    .filter((q) => q.boss && q.week > run.week && q.week - run.week <= campaign.balance.bossBriefingLead)
     .map((q) => q.week)
     .find((w) => !state.briefedBossWeeks.includes(w));
   // 幕の変わり目にシーンチェンジを挟む（v5.9）
-  const actStart = actStartingAt(run.week);
+  const actStart = actStartingAtIn(campaign.acts, run.week);
   // 在籍が6人を超えた翌週、出演者を自分で選ぶ場面だと説明する（v6.2）。
   // それまでは全員自動でハイライトされているので、ここで初めて「選ぶ」操作が必要になる
   const showHighlightTutorial = rosterOf(state.data, run).length > HIGHLIGHT_LIMIT && !state.highlightTutorialShown;
   // ルールが変わる週は、その週に入った時点で理由を説明する（v7.3）。
   // どちらもラン中に1回しか来ない週なので「表示済み」フラグは持たない
-  const quotaEntry = state.data.quotas.get(run.week);
+  const quotaEntry = campaign.quotas.get(run.week);
   const showVoteTutorial = quotaEntry?.boss === '人気投票';
   const showFinaleTutorial = quotaEntry?.final === true;
   return {
@@ -424,6 +431,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           startingCast: action.startingCast,
           startingFactions: action.startingFactions,
           startingNicknames: action.startingNicknames,
+          mode: action.mode,
         }),
       );
       return {
@@ -442,7 +450,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
          * 「有効」扱いに戻ってしまっていた
          */
         tutorialEnabled: state.tutorialEnabled,
-        actIntro: actStartingAt(run.week)?.act ?? null,
+        actIntro: actStartingAtIn(campaignOf(state.data, run).acts, run.week)?.act ?? null,
       };
     }
 
@@ -462,7 +470,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         return {
           ...base,
           screen: 'shop',
-          shopPack: rollPack(state.data, action.run, MAX_PLAYABLE_WEEK),
+          shopPack: rollPack(state.data, action.run, totalWeeksOf(state.data, action.run)),
           notice: '編集会議から再開した',
         };
       }
@@ -597,7 +605,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const validity = validateSelection(state.data, state.run, state.selection);
       if (!validity.ok) return withNotice(state, validity.reason);
       // 最終回は結末カードを1枚選んでから確定する（v5.9）
-      if (state.data.quotas.get(state.run.week)?.final && !state.selectedEnding) {
+      if (quotaAt(state.data, state.run, state.run.week)?.final && !state.selectedEnding) {
         return withNotice(state, 'この連載の結末を選んでください');
       }
       const result = resolveWeek(state.data, state.run, state.selection, state.stockPicks, state.selectedEnding);
@@ -626,12 +634,12 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'proceedFromResult': {
       if (!state.run || !state.lastResult) return state;
       if (state.lastResult.outcome === 'cancelled') return { ...state, screen: 'cancelled' };
-      if (state.run.week > MAX_PLAYABLE_WEEK) return { ...state, screen: 'clearedAll' };
+      if (state.run.week > totalWeeksOf(state.data, state.run)) return { ...state, screen: 'clearedAll' };
       /*
        * v7.28: 最終回の前の編集会議は飛ばす。カードは仕入れられず、
        * キャラも展開もベース点（中央値）に置き換わって出番が無いので、開いても選べることが無い
        */
-      if (state.data.quotas.get(state.run.week)?.final) {
+      if (quotaAt(state.data, state.run, state.run.week)?.final) {
         const run = startWeek(state.data, state.run);
         return { ...enterWeek(state, run), lastResult: null };
       }
@@ -640,7 +648,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         screen: 'shop',
-        shopPack: rollPack(state.data, state.run, MAX_PLAYABLE_WEEK),
+        shopPack: rollPack(state.data, state.run, totalWeeksOf(state.data, state.run)),
         shopRerolls: 0,
         lastResult: null,
         // v7.18: タイトルでチュートリアルを不要と答えていたら、編集会議の説明も出さない
@@ -652,7 +660,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'buyShopCard': {
       if (!state.run || state.screen !== 'shop') return state;
       // v7.28: 最終回の前の編集会議ではカードを仕入れられない（出番が無いまま終わるため）
-      if (state.data.quotas.get(state.run.week)?.final) {
+      if (quotaAt(state.data, state.run, state.run.week)?.final) {
         return withNotice(state, '最終回は結末を選ぶだけなので、カードは仕入れられません');
       }
       if (state.run.funds < PACK_PRICE) return withNotice(state, '原稿料が足りません');
@@ -663,7 +671,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         run,
-        shopPack: rollPack(state.data, run, MAX_PLAYABLE_WEEK, state.shopRerolls),
+        shopPack: rollPack(state.data, run, totalWeeksOf(state.data, run), state.shopRerolls),
         notice:
           def?.kind === 'character'
             ? `「${name}」を控えに加えた（「新キャラ登場」でデビュー）`
@@ -683,7 +691,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return {
         ...state,
         shopRerolls: rerolls,
-        shopPack: rollPack(state.data, state.run, MAX_PLAYABLE_WEEK, rerolls),
+        shopPack: rollPack(state.data, state.run, totalWeeksOf(state.data, state.run), rerolls),
         notice: 'ラインナップを入れ替えた',
       };
     }
@@ -792,7 +800,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     // 各caseの本体はビルド時に丸ごと除去され、配布物（dist/uchikiri.html）には残らない
     case 'debugJumpWeek': {
       if (!import.meta.env.DEV || !state.run) return state;
-      const week = Math.max(1, Math.min(MAX_PLAYABLE_WEEK, Math.round(action.week)));
+      const week = Math.max(1, Math.min(totalWeeksOf(state.data, state.run), Math.round(action.week)));
       const run = startWeek(state.data, { ...state.run, week });
       return {
         ...state,
@@ -806,6 +814,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         stockMode: false,
         stockPicks: [],
         lastResult: null,
+        /*
+         * v7.30: 飛んだ先の幕に合わせる。以前は据え置きだったので、
+         * 第1話（序）から飛ぶと第4話（短期の破）でも「第一幕」の見出しが残っていた
+         */
+        actIntro: actStartingAtIn(campaignOf(state.data, run).acts, week)?.act ?? null,
         notice: `第${week}話へジャンプした（デバッグ）`,
       };
     }

@@ -1,3 +1,4 @@
+import { campaignOf } from '../core/campaign';
 import { completionBonus, offeredEndings, SETUP_COMBO_TOTAL, yumeochiCount } from '../core/finale';
 import type { GameAction, GameState } from '../state/gameReducer';
 
@@ -13,7 +14,7 @@ interface Props {
 export function EndingPicker({ state, dispatch }: Props) {
   const run = state.run!;
   const offered = offeredEndings(state.data, run);
-  const bonus = completionBonus(run);
+  const bonus = completionBonus(run, campaignOf(state.data, run).balance.completionBonusPerCombo);
   const dreams = yumeochiCount(run);
 
   return (

@@ -4,9 +4,10 @@
  */
 import cardsJson from './cards.json';
 import quotasJson from './quotas.json';
+import quotasShortJson from './quotas-short.json';
 import tutorialJson from './tutorial.json';
 import { buildGameData, type GameData } from '../core/validate';
 
 export function loadGameData(): GameData {
-  return buildGameData(cardsJson, quotasJson, tutorialJson);
+  return buildGameData(cardsJson, quotasJson, tutorialJson, quotasShortJson);
 }

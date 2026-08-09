@@ -6,6 +6,7 @@
  */
 import cardsJson from '../src/data/cards.json';
 import quotasJson from '../src/data/quotas.json';
+import quotasShortJson from '../src/data/quotas-short.json';
 import tutorialJson from '../src/data/tutorial.json';
 import { buildGameData } from '../src/core/validate';
 import { createRun, previewScore, resolveWeek, startWeek } from '../src/core/run';
@@ -26,7 +27,7 @@ function argValue(name: string, fallback: number): number {
 
 const runs = argValue('runs', 30);
 const weeks = 25;
-const data = buildGameData(cardsJson, quotasJson, tutorialJson);
+const data = buildGameData(cardsJson, quotasJson, tutorialJson, quotasShortJson);
 const WATCH = [8, 15, 16, 17, 20, 23, 24];
 
 function findBestSafePlay(state: RunState): { selection: PlaySelection; score: number } | null {
@@ -62,7 +63,7 @@ for (let r = 0; r < runs; r++) {
     const selection = best.selection;
 
     let endingId: string | null = null;
-    if (data.quotas.get(w)?.final) {
+    if (data.campaigns.long.quotas.get(w)?.final) {
       let bestScore = -1;
       for (const card of offeredEndings(data, state)) {
         const score = previewScore(data, state, selection, card.id).finalScore;
@@ -101,7 +102,7 @@ for (const w of WATCH) {
     console.log(`${String(w).padStart(4)}   0   —`);
     continue;
   }
-  const boss = data.quotas.get(w)?.boss ?? '';
+  const boss = data.campaigns.long.quotas.get(w)?.boss ?? '';
   console.log(
     `${String(w).padStart(4)} ${String(list.length).padStart(3)} ${String(list[0]).padStart(6)} ${String(pct(list, 0.25)).padStart(6)} ${String(pct(list, 0.5)).padStart(6)} ${String(pct(list, 0.75)).padStart(6)} ${String(list[list.length - 1]).padStart(6)}   ${boss}`,
   );

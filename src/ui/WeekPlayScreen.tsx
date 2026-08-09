@@ -1,7 +1,8 @@
 import { useState, type ReactNode } from 'react';
 import { castOf, HIGHLIGHT_LIMIT, previewScore, redrawLimit, rosterOf, validateSelection } from '../core/run';
 import { displayName, MAX_STOCK, MAX_WARNINGS, OFF_STAGE_POPULARITY_RATE } from '../core/types';
-import { MAX_PLAYABLE_WEEK, type GameAction, type GameState } from '../state/gameReducer';
+import { campaignOf } from '../core/campaign';
+import { type GameAction, type GameState } from '../state/gameReducer';
 import { playFlip, playWrite } from './audio';
 import { CardView } from './CardView';
 import { CodexOverlay } from './CodexScreen';
@@ -214,14 +215,15 @@ const BOSS_BRIEFINGS: Record<string, { what: ReactNode; prepare: ReactNode }> = 
 export function WeekPlayScreen({ state, dispatch }: Props) {
   const run = state.run!;
   const data = state.data;
-  const quotaEntry = data.quotas.get(run.week)!;
+  const campaign = campaignOf(data, run);
+  const quotaEntry = campaign.quotas.get(run.week)!;
   const byId = new Map(run.cards.map((c) => [c.instanceId, c]));
   const defOf = (id: string) => data.definitions.get(byId.get(id)!.definitionId)!;
   // 控えキャラのニックネーム編集ポップアップ（v7.29）。単なる画面内UI状態なので保存対象には含めない
   const [editingNickname, setEditingNickname] = useState<{ instanceId: string; draft: string } | null>(null);
 
   // ボス週の事前ブリーフィング（v7.5）: 対象週の情報と、ボスごとの説明文を組み立てる
-  const briefingEntry = state.bossBriefingWeek !== null ? data.quotas.get(state.bossBriefingWeek) : undefined;
+  const briefingEntry = state.bossBriefingWeek !== null ? campaign.quotas.get(state.bossBriefingWeek) : undefined;
   const briefingText = briefingEntry?.boss ? BOSS_BRIEFINGS[briefingEntry.boss] : undefined;
   const bossBriefing =
     briefingEntry?.boss && briefingText
@@ -323,7 +325,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
             {Array.from({ length: MAX_WARNINGS }, (_, i) => (i < run.warnings ? '⚠' : '・')).join('')}
           </span>
         </div>
-        <RunTimeline data={data} week={run.week} lastWeek={MAX_PLAYABLE_WEEK} />
+        <RunTimeline campaign={campaign} week={run.week} />
         <div className="header-sub-row">
           {run.stress > 0 && (
             <span className="stress-meter">
@@ -786,7 +788,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
         })()}
 
       {state.actIntro && (
-        <ActIntro act={state.actIntro} week={run.week} onDismiss={() => dispatch({ type: 'dismissActIntro' })} />
+        <ActIntro acts={campaign.acts} act={state.actIntro} week={run.week} onDismiss={() => dispatch({ type: 'dismissActIntro' })} />
       )}
 
       {state.showHighlightTutorial && (

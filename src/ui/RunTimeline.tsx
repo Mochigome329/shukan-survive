@@ -1,11 +1,10 @@
-import type { GameData } from '../core/validate';
+import type { Campaign } from '../core/campaign';
 
 interface Props {
-  data: GameData;
+  /** 今の連載のキャンペーン（話数とボス週の並びがここから決まる、v7.30） */
+  campaign: Campaign;
   /** 現在の話数 */
   week: number;
-  /** 実装済みの最終話 */
-  lastWeek: number;
 }
 
 /**
@@ -13,13 +12,14 @@ interface Props {
  * ラン全体のどこにいるか、次のボス週まであと何話かを一目で分かるようにする。
  * 1話=1目盛りで、ボス週は赤い目盛り、通過済みは塗り、現在地は太い縦線で示す。
  */
-export function RunTimeline({ data, week, lastWeek }: Props) {
+export function RunTimeline({ campaign, week }: Props) {
+  const lastWeek = campaign.totalWeeks;
   const weeks = Array.from({ length: lastWeek }, (_, i) => i + 1);
 
   // 次のボス週（今週がボス週なら今週）
   let nextBoss: { week: number; boss: string } | null = null;
   for (let w = week; w <= lastWeek; w++) {
-    const boss = data.quotas.get(w)?.boss;
+    const boss = campaign.quotas.get(w)?.boss;
     if (boss) {
       nextBoss = { week: w, boss };
       break;
@@ -31,7 +31,7 @@ export function RunTimeline({ data, week, lastWeek }: Props) {
     <div className="timeline">
       <div className="timeline-track">
         {weeks.map((w) => {
-          const boss = data.quotas.get(w)?.boss;
+          const boss = campaign.quotas.get(w)?.boss;
           const state = w < week ? 'past' : w === week ? 'now' : 'future';
           return (
             <span

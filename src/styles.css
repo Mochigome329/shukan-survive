@@ -1531,6 +1531,40 @@ button {
   background: #fff;
 }
 
+/* v7.30: 連載の長さ（通常25話／短期13話）の選択 */
+.setup-mode-row {
+  display: flex;
+  gap: 8px;
+}
+
+.setup-mode {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  background: #fff;
+  border: 2px solid #b3a894;
+  border-radius: 4px;
+  padding: 8px 10px;
+}
+
+.setup-mode-selected {
+  border-color: var(--accent);
+  border-width: 2.5px;
+  box-shadow: 2px 2px 0 var(--accent);
+}
+
+.setup-mode-name {
+  font-weight: 900;
+  font-size: 14px;
+}
+
+.setup-mode-meta {
+  font-size: 10px;
+  color: #6b6152;
+}
+
 /* v7.29: 主人公・初期共演者候補のニックネーム入力（任意） */
 .cast-nickname-input {
   width: 100%;

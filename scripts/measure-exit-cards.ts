@@ -20,6 +20,7 @@ const data = buildGameData(
   read('src/data/cards.json'),
   read('src/data/quotas.json'),
   read('src/data/tutorial.json'),
+  read('src/data/quotas-short.json'),
 );
 
 /** 敵を dead / waiting に送れるカード（全滅は味方のみなので除く） */

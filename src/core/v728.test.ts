@@ -5,7 +5,7 @@
  */
 import { describe, expect, it } from 'vitest';
 import { COMBO_REGISTRY, YUUSHUU_NO_BI_MIN_SCORE, YUUSHUU_NO_BI_RATIO } from './combos';
-import { createDemands } from './demands';
+import { createDemands, DEMANDS_LONG } from './demands';
 import { finaleBase, finaleBaseScore } from './finale';
 import { previewScore, resolveWeek, startWeek } from './run';
 import { loadTestData, makeInstance, makeState } from './testHelpers';
@@ -152,7 +152,7 @@ describe('最終回のノルマは廃止（v7.28）', () => {
       warnings: MAX_WARNINGS - 1,
       log: [week(1, 200, 20)],
       // すべての要求を未達のまま最終回に持ち込む（期限はとうに過ぎている）
-      demands: createDemands(),
+      demands: createDemands(DEMANDS_LONG),
     });
     const result = resolveWeek(data, state, { cards: [], targets: {} }, [], 'gojitsudan');
     expect(result.outcome).toBe('continue');

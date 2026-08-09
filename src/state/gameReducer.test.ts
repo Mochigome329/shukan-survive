@@ -11,7 +11,7 @@ function atShopBefore(week: number, over: Partial<GameState> = {}): GameState {
   return { ...initialGameState(data), screen: 'shop', run, ...over };
 }
 
-const bossWeeks = [...data.quotas.values()].filter((q) => q.boss).map((q) => q.week);
+const bossWeeks = [...data.campaigns.long.quotas.values()].filter((q) => q.boss).map((q) => q.week);
 
 describe('ボス週の事前ブリーフィング（v7.5）', () => {
   it('ボス週が定義されている話数を把握している（前提の確認）', () => {
@@ -270,6 +270,62 @@ function atPlayWithBenchChar(): GameState {
   const run = { ...createRun(data, 1, { mangaTitle: 'テスト' }), cards: [makeInstance(data, 'heroine', 1, { zone: 'bench' })] };
   return { ...initialGameState(data), screen: 'play', run };
 }
+
+describe('短期連載モード（v7.30）', () => {
+  /** 短期連載で第`week`話へ入る直前の編集会議状態 */
+  function shortShopBefore(week: number): GameState {
+    const run = { ...createRun(data, 1, { mangaTitle: 'テスト', mode: 'short' as const }), week };
+    return { ...initialGameState(data), screen: 'shop', run };
+  }
+
+  it('幕の変わり目（第4話=破・第10話=急）でシーンチェンジが出る', () => {
+    expect(gameReducer(shortShopBefore(4), { type: 'leaveShop' }).actIntro).toBe('ha');
+    expect(gameReducer(shortShopBefore(10), { type: 'leaveShop' }).actIntro).toBe('kyu');
+  });
+
+  it('幕の途中ではシーンチェンジを出さない', () => {
+    expect(gameReducer(shortShopBefore(5), { type: 'leaveShop' }).actIntro).toBeNull();
+    expect(gameReducer(shortShopBefore(11), { type: 'leaveShop' }).actIntro).toBeNull();
+  });
+
+  it('通常連載の幕の変わり目は従来どおり第6話・第17話', () => {
+    expect(gameReducer(atShopBefore(6), { type: 'leaveShop' }).actIntro).toBe('ha');
+    expect(gameReducer(atShopBefore(17), { type: 'leaveShop' }).actIntro).toBe('kyu');
+    expect(gameReducer(atShopBefore(4), { type: 'leaveShop' }).actIntro).toBeNull();
+  });
+
+  it('第8話の人気投票チュートリアルが出る（通常連載は第16話）', () => {
+    expect(gameReducer(shortShopBefore(8), { type: 'leaveShop' }).showVoteTutorial).toBe(true);
+    expect(gameReducer(shortShopBefore(16), { type: 'leaveShop' }).showVoteTutorial).toBe(false);
+    expect(gameReducer(atShopBefore(16), { type: 'leaveShop' }).showVoteTutorial).toBe(true);
+  });
+
+  it('第13話で最終回チュートリアルが出て、編集会議は飛ばされる', () => {
+    expect(gameReducer(shortShopBefore(13), { type: 'leaveShop' }).showFinaleTutorial).toBe(true);
+
+    const run = { ...createRun(data, 1, { mangaTitle: 'テスト', mode: 'short' as const }), week: 13 };
+    const atResult: GameState = {
+      ...initialGameState(data),
+      screen: 'result',
+      run,
+      lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    };
+    const next = gameReducer(atResult, { type: 'proceedFromResult' });
+    expect(next.screen).toBe('play');
+    expect(next.run!.hand).toEqual([]);
+  });
+
+  it('第13話を終えると完結画面へ行く（第25話ではない）', () => {
+    const run = { ...createRun(data, 1, { mangaTitle: 'テスト', mode: 'short' as const }), week: 14 };
+    const atResult: GameState = {
+      ...initialGameState(data),
+      screen: 'result',
+      run,
+      lastResult: { breakdown: { finalScore: 0 } as never, outcome: 'continue', achievedDemands: [], failedDemands: [] },
+    };
+    expect(gameReducer(atResult, { type: 'proceedFromResult' }).screen).toBe('clearedAll');
+  });
+});
 
 describe('ニックネーム（v7.29）', () => {
   it('setNicknameで対象のCardInstanceが更新される', () => {

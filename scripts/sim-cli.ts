@@ -4,6 +4,7 @@
  */
 import cardsJson from '../src/data/cards.json';
 import quotasJson from '../src/data/quotas.json';
+import quotasShortJson from '../src/data/quotas-short.json';
 import tutorialJson from '../src/data/tutorial.json';
 import { buildGameData } from '../src/core/validate';
 import { simulate, type SimReport } from '../src/sim/simulator';
@@ -20,7 +21,7 @@ function argValue(name: string, fallback: number): number {
 const runs = argValue('runs', 2000);
 const weeks = argValue('weeks', 25);
 
-const data = buildGameData(cardsJson, quotasJson, tutorialJson);
+const data = buildGameData(cardsJson, quotasJson, tutorialJson, quotasShortJson);
 
 function printReport(report: SimReport): void {
   console.log(`\n=== 戦略: ${report.strategy} (${report.runs}ラン, 第1〜${report.weeksPlayed}話) ===`);

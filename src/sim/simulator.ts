@@ -10,6 +10,7 @@ import { previewScore } from '../core/run';
 import { buyCard, rollPack, PACK_PRICE } from '../core/shop';
 import type { RunState } from '../core/types';
 import type { GameData } from '../core/validate';
+import { normalizeMode, type CampaignMode } from '../core/campaign';
 
 /** ショップの簡易方針: 資金がある限りパックを買い、素材価値の高いカードを選ぶ */
 const COMBO_MATERIALS = new Set(['uragiri', 'kanashii_kako', 'shinchara', 'shibou', 'kakusei', 'battle', 'shugyou']);
@@ -108,11 +109,15 @@ export interface SimOptions {
   weeks: number;
   strategy: Strategy;
   seedBase?: number;
+  /** 連載の長さ（v7.30）。省略時は通常連載（全25話） */
+  mode?: CampaignMode;
 }
 
 export function simulate(data: GameData, options: SimOptions): SimReport {
   const { runs, weeks, strategy } = options;
   const seedBase = options.seedBase ?? 12345;
+  const mode = normalizeMode(options.mode);
+  const campaign = data.campaigns[mode];
   const scoresByWeek = new Map<number, number[]>();
   const clearsByWeek = new Map<number, number>();
   const samplesByWeek = new Map<number, number>();
@@ -122,7 +127,7 @@ export function simulate(data: GameData, options: SimOptions): SimReport {
   for (let r = 0; r < runs; r++) {
     const runSeed = hashSeed(seedBase, 'sim-run', r);
     const pickRng = mulberry32(hashSeed(runSeed, 'sim-pick'));
-    let state = createRun(data, runSeed, { mangaTitle: 'sim' });
+    let state = createRun(data, runSeed, { mangaTitle: 'sim', mode });
     let alive = true;
 
     for (let w = 1; w <= weeks && alive; w++) {
@@ -150,7 +155,7 @@ export function simulate(data: GameData, options: SimOptions): SimReport {
 
       // 最終回は提示された結末カードのうち、いちばん点が出るものを選ぶ（v5.9）
       let endingId: string | null = null;
-      if (data.quotas.get(w)?.final) {
+      if (campaign.quotas.get(w)?.final) {
         let best = -1;
         for (const card of offeredEndings(data, state)) {
           const score = previewScore(data, state, selection, card.id).finalScore;
@@ -169,7 +174,7 @@ export function simulate(data: GameData, options: SimOptions): SimReport {
       const result = resolveWeek(data, state, selection, [], endingId);
       state = result.state;
       if (result.outcome === 'cancelled') alive = false;
-      else state = shopPolicy(data, state, weeks);
+      else state = shopPolicy(data, state, campaign.totalWeeks);
     }
     if (alive) survived++;
   }
@@ -180,7 +185,7 @@ export function simulate(data: GameData, options: SimOptions): SimReport {
     const samples = samplesByWeek.get(w) ?? 0;
     weekStats.push({
       week: w,
-      quota: data.quotas.get(w)?.quota ?? 0,
+      quota: campaign.quotas.get(w)?.quota ?? 0,
       samples,
       clearRate: samples > 0 ? (clearsByWeek.get(w) ?? 0) / samples : 0,
       scoreMean: scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 0,

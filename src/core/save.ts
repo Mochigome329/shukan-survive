@@ -10,6 +10,7 @@
  * localStorage が使えない環境（プライベートモード等）でも落ちないよう、
  * すべての入出力を try/catch で包み、失敗時は「セーブなし」として扱う。
  */
+import { normalizeMode } from './campaign';
 import type { RunState } from './types';
 
 const STORAGE_KEY = 'uchikiri-survivor:save';
@@ -61,7 +62,13 @@ export function saveRun(run: RunState, phase: SavePhase = 'play', now: Date = ne
  */
 function migrate(data: SaveData): SaveData | null {
   if (data.version > SAVE_VERSION) return null; // 新しい版で保存されたものは読めない
-  return data;
+  /*
+   * v7.30: 連載の長さ（mode）を正規化する。
+   * looksLikeRun は mode を検査しないので、古いセーブ（mode 無し）だけでなく
+   * 手で書き換えられた不正な文字列も入りうる。ここで一度だけ通常連載へ寄せておけば、
+   * 以降どこで run.mode を読んでも安全になる
+   */
+  return { ...data, run: { ...data.run, mode: normalizeMode(data.run.mode) } };
 }
 
 /** 最低限の形チェック。壊れたJSONを読み込んでゲームが崩壊するのを防ぐ */

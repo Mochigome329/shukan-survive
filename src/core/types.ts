@@ -385,6 +385,16 @@ export interface WeekLogEntry {
    */
   popularity?: number;
   buzz?: number;
+  /**
+   * その週の種別（v7.30）。最終回のベース点の母集団から
+   * 「最終回そのもの」と「人気投票（話題性が固定1）」を外すのに使う。
+   *
+   * 以前は話数（第16話）とノルマ0で見分けていたが、連載の長さを選べるようになって
+   * 話数が固定でなくなったため、週ごとに記録しておく。
+   * 古いセーブには無いので省略可（その場合は通常連載として話数から推定する）
+   */
+  final?: boolean;
+  boss?: string;
 }
 
 /** 編集部の要求（v5.2d）: ジャンルごとの「連載として成立しているか」の期限つき要求 */
@@ -405,6 +415,12 @@ export interface RunState {
   runSeed: number;
   /** 作品タイトル（連載開始時に宣言、v5.2） */
   mangaTitle: string;
+  /**
+   * 連載の長さ（v7.30）。'long'=全25話 / 'short'=全13話。
+   * 古いセーブには無いので省略可。読む側は campaign.ts の normalizeMode を通して
+   * 未設定・不正値を 'long' に寄せる
+   */
+  mode?: 'long' | 'short';
   /** 現在プレイ中の話数（1始まり） */
   week: number;
   cards: CardInstance[];

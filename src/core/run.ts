@@ -4,7 +4,8 @@
  * 打ち切り判定は警告制（未達+1、達成-1、3で打ち切り。ボス週未達は即打ち切り）。
  * 状態は破壊せず、新しいRunStateを返す。
  */
-import { actOfWeek } from './acts';
+import { actOfWeekIn } from './acts';
+import { campaignOf, normalizeMode, quotaAt, type CampaignMode } from './campaign';
 import { ACT3_COMBO_MATERIALS, ACT3_DRAW_WEIGHT, COMBO_REGISTRY, SETUP_COMBO_IDS } from './combos';
 import {
   completionBonus,
@@ -109,12 +110,18 @@ export interface RunOptions {
   startingFactions?: Record<string, Faction>;
   /** 主人公・初期共演者候補のニックネーム（v7.29）。定義ID単位。省略時は既定名のまま */
   startingNicknames?: Readonly<Record<string, string>>;
+  /** 連載の長さ（v7.30）。省略時は通常連載（全25話） */
+  mode?: CampaignMode;
 }
 
 export function createRun(data: GameData, runSeed: number, options: RunOptions): RunState {
+  const mode = normalizeMode(options.mode);
+  // 要求はキャンペーンごとに違うので、必ずここで解決した表から作る（v7.30）
+  const campaign = data.campaigns[mode];
   return {
     runSeed,
     mangaTitle: options.mangaTitle,
+    mode,
     week: 1,
     cards: createInitialDeck(data, options.startingCast, options.startingFactions, runSeed, options.startingNicknames),
     hand: [],
@@ -136,7 +143,7 @@ export function createRun(data: GameData, runSeed: number, options: RunOptions):
     comboUsage: { oncePerRun: [], perCharacter: {} },
     permanentBuzzByDef: {},
     upgrades: [],
-    demands: createDemands(),
+    demands: createDemands(campaign.demands),
     log: [],
   };
 }
@@ -246,12 +253,12 @@ export function startWeek(data: GameData, state: RunState): RunState {
    * 和らげる対症療法だったが、選択そのものを無くすことで根本的に解消した。
    * ハイライト（出演枠）は最終回でも決める必要があるので、手札だけを空にして先へ進む
    */
-  const isFinale = data.quotas.get(state.week)?.final ?? false;
+  const isFinale = quotaAt(data, state, state.week)?.final ?? false;
   const playable = cards.filter((c) => c.zone === 'activeDeck' && isDevelopment(data, c));
   const playableIds = new Set(playable.map((c) => c.instanceId));
 
   // ボス週「合併号」は手札が2枚少ない（10節）。最終回は手札そのものを配らない（v7.28）
-  const handSize = isFinale ? 0 : data.quotas.get(state.week)?.boss === '合併号' ? HAND_SIZE - 2 : HAND_SIZE;
+  const handSize = isFinale ? 0 : quotaAt(data, state, state.week)?.boss === '合併号' ? HAND_SIZE - 2 : HAND_SIZE;
 
   // 確定枠: 仕入れたカード → ストックの順（重複と紛失を除く）
   const forced: string[] = [];
@@ -268,7 +275,7 @@ export function startWeek(data: GameData, state: RunState): RunState {
     handIds = [...forced, ...rest.map((c) => c.instanceId)];
   } else {
     const rng = drawRng(state.runSeed, state.week, 0);
-    if (actOfWeek(state.week) === 'kyu') {
+    if (actOfWeekIn(campaignOf(data, state).acts, state.week) === 'kyu') {
       // 第3部だけ、専用役の素材が手札に来やすいよう重みをつけて引く（v7.4b）。
       // 終盤はデッキが70枚を超えるので、均等に引くと2枚組の役が実測1.8〜5.5%しか揃わなかった。
       // 第2部までは従来どおりの均等シャッフルのままにして、影響範囲を第3部に閉じ込める
@@ -325,7 +332,7 @@ export function startWeek(data: GameData, state: RunState): RunState {
 /** 再登場可能なキャラ（離脱から2週以上経過、4.5節） */
 export function returnableCharacters(data: GameData, state: RunState): CardInstance[] {
   // 最終回は待機期間を無視して全員戻せる（11節、v5.9）
-  const isFinale = data.quotas.get(state.week)?.final ?? false;
+  const isFinale = quotaAt(data, state, state.week)?.final ?? false;
   return state.cards.filter(
     (c) =>
       c.zone === 'waiting' &&
@@ -340,7 +347,7 @@ export function returnableCharacters(data: GameData, state: RunState): CardInsta
  */
 export function returnCharacter(data: GameData, state: RunState, instanceId: string): RunState {
   // 最終回は週1人の制限も外す（11節、v5.9）
-  const isFinale = data.quotas.get(state.week)?.final ?? false;
+  const isFinale = quotaAt(data, state, state.week)?.final ?? false;
   if (state.returnUsedThisWeek && !isFinale) throw new Error('再登場させられるのは週に1人までです');
   const target = returnableCharacters(data, state).find((c) => c.instanceId === instanceId);
   if (!target) throw new Error('そのキャラはまだ再登場できません');
@@ -424,7 +431,7 @@ export function redraw(data: GameData, state: RunState, returnIds: string[]): Ru
 export function validateSelection(data: GameData, state: RunState, selection: PlaySelection): SelectionValidity {
   const { cards: ids, targets } = selection;
   if (new Set(ids).size !== ids.length) return { ok: false, reason: '同じカードを複数回選べません' };
-  const playLimit = data.quotas.get(state.week)?.final ? FINALE_MAX_PLAY_CARDS : MAX_PLAY_CARDS;
+  const playLimit = quotaAt(data, state, state.week)?.final ? FINALE_MAX_PLAY_CARDS : MAX_PLAY_CARDS;
   if (ids.length > playLimit) return { ok: false, reason: `プレイできるのは${playLimit}枚までです` };
 
   const handSet = new Set(state.hand);
@@ -464,7 +471,7 @@ export function validateSelection(data: GameData, state: RunState, selection: Pl
   if (solo) {
     if (ids.length !== 1) return { ok: false, reason: `「${solo.def.name}」は単独でのみプレイできます` };
     const bypassesQuota = solo.def.effects.some((e) => e.effect.type === 'bypassQuota');
-    const quotaEntry = data.quotas.get(state.week);
+    const quotaEntry = quotaAt(data, state, state.week);
     // 最終回は総集編も宴会も描けない（11節）。ボス週で禁止するのはノルマ判定を免除するものだけ
     if (quotaEntry?.final) {
       return { ok: false, reason: `「${solo.def.name}」は最終回では使用できません` };
@@ -556,6 +563,8 @@ export function previewScore(data: GameData, state: RunState, selection: PlaySel
   const timeskipWeek = state.log.find((w) => w.playedDefinitionIds.includes('timeskip'))?.week ?? null;
   return computeScore({
     data,
+    // 連載の長さ（v7.30）。幕の区切りとノルマ表がこれで決まる
+    mode: state.mode,
     cards: state.cards,
     week: state.week,
     selection,
@@ -577,12 +586,12 @@ export function previewScore(data: GameData, state: RunState, selection: PlaySel
 
 /** 最終回の結末カードと完結ボーナスをスコア入力へ変換する（v5.9） */
 function finaleScoreInput(data: GameData, state: RunState, endingId?: string | null) {
-  if (!data.quotas.get(state.week)?.final) return {};
+  if (!quotaAt(data, state, state.week)?.final) return {};
   const card = endingId ? endingById(endingId) : undefined;
   return {
     // 最終回は展開カードを出さず、これまでの中央値をベース点にする（v7.28）
     finaleBase: finaleBase(state),
-    completionBonus: completionBonus(state),
+    completionBonus: completionBonus(state, campaignOf(data, state).balance.completionBonusPerCombo),
     setupComboIds: state.setupComboHistory,
     finaleEnding: card
       ? {
@@ -725,7 +734,7 @@ export function resolveWeek(
   }
 
   // 打ち切り判定（v5.2 警告制）
-  const quotaEntry = data.quotas.get(state.week);
+  const quotaEntry = quotaAt(data, state, state.week);
   let warnings = state.warnings;
   let outcome: 'continue' | 'cancelled' = 'continue';
   let cancelReason: CancelReason | undefined;
@@ -824,11 +833,14 @@ export function resolveWeek(
       // 最終回のベース点（中央値）の母集団になる（v7.28）
       popularity: breakdown.popularityTotal,
       buzz: breakdown.buzzApplied,
+      // 週の種別（v7.30）。連載の長さで話数が変わるので、話数から推定せず記録しておく
+      final: quotaEntry?.final,
+      boss: quotaEntry?.boss,
     },
   ];
 
   // 編集部の要求（v5.2d）: 達成なら原稿料ボーナス、期限切れなら読者が離れて警告+1
-  const demandUpdate = updateDemands(state, { log, cards, data }, state.week);
+  const demandUpdate = updateDemands(campaignOf(data, state).demands, state, { log, cards, data }, state.week);
   let demandWarnings = warnings;
   for (const _failed of demandUpdate.failed) {
     void _failed;
@@ -880,7 +892,7 @@ export function resolveWeek(
    * 伏線回収と同じ週に出しただけで、回収したのに未回収ぶんの減点が付いていた。
    * 実際「伏線回収を使ったのに未回収2本」という結果になる
    */
-  const isFinaleWeek = data.quotas.get(state.week)?.final ?? false;
+  const isFinaleWeek = quotaAt(data, state, state.week)?.final ?? false;
   const keptForeshadowWeeks = foreshadowConsumed ? [] : state.foreshadowWeeks;
   const gainedWeeks = foreshadowConsumed && isFinaleWeek ? [] : Array<number>(foreshadowGained).fill(state.week);
   const foreshadowWeeks = [...keptForeshadowWeeks, ...gainedWeeks];

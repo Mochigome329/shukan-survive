@@ -8,6 +8,7 @@
  */
 import { PROTAGONIST_ID } from './types';
 import type {
+  Act,
   CardInstance,
   CharacterCardDefinition,
   ComboScoreDetail,
@@ -57,6 +58,11 @@ export interface ComboMatchInput {
   weekScore: number;
   quota: number;
   /** 最終回かどうか（最終回専用役が参照する、v5.9） */
+  /**
+   * 今週の幕（v7.30）。連載の長さで区切りが変わるので、
+   * 役の「序盤限定」「第三幕限定」は話数ではなくこれで判定する
+   */
+  act: Act;
   isFinale: boolean;
   /**
    * 最終回のベース点（人気度の中央値 × 話題性の中央値、v7.28）。
@@ -65,6 +71,12 @@ export interface ComboMatchInput {
   finaleBaseScore: number;
   /** 通算で成立させた仕込み役の種類数（完結ボーナスと「伝説の完結」に使う、v5.9） */
   setupComboCount: number;
+  /**
+   * このキャンペーンでの閾値（v7.30）。連載の長さで積み上がる量が変わるため、
+   * 「伝説の完結」の必要種類数と「有終の美」の絶対点はデータ側から渡す
+   */
+  legendaryCompletionCombos: number;
+  yuushuuMinScore: number;
 }
 
 /** 成立1件。対象束縛（7.2節）まで含める */
@@ -230,8 +242,8 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '新しい顔ぶれを、日常の中で読者に紹介',
-    conditionText: '第5話までに「新キャラ登場」と「日常回」を同時にプレイ',
-    match: (input) => (input.week <= 5 && hasDev(input, 'shinchara') && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : []),
+    conditionText: '第一幕のうちに「新キャラ登場」と「日常回」を同時にプレイ',
+    match: (input) => (input.act === 'jo' && hasDev(input, 'shinchara') && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'tabidachi',
@@ -244,9 +256,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '新しい仲間と困難を乗り越えはじめる',
-    conditionText: '第5話までに「新キャラ登場」と「敵組織の襲来」か「悲劇」を同時にプレイ',
+    conditionText: '第一幕のうちに「新キャラ登場」と「敵組織の襲来」か「悲劇」を同時にプレイ',
     match: (input) =>
-      input.week <= 5 && hasDev(input, 'shinchara') && (hasDev(input, 'teki_soshiki') || hasDev(input, 'higeki'))
+      input.act === 'jo' && hasDev(input, 'shinchara') && (hasDev(input, 'teki_soshiki') || hasDev(input, 'higeki'))
         ? [{ boundCharIds: [] }]
         : [],
   },
@@ -261,8 +273,8 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '序盤の敗北はその後の成長の約束',
-    conditionText: '第5話までに「バトル」と「敗北」を同時にプレイ',
-    match: (input) => (input.week <= 5 && hasDev(input, 'battle') && hasDev(input, 'haiboku') ? [{ boundCharIds: [] }] : []),
+    conditionText: '第一幕のうちに「バトル」と「敗北」を同時にプレイ',
+    match: (input) => (input.act === 'jo' && hasDev(input, 'battle') && hasDev(input, 'haiboku') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'shi_tono_deai',
@@ -274,9 +286,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '導く者との出会い',
-    conditionText: '第5話までに、師匠が場にいる状態で「修行」をプレイ',
+    conditionText: '第一幕のうちに、師匠が場にいる状態で「修行」をプレイ',
     match: (input) =>
-      input.week <= 5 && input.characters.some((c) => c.def.id === 'shishou') && hasDev(input, 'shugyou')
+      input.act === 'jo' && input.characters.some((c) => c.def.id === 'shishou') && hasDev(input, 'shugyou')
         ? [{ boundCharIds: [] }]
         : [],
   },
@@ -293,9 +305,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     hintText: '少年と少女の出会いが運命を回し始める',
     // v5.8b: 「揃った状態で運命的な出会い」だと運命の相手が別キャラになってしまうので、
     // ヒロイン本人をデビューさせた週だけ成立するようにした
-    conditionText: '第5話までに「運命的な出会い」でヒロインをデビューさせる',
+    conditionText: '第一幕のうちに「運命的な出会い」でヒロインをデビューさせる',
     match: (input) => {
-      if (input.week > 5) return [];
+      if (input.act !== 'jo') return [];
       const hero = input.characters.find((c) => c.def.id === 'hero');
       const heroine = input.characters.find((c) => c.def.id === 'heroine');
       if (!hero || !heroine) return [];
@@ -315,9 +327,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '生涯の敵と初めて刃を交える',
-    conditionText: '第5話までに、敵キャラをデビューさせた週に「バトル」をプレイ',
+    conditionText: '第一幕のうちに、敵キャラをデビューさせた週に「バトル」をプレイ',
     match: (input) => {
-      if (input.week > 5 || !hasDev(input, 'battle')) return [];
+      if (input.act !== 'jo' || !hasDev(input, 'battle')) return [];
       return input.developments
         .filter((d) => d.def.effects.some((e) => e.effect.type === 'debutSelect') && !!d.targetId)
         .map((d) => castById(input, d.targetId!))
@@ -336,9 +348,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '自分でも知らなかった力に触れる',
-    conditionText: '第5話までに、主人公を対象に「能力覚醒」か「才能の片鱗」をプレイ',
+    conditionText: '第一幕のうちに、主人公を対象に「能力覚醒」か「才能の片鱗」をプレイ',
     match: (input) => {
-      if (input.week > 5) return [];
+      if (input.act !== 'jo') return [];
       const hero = input.characters.find((c) => c.def.id === 'hero');
       if (!hero) return [];
       const target = hero.instance.instanceId;
@@ -358,8 +370,8 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 4,
     hintText: '運命の出会いが物語を駆動する',
-    conditionText: '第5話までに「運命的な出会い」でキャラをデビューさせる',
-    match: (input) => (input.week <= 5 && hasDev(input, 'unmei_deai') ? [{ boundCharIds: [] }] : []),
+    conditionText: '第一幕のうちに「運命的な出会い」でキャラをデビューさせる',
+    match: (input) => (input.act === 'jo' && hasDev(input, 'unmei_deai') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'kankyuu',
@@ -1318,9 +1330,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 10,
     hintText: '最後にぶつける総力戦',
-    conditionText: '第17話以降、「バトル」+「総力戦」をプレイ',
+    conditionText: '第三幕に入ってから、「バトル」+「総力戦」をプレイ',
     match: (input) =>
-      input.week >= 17 && hasDev(input, 'battle') && hasDev(input, 'souryokusen') ? [{ boundCharIds: [] }] : [],
+      input.act === 'kyu' && hasDev(input, 'battle') && hasDev(input, 'souryokusen') ? [{ boundCharIds: [] }] : [],
   },
   {
     // v7.4: 旧「最終決戦」の条件をこちらへ移した。決着ではなく、終盤に差す不穏さを表す役
@@ -1334,9 +1346,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '決戦で追い詰められる',
-    conditionText: '第17話以降、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ',
+    conditionText: '第三幕に入ってから、場に敵キャラがいる状態で「バトル」+「大ピンチ」か「敗北」をプレイ',
     match: (input) => {
-      if (input.week < 17 || !hasDev(input, 'battle')) return [];
+      if (input.act !== 'kyu' || !hasDev(input, 'battle')) return [];
       const hasEnemy = input.characters.some((c) => c.instance.faction === 'enemy');
       const tense = hasDev(input, 'dai_pinch') || hasDev(input, 'haiboku');
       return hasEnemy && tense ? [{ boundCharIds: [] }] : [];
@@ -1449,9 +1461,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 9,
     hintText: 'クライマックスに訪れる危機',
-    conditionText: '第17話以降、「敵組織の襲来」+「大ピンチ」をプレイ',
+    conditionText: '第三幕に入ってから、「敵組織の襲来」+「大ピンチ」をプレイ',
     match: (input) =>
-      input.week >= 17 && hasDev(input, 'teki_soshiki') && hasDev(input, 'dai_pinch') ? [{ boundCharIds: [] }] : [],
+      input.act === 'kyu' && hasDev(input, 'teki_soshiki') && hasDev(input, 'dai_pinch') ? [{ boundCharIds: [] }] : [],
   },
   {
     id: 'innen_no_seisan',
@@ -1467,9 +1479,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 0,
     extraText: '週スコア×2',
     hintText: '長く戦い続けた相手との決着',
-    conditionText: '第17話以降、通算5回以上登場した敵キャラを対象に「死亡」をプレイ',
+    conditionText: '第三幕に入ってから、通算5回以上登場した敵キャラを対象に「死亡」をプレイ',
     match: (input) => {
-      if (input.week < 17) return [];
+      if (input.act !== 'kyu') return [];
       return devsOf(input, 'shibou')
         .map((d) => (d.targetId ? castById(input, d.targetId) : undefined))
         .filter((c): c is CastCharacter => !!c && c.instance.faction === 'enemy' && c.instance.playCount >= 5)
@@ -1487,9 +1499,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 8,
     hintText: '積み上げてきたキャラが力を合わせる',
-    conditionText: '第17話以降、キャストが5人以上の状態で「総力戦」をプレイ',
+    conditionText: '第三幕に入ってから、キャストが5人以上の状態で「総力戦」をプレイ',
     match: (input) =>
-      input.week >= 17 && hasDev(input, 'souryokusen') && input.characters.length >= 5 ? [{ boundCharIds: [] }] : [],
+      input.act === 'kyu' && hasDev(input, 'souryokusen') && input.characters.length >= 5 ? [{ boundCharIds: [] }] : [],
   },
   {
     id: 'ketsui_no_wakare',
@@ -1502,9 +1514,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 7,
     hintText: '終盤での悲しき離別',
-    conditionText: '第17話以降、同じキャラを対象に「途中離脱」と「悲しい過去」をプレイ',
+    conditionText: '第三幕に入ってから、同じキャラを対象に「途中離脱」と「悲しい過去」をプレイ',
     match: (input) => {
-      if (input.week < 17) return [];
+      if (input.act !== 'kyu') return [];
       return input.characters
         .filter(
           (c) =>
@@ -1525,9 +1537,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 20,
     buzzAdd: 0,
     hintText: '命運駆けた戦いの前に最後の鍛錬',
-    conditionText: '第17話以降、「修行」と「能力覚醒」を同じ週にプレイ',
+    conditionText: '第三幕に入ってから、「修行」と「能力覚醒」を同じ週にプレイ',
     match: (input) =>
-      input.week >= 17 && hasDev(input, 'shugyou') && hasDev(input, 'nouryoku_kakusei') ? [{ boundCharIds: [] }] : [],
+      input.act === 'kyu' && hasDev(input, 'shugyou') && hasDev(input, 'nouryoku_kakusei') ? [{ boundCharIds: [] }] : [],
   },
 
   // ===== 関係と成長の役（v5.8: 追加キャラ・追加展開に対応する役） =====
@@ -1871,8 +1883,8 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 5,
     hintText: '決戦を前にした静けさ',
-    conditionText: '第17話以降に「日常回」をプレイ',
-    match: (input) => (input.week >= 17 && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : []),
+    conditionText: '第三幕に入ってから「日常回」をプレイ',
+    match: (input) => (input.act === 'kyu' && hasDev(input, 'nichijou') ? [{ boundCharIds: [] }] : []),
   },
   {
     id: 'kessen_zenya',
@@ -1885,9 +1897,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     popularityAdd: 0,
     buzzAdd: 6,
     hintText: '最後の休息',
-    conditionText: '第17話以降に「宴会」か「骨休め」をプレイ',
+    conditionText: '第三幕に入ってから「宴会」か「骨休め」をプレイ',
     match: (input) =>
-      input.week >= 17 && (hasDev(input, 'enkai') || hasDev(input, 'honeyasume')) ? [{ boundCharIds: [] }] : [],
+      input.act === 'kyu' && (hasDev(input, 'enkai') || hasDev(input, 'honeyasume')) ? [{ boundCharIds: [] }] : [],
   },
 
   // ===== 立て直し役（v5.7: キャスト人数が正義になりすぎる問題への対処） =====
@@ -1944,8 +1956,9 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
     buzzAdd: 8,
     extraText: '週スコア×2',
     hintText: '物語を通じて多くを積み上げる',
-    conditionText: '最終回に、仕込み役を通算10種類以上成立させた状態で迎える',
-    match: (input) => (input.isFinale && input.setupComboCount >= 10 ? [{ boundCharIds: [] }] : []),
+    conditionText: '最終回に、仕込み役を規定の種類数以上（通常連載は10種、短期連載は4種）成立させた状態で迎える',
+    match: (input) =>
+      input.isFinale && input.setupComboCount >= input.legendaryCompletionCombos ? [{ boundCharIds: [] }] : [],
   },
   {
     id: 'daidanen',
@@ -1979,12 +1992,12 @@ export const COMBO_REGISTRY: ComboDefinition[] = [
      * 結末カードの倍率（最大×4）と完結ボーナス（最大×2）が乗れば届く水準。
      * v7.29: 相対条件だけだと弱い連載が有利になる逆転現象があったため、絶対点の下限も併せて課す
      */
-    conditionText: `最終回で、それまでの連載の平常運転（中央値）の3倍以上、かつ${YUUSHUU_NO_BI_MIN_SCORE.toLocaleString()}点以上のスコアを出す`,
+    conditionText: '最終回で、それまでの連載の平常運転（中央値）の3倍以上、かつ規定の絶対点以上（通常連載は10,000点、短期連載は6,000点）のスコアを出す',
     match: (input) =>
       input.isFinale &&
       input.finaleBaseScore > 0 &&
       input.weekScore >= input.finaleBaseScore * YUUSHUU_NO_BI_RATIO &&
-      input.weekScore >= YUUSHUU_NO_BI_MIN_SCORE
+      input.weekScore >= input.yuushuuMinScore
         ? [{ boundCharIds: [] }]
         : [],
   },
