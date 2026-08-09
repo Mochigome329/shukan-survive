@@ -9,19 +9,24 @@
     <meta name="author" content="Mochigome329" />
 
     <!--
-      リンクを貼ったときのカード表示（v1.0）。
-      og:image は絶対URLでないと効かないので、公開先のURLが決まってから追記する。
-      なおこのタグ自体はページ読み込み時に通信を発生させないため、
-      単一HTMLをローカルで開く配布形態のままでも問題ない
+      リンクを貼ったときのカード表示（v1.0、v7.32でog:imageを追記）。
+      og:image は絶対URLでないと効かないので、公開先URL（GitHub Pages）で固定する。
+      ogp.png は public/ 直下に置き、vite が dist/ にそのままコピーする。
+      deploy.yml 側もこのファイルを _site/ にコピーするよう対応済み
     -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="週刊サバイブ" />
     <meta property="og:title" content="週刊サバイブ" />
     <meta property="og:description" content="きみの連載は、何話まで生き残れるか。週刊連載の漫画家になって全25話を描ききるデッキ構築型スコアアタック。" />
+    <meta property="og:url" content="https://mochigome329.github.io/shukan-survive/" />
+    <meta property="og:image" content="https://mochigome329.github.io/shukan-survive/ogp.png" />
+    <meta property="og:image:width" content="1731" />
+    <meta property="og:image:height" content="909" />
     <meta property="og:locale" content="ja_JP" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="週刊サバイブ" />
     <meta name="twitter:description" content="きみの連載は、何話まで生き残れるか。週刊連載の漫画家になって全25話を描ききるデッキ構築型スコアアタック。" />
+    <meta name="twitter:image" content="https://mochigome329.github.io/shukan-survive/ogp.png" />
   </head>
   <body>
     <div id="root"></div>

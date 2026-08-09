@@ -3,9 +3,16 @@ import { join, resolve } from 'node:path';
 
 /**
  * 配布物の検査。
- * ・dist/ に uchikiri.html 以外のファイルがないこと
+ * ・dist/ に uchikiri.html / ALLOWED_EXTRA_FILES 以外のファイルがないこと
  * ・HTML が外部リソース（http / https / 相対パスのアセット）を参照していないこと
  */
+
+/*
+ * v7.32: og:image は絶対URLでないと動かないため、data URI 化できず単一HTMLの外に置く。
+ * uchikiri.html 本体が単一ファイルである原則はそのまま守り、
+ * OGP用の画像だけを例外として許可する
+ */
+const ALLOWED_EXTRA_FILES = new Set(['ogp.png']);
 
 const dist = resolve(process.cwd(), 'dist');
 const problems = [];
@@ -15,7 +22,7 @@ function walk(dir, prefix = '') {
     const full = join(dir, name);
     const rel = prefix ? `${prefix}/${name}` : name;
     if (statSync(full).isDirectory()) walk(full, rel);
-    else if (rel !== 'uchikiri.html') problems.push(`dist に余分なファイルがあります: ${rel}`);
+    else if (rel !== 'uchikiri.html' && !ALLOWED_EXTRA_FILES.has(rel)) problems.push(`dist に余分なファイルがあります: ${rel}`);
   }
 }
 

@@ -25,10 +25,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      # 単一HTML（dist/uchikiri.html）を index.html として配信する
+      # 単一HTML（dist/uchikiri.html）を index.html として配信する。
+      # og:image が絶対URLで参照する ogp.png（public/ 直下、vite が dist/ にそのままコピー）も
+      # 単一HTML化の対象外なので別途コピーする（v7.32）
       - run: |
           mkdir -p _site
           cp dist/uchikiri.html _site/index.html
+          cp dist/ogp.png _site/ogp.png
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
