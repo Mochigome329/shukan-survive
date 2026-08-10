@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { SaveData } from '../core/save';
 import type { GameAction } from '../state/gameReducer';
 import titleArt from '../assets/title-art.webp';
+import { AccessCounter } from './AccessCounter';
 import { playPico } from './audio';
 import { hasPlayedBefore } from './playHistory';
 
@@ -98,6 +99,10 @@ export function TitleScreen({ dispatch, save, onResume, onDiscardSave }: Props) 
       </button>
       {/* v7.32: 短期連載（全13話）を選べるようになったので、タイトル画面の時点では長さを断定しない */}
       <p className="title-note">短期13話／通常25話・最終回まで収録　v1.0</p>
+      <a className="title-credit" href="https://x.com/oIwaaakIo" target="_blank" rel="noopener noreferrer">
+        作者: もちごめ
+      </a>
+      <AccessCounter />
     </div>
   );
 }

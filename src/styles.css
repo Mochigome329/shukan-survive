@@ -140,6 +140,21 @@ button {
   margin-top: 22px;
 }
 
+/* v7.32: 製作者クレジット。title-noteより控えめな下段に置く */
+.title-credit {
+  font-size: 11px;
+  color: #8a7f70;
+  margin-top: 4px;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.title-access-count {
+  font-size: 10px;
+  color: #b0a696;
+  margin-top: 2px;
+}
+
 .primary-btn {
   background: var(--accent);
   color: #fff;
