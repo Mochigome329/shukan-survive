@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { isMuted, playFlip, toggleMuted } from './audio';
+import { syncMusicVolume } from './music';
 
 interface Props {
   /**
@@ -30,6 +31,7 @@ export function SoundToggle({ variant = 'floating' }: Props) {
       aria-label={muted ? '効果音オフ（タップでオン）' : '効果音オン（タップでオフ）'}
       onClick={() => {
         const nowMuted = toggleMuted();
+        syncMusicVolume();
         setMutedState(nowMuted);
         // オンにした直後は、切り替え自体をシュッという音で確認できるようにする
         if (!nowMuted) playFlip();

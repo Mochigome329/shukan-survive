@@ -54,19 +54,21 @@ src/
            storyTypes / chronicle / search / validate（純関数+テスト）
   sim/     simulator.ts（UIなしで多数ランを実行）
   state/   gameReducer.ts（title→setup→play→result→shop のフェーズマシン）
-  ui/      画面コンポーネント（役カットイン・描き文字・効果音・連載年表を含む）
-  assets/  タイトル画（webp）
+  ui/      画面コンポーネント（役カットイン・描き文字・効果音・BGM・連載年表を含む）
+  assets/  タイトル画（webp）、BGM（mp3、v7.34）
 ```
 
 - コアロジックはUI非依存の純関数。確定前プレビューとリザルトは同じ `computeScore` を使う
 - 乱数はシード注入可能（mulberry32）で、draw / redraw / shop / boss の用途別に系列を分離
 - 役の定義は `src/core/combos.ts` のレジストリが唯一の正（100種）
 - 効果音は音声ファイルを持たず Web Audio API で合成する（`ui/audio.ts`）
+- BGMはSuno生成の1曲を、イントロ（1回のみ）→ループ本編（無限リピート）に加工して同じAudioContextで再生する（`ui/music.ts`）。タイトル画面からの最初のタップで起動し、画面をまたいで流れ続ける
 - 漫画の描き文字は画像ではなくSVGパス（`scripts/trace-sfx.mjs` が生成、`data/sfx.json`）
 
 ## 素材について
 
 - タイトル画（`src/assets/title-art.webp`）と描き文字13点は画像生成AIで作成したもの
+- BGM（`src/assets/bgm-intro.mp3` / `bgm-loop.mp3`）はSuno生成。ループ用にffmpegでトリミング・クロスフェード加工している
 - 効果音はすべてコードによる合成音で、音源ファイルは使用していない
 - フォントは端末のシステムフォント（Hiragino Kaku Gothic ProN / Yu Gothic / Noto Sans JP）
 

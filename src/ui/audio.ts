@@ -36,7 +36,8 @@ export function toggleMuted(): boolean {
 
 let ctx: AudioContext | null = null;
 
-function getCtx(): AudioContext | null {
+/** BGM（music.ts）とSFXで同じAudioContextを共有する。iOS Safariはページに1つしか実質使えないため */
+export function getCtx(): AudioContext | null {
   if (typeof window === 'undefined') return null;
   const w = window as unknown as { webkitAudioContext?: typeof AudioContext };
   const AC = window.AudioContext ?? w.webkitAudioContext;

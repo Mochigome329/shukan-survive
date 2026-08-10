@@ -6,6 +6,7 @@ import { playClick } from './audio';
 import { CodexScreen } from './CodexScreen';
 import { DebugPanel } from './DebugPanel';
 import { EndScreen } from './EndScreen';
+import { startMusic } from './music';
 import { ResultScreen } from './ResultScreen';
 import { SetupScreen } from './SetupScreen';
 import { ShopScreen } from './ShopScreen';
@@ -56,6 +57,17 @@ export function App({ data }: { data: GameData }) {
     };
     document.addEventListener('click', onClick, true);
     return () => document.removeEventListener('click', onClick, true);
+  }, []);
+
+  /*
+   * BGM（v7.34）はタイトル画面から連載終了後まで、画面をまたいで流し続ける。
+   * ブラウザの自動再生制限で最初のユーザー操作の中でしか起動できないため、
+   * 個々のボタンに仕込むのではなく、ページ上で最初に起きたタップ1回だけを拾う
+   */
+  useEffect(() => {
+    const onFirstInteraction = () => startMusic();
+    window.addEventListener('pointerdown', onFirstInteraction, { once: true });
+    return () => window.removeEventListener('pointerdown', onFirstInteraction);
   }, []);
 
   const screen = (() => {

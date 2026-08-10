@@ -7,6 +7,7 @@ import { campaignOf, totalWeeksOf } from '../core/campaign';
 import { type GameAction, type GameState } from '../state/gameReducer';
 import { playCheer, playCutinNote } from './audio';
 import { addDiscovered, getDiscovered } from './discovery';
+import { duckMusic, unduckMusic } from './music';
 import { SfxMark } from './SfxMark';
 import { JaggedBalloon, UniFlash } from './CutInShapes';
 import { pickVoices } from './voices';
@@ -196,6 +197,18 @@ export function ResultScreen({ state, dispatch }: Props) {
       )
     : null;
   const showScore = step >= bonusCutInSteps + 1;
+
+  /*
+   * v7.34: カットインの連打中（debut〜役〜完結ボーナスの演出）はBGMを下げ、
+   * スコア表示に入ったら戻す。早送り（skip）でstepが一気にtotalStepsへ飛ぶ場合も
+   * showScoreがtrueになる一度きりの遷移なので同じ経路で戻る。
+   * アンマウント時の戻し忘れ防止に、クリーンアップでも一応呼んでおく
+   */
+  useEffect(() => {
+    if (showScore) unduckMusic();
+    else duckMusic();
+    return () => unduckMusic();
+  }, [showScore]);
 
   const skip = () => {
     if (!done) {
