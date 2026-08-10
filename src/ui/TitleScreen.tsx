@@ -96,7 +96,8 @@ export function TitleScreen({ dispatch, save, onResume, onDiscardSave }: Props) 
       <button type="button" className="small-btn ghost" onClick={() => dispatch({ type: 'openCodex' })}>
         役図鑑
       </button>
-      <p className="title-note">全25話・最終回まで収録　v1.0</p>
+      {/* v7.32: 短期連載（全13話）を選べるようになったので、タイトル画面の時点では長さを断定しない */}
+      <p className="title-note">短期13話／通常25話・最終回まで収録　v1.0</p>
     </div>
   );
 }

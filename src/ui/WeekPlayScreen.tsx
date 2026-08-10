@@ -55,7 +55,8 @@ const TUTORIAL_STEPS: {
       <>
         <p className="explain-formula">
           作品タイトルの下に<strong>今が何話か</strong>と<strong>今週のノルマ</strong>が出ます。
-          その下の細い帯が全25話の進み具合と<strong>ボス週の位置</strong>。
+          {/* v7.32: 短期連載（全13話）だと帯の目盛りが25話ぶんではなくなるので、話数を明言しない */}
+          その下の細い帯が連載全体の進み具合と<strong>ボス週の位置</strong>。
         </p>
         <p className="explain-formula">
           ノルマを割ると<strong>打ち切り警告</strong>が1つ増え、<strong>3つで連載終了</strong>。達成すると1つ減ります。
