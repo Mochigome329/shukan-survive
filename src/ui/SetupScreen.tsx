@@ -29,8 +29,12 @@ export function SetupScreen({ state, dispatch }: Props) {
   const [factionChoices, setFactionChoices] = useState<Record<string, Faction>>({});
   // 主人公・共演者候補のニックネーム（v7.29）。定義ID単位、空欄なら既定名のまま
   const [nicknames, setNicknames] = useState<Record<string, string>>({});
-  // 連載の長さ（v7.30）。既定は通常連載
-  const [mode, setMode] = useState<CampaignMode>('long');
+  /*
+   * 連載の長さ（v7.30）。既定は短期連載（v7.33）。
+   * X等からの告知経由で「試しに触ってみる」層が主な想定読者になるため、
+   * 一気に遊びきれる13話を既定にする。通常連載へはこの画面でいつでも切り替えられる
+   */
+  const [mode, setMode] = useState<CampaignMode>('short');
 
   const toggleCast = (defId: string) => {
     setCast((prev) => {
@@ -59,6 +63,23 @@ export function SetupScreen({ state, dispatch }: Props) {
   return (
     <div className="screen setup-screen">
       <h1 className="setup-heading">新連載 打ち合わせ</h1>
+
+      {/*
+       * v7.33: 導入を軽くする。SetupScreenの各項目には既に既定値があるので
+       * （タイトルはランダム生成済み、共演者2名は選択済み、呼び名・陣営は空欄でよい）、
+       * 下まで読まずにこの内容のまま始められる導線を上部に置く。
+       * start()をそのまま呼ぶだけで、通常の確定ボタンと処理を完全に共有する
+       */}
+      <button
+        type="button"
+        className="primary-btn setup-quickstart"
+        data-sfx="skip"
+        disabled={cast.length !== STARTING_CAST_PICKS}
+        onClick={start}
+      >
+        おまかせで連載開始
+      </button>
+      <p className="setup-hint setup-quickstart-hint">タイトルや共演者は、この下で変更できます</p>
 
       <label className="setup-label" htmlFor="manga-title">作品タイトル</label>
       <div className="setup-title-row">

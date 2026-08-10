@@ -10,3 +10,6 @@ Thumbs.db
 .DS_Store
 .vscode/
 .idea/
+
+# 作業用スクラッチ（sol依頼のプロンプト/ログ、録画素材の下ごしらえなど。git管理対象外）
+tmp/

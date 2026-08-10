@@ -1444,6 +1444,22 @@ button {
   margin-top: 8px;
 }
 
+/* v7.33: 導入を軽くする即開始ボタン。末尾のsetup-startと同じ見た目で、最初の主要操作として見せる */
+.setup-quickstart {
+  width: 100%;
+  margin-top: 4px;
+}
+
+.setup-quickstart:disabled {
+  opacity: 0.4;
+}
+
+.setup-quickstart-hint {
+  text-align: center;
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
 .setup-title-row {
   display: flex;
   gap: 8px;
