@@ -1,0 +1,103 @@
+.target-picker-dialog {
+  --picker-paper: #f5efdf;
+  --picker-ink: #171613;
+  --picker-red: #d6402c;
+  width: min(820px, calc(100vw - 36px));
+  max-width: none;
+  position: fixed;
+  inset: 16px 0 auto;
+  max-height: min(calc(100svh - 32px), 960px);
+  margin: 0 auto;
+  outline: none;
+  padding: 0;
+  overflow: hidden;
+  border: 4px solid var(--picker-ink);
+  border-radius: 0;
+  background: var(--picker-paper);
+  color: var(--picker-ink);
+  text-align: left;
+  box-shadow: 10px 10px 0 #171613;
+}
+.target-picker-dialog[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.target-picker-dialog::backdrop { background: rgb(10 9 7 / 78%); }
+.target-picker-dialog .target-picker-header { padding: 14px 24px 18px; border-bottom: 4px solid var(--picker-ink); background: var(--picker-paper); }
+.target-picker-dialog .target-picker-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.target-picker-dialog .target-picker-step { font-size: 12px; font-weight: 900; letter-spacing: 0.08em; }
+.target-picker-dialog .target-picker-cancel {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--picker-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--picker-ink);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.target-picker-dialog .target-picker-cancel > span { font-size: 22px; line-height: 1; }
+.target-picker-dialog .target-picker-header h2 {
+  margin: 16px 0 0;
+  font-family: var(--display-font);
+  font-size: clamp(23px, 4vw, 34px);
+  line-height: 1.35;
+  letter-spacing: -0.04em;
+  font-weight: 900;
+  overflow-wrap: anywhere;
+}
+.target-picker-dialog .target-picker-content { min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 18px 24px 24px; }
+.target-picker-dialog .target-picker-description { margin: 0 0 16px; padding: 0 0 16px; border-bottom: 1px solid #aaa18f; font-size: 14px; line-height: 1.8; }
+.target-picker-dialog .target-picker-instruction { margin: 0 0 16px; font-size: 14px; line-height: 1.7; font-weight: 800; }
+.target-picker-dialog .target-picker-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.target-picker-dialog .target-picker-candidate {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0;
+  border: 2px solid var(--picker-ink);
+  border-radius: 0;
+  background: var(--picker-paper);
+  color: var(--picker-ink);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--picker-ink);
+}
+.target-picker-dialog .target-picker-face { position: relative; display: block; width: 100%; aspect-ratio: 1; overflow: hidden; border-bottom: 2px solid var(--picker-ink); }
+.target-picker-dialog .target-picker-face .manga-art { display: block; position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 0; border-radius: 0; }
+.target-picker-dialog .target-picker-character-info { display: flex; flex-direction: column; gap: 6px; width: 100%; padding: 10px 12px 12px; }
+.target-picker-dialog .target-picker-character-name { font-family: var(--display-font); font-size: 20px; font-weight: 900; line-height: 1.4; overflow-wrap: anywhere; }
+.target-picker-dialog .target-picker-character-popularity { font-size: 12px; line-height: 1.2; }
+.target-picker-dialog .target-picker-character-popularity b { margin-left: 3px; font-size: 24px; font-weight: 900; }
+.target-picker-dialog .target-picker-character-status { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; }
+.target-picker-dialog .target-picker-faction { padding: 3px 7px; border: 1px solid currentColor; }
+.target-picker-dialog .target-picker-faction-enemy { background: var(--picker-ink); color: var(--picker-paper); }
+.target-picker-dialog .target-picker-pick { display: flex; justify-content: space-between; align-items: center; gap: 8px; width: 100%; margin-top: auto; padding: 11px 12px; background: var(--picker-ink); color: var(--picker-paper); font-size: 12px; font-weight: 900; }
+.target-picker-dialog .target-picker-selected-character { display: grid; grid-template-columns: 130px minmax(0, 1fr); align-items: center; margin: 0 0 18px; border: 2px solid var(--picker-ink); }
+.target-picker-dialog .target-picker-selected-character .target-picker-face { border-bottom: 0; border-right: 2px solid var(--picker-ink); }
+.target-picker-dialog .target-picker-faction-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.target-picker-dialog .target-picker-faction-choice { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; min-height: 110px; padding: 18px; border: 2px solid var(--picker-ink); border-radius: 0; font-family: inherit; text-align: left; cursor: pointer; box-shadow: 3px 3px 0 var(--picker-ink); }
+.target-picker-dialog .target-picker-faction-choice > span { font-family: var(--display-font); font-size: 32px; font-weight: 900; }
+.target-picker-dialog .target-picker-faction-choice > small { font-size: 12px; font-weight: 800; }
+.target-picker-dialog .target-picker-choose-ally { background: var(--picker-paper); color: var(--picker-ink); }
+.target-picker-dialog .target-picker-choose-enemy { background: var(--picker-ink); color: var(--picker-paper); }
+.target-picker-dialog .target-picker-empty { padding: 18px 0; }
+.target-picker-dialog .target-picker-empty strong { display: block; font-family: var(--display-font); font-size: 23px; font-weight: 900; }
+.target-picker-dialog .target-picker-empty p { font-size: 14px; line-height: 1.8; }
+.target-picker-dialog .target-picker-empty-back { min-height: 48px; padding: 12px 18px; border: 2px solid var(--picker-ink); border-radius: 0; background: var(--picker-ink); color: var(--picker-paper); font-size: 14px; font-weight: 800; cursor: pointer; }
+.target-picker-dialog button:hover .target-picker-pick { background: var(--picker-red); color: #000; }
+.target-picker-dialog button:active { transform: none; translate: none; }
+.target-picker-dialog button:focus-visible { outline: 3px solid var(--picker-red); outline-offset: 3px; }
+@media (max-width: 640px) {
+  .target-picker-dialog { width: calc(100% - 16px); inset: max(8px, env(safe-area-inset-top)) 0 auto; max-height: calc(100svh - max(8px, env(safe-area-inset-top)) - max(12px, env(safe-area-inset-bottom))); margin: 0 auto; border-width: 3px; box-shadow: none; }
+  .target-picker-dialog .target-picker-header { padding: 10px 14px 14px; }
+  .target-picker-dialog .target-picker-header h2 { margin-top: 12px; font-size: 24px; }
+  .target-picker-dialog .target-picker-content { padding: 14px 14px max(24px, env(safe-area-inset-bottom)); }
+  .target-picker-dialog .target-picker-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .target-picker-dialog .target-picker-character-name { font-size: 18px; }
+  .target-picker-dialog .target-picker-character-info { padding: 10px; }
+  .target-picker-dialog .target-picker-selected-character { grid-template-columns: 110px minmax(0, 1fr); }
+  .target-picker-dialog .target-picker-faction-choice { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) { .target-picker-dialog, .target-picker-dialog button { animation: none; transition: none; } }

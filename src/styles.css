@@ -7,13 +7,23 @@
 }
 
 :root {
-  --ink: #1a1613;
-  --paper: #f7f3ea;
-  --paper-dark: #eae4d5;
-  --accent: #c0392b;
-  --accent-dark: #8e2418;
-  --ok: #1e7d4f;
-  --line: #2b2520;
+--ink: #171715;
+  --paper: #faf9f5;
+  --paper-dark: #eceae2;
+  --accent: #bc3024;
+  --accent-dark: #892218;
+  --ok: #276344;
+  --line: #34342f;
+  --muted: #64645b;
+  --rule: #c9c8be;
+  --display-font: 'Yu Mincho', 'Hiragino Mincho ProN', 'Noto Serif JP', serif;
+  --spacing-6: 6px;
+  --spacing-12: 12px;
+  --spacing-18: 18px;
+  --spacing-24: 24px;
+  --text-caption: 12px;
+  --text-body: 16px;
+  --text-heading-sm: 32px;
 }
 
 html,
@@ -31,12 +41,10 @@ body {
 }
 
 #root {
-  max-width: 480px;
+max-width: 480px;
   margin: 0 auto;
   min-height: 100dvh;
-  background:
-    radial-gradient(circle at 1px 1px, rgba(26, 22, 19, 0.06) 1px, transparent 0) 0 0 / 8px 8px,
-    var(--paper);
+  background: var(--paper);
 }
 
 .screen {
@@ -52,11 +60,10 @@ button {
 
 /* ===== タイトル ===== */
 .title-screen {
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  padding: 24px;
-  text-align: center;
+gap: 12px;
+  padding: 18px 24px 24px;
+  align-items: stretch;
+  text-align: left;
 }
 
 /* 見た目上はタイトルアート（.title-art）が見出しを兼ねるので、テキストは読み上げ専用に残す */
@@ -74,22 +81,31 @@ button {
 
 /* v7.8: キービジュアル（キャラ2人＋ロゴ描き文字入りの1枚絵）をタイトル文字の代わりに */
 .title-art {
-  width: min(78vw, 340px);
-  max-width: 100%;
-  border: 4px solid var(--ink);
-  box-shadow: 6px 6px 0 var(--accent);
-  transform: rotate(-1.5deg);
+display: block;
+  width: 100%;
+  height: auto;
+  max-height: 56dvh;
+  object-fit: contain;
+  background: #e9d4aa;
+  border: 2px solid var(--ink);
 }
 
 .title-sub {
-  font-size: 14px;
-  color: #4a4238;
+font-family: var(--display-font);
+  font-size: clamp(17px, 4.8vw, 22px);
+  font-weight: 900;
+  line-height: 1.6;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+  padding: 6px 0 12px;
+  border-bottom: 1px solid var(--ink);
 }
 
 .title-start {
-  margin-top: 18px;
+margin-top: 6px;
   font-size: 20px;
-  padding: 14px 44px;
+  padding: 14px 18px;
+  text-align: left;
 }
 
 /* v6.8: 中断した連載の再開ボタン */
@@ -135,9 +151,11 @@ button {
 }
 
 .title-note {
-  font-size: 11px;
-  color: #8a7f70;
-  margin-top: 22px;
+font-size: 11px;
+  color: var(--muted);
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
 }
 
 /* v7.32: 製作者クレジット。title-noteより控えめな下段に置く */
@@ -156,13 +174,13 @@ button {
 }
 
 .primary-btn {
-  background: var(--accent);
+background: var(--accent);
   color: #fff;
-  border: 3px solid var(--ink);
-  border-radius: 6px;
+  border: 2px solid var(--ink);
+  border-radius: 0;
   font-weight: 800;
   font-size: 17px;
-  padding: 12px 28px;
+  padding: 12px 24px;
   box-shadow: 3px 3px 0 var(--ink);
 }
 
@@ -173,8 +191,8 @@ button {
 
 /* ===== 週プレイ ===== */
 .play-screen {
-  padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-  gap: 8px;
+padding: 12px 12px calc(18px + env(safe-area-inset-bottom));
+  gap: 12px;
 }
 
 /*
@@ -192,23 +210,22 @@ button {
 }
 
 .week-badge {
-  background: var(--ink);
+background: var(--ink);
   color: var(--paper);
   font-weight: 900;
-  font-size: 16px;
-  padding: 4px 12px;
-  transform: skewX(-8deg);
+  font-size: 18px;
+  padding: 6px 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .quota {
-  font-size: 11px;
-  font-weight: 700;
-  color: #5c5347;
-  border: 2px solid var(--ink);
-  padding: 3px 10px;
+font-size: 11px;
+  color: var(--muted);
+  padding: 3px 0;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 5px;
+  gap: 6px;
 }
 
 .quota strong {
@@ -232,11 +249,11 @@ button {
   font-size: 13px;
   font-weight: 700;
   padding: 6px 10px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .notice-target {
-  background: #2c5f8a;
+  background: var(--ink);
 }
 
 /* ===== v6.2: デビュー時の陣営選択 ===== */
@@ -275,22 +292,23 @@ button {
  * 影をぼかさないのは既存のカットイン・説明箱と同じ語彙（box-shadow: Npx Npx 0）
  */
 .field {
-  min-height: 118px;
-  border: 3px solid var(--ink);
-  border-radius: 0;
-  box-shadow: 4px 4px 0 var(--ink);
-  padding: 10px;
+position: relative;
+  min-height: 126px;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  padding: 36px 12px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--paper);
+  background: #fff;
 }
 
 .field-empty {
-  color: #8a7f70;
-  font-size: 13px;
+color: var(--muted);
+  font-family: var(--display-font);
+  font-size: 15px;
   text-align: center;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .field-cards {
@@ -308,10 +326,12 @@ button {
 }
 
 .preview-line {
-  display: flex;
+display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  align-items: baseline;
-  font-size: 13px;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
   min-height: 22px;
   font-weight: 700;
 }
@@ -328,9 +348,11 @@ button {
 }
 
 .preview-line strong {
-  font-size: 24px;
+font-size: 32px;
+  line-height: 1.15;
   font-weight: 900;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
 }
 
 .preview-line small {
@@ -344,8 +366,7 @@ button {
 }
 
 .preview-line > span:last-child {
-  font-weight: 900;
-  white-space: nowrap;
+font-weight: 900;
 }
 
 .preview-ok {
@@ -405,25 +426,27 @@ button {
 }
 
 .hand-toolbar {
-  display: flex;
+display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  gap: 6px;
 }
 
 .hand-label {
-  font-weight: 900;
+font-weight: 900;
   font-size: 14px;
-  border-left: 5px solid var(--accent);
-  padding-left: 6px;
+  letter-spacing: 0.04em;
 }
 
 .small-btn {
-  background: var(--ink);
+background: var(--ink);
   color: var(--paper);
-  border: none;
-  border-radius: 4px;
+  border: 1px solid var(--ink);
+  border-radius: 0;
   font-size: 12px;
   font-weight: 700;
+  min-height: 40px;
   padding: 6px 10px;
 }
 
@@ -484,8 +507,8 @@ button {
 }
 
 .hand-cards {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -504,27 +527,32 @@ button {
  * アスペクト比を 3/4.2 → 3/3.4 に。手札2段で約45px節約できる
  */
 .card {
-  position: relative;
+position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 3px;
-  aspect-ratio: 3 / 3.4;
-  border: 2px solid var(--line);
+  align-items: stretch;
+  justify-content: space-between;
+  gap: 6px;
+  min-width: 0;
+  min-height: 112px;
+  border: 1px solid var(--line);
   border-radius: 0;
   background: #fff;
-  box-shadow: 2px 2px 0 rgba(26, 22, 19, 0.35);
+  color: var(--ink);
+  box-shadow: 0 2px 0 var(--rule);
   font-size: 12px;
-  padding: 4px 3px;
+  padding: 12px 6px 8px;
+  text-align: left;
 }
 
 .card-meta {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+display: flex;
+  align-items: baseline;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 4px;
+  border-top: 1px solid var(--rule);
+  padding-top: 5px;
+  gap: 3px;
 }
 
 /*
@@ -533,47 +561,49 @@ button {
  * カード一覧をぱっと見たときの判別を速くする。:has()はモバイルブラウザの現行版で対応済み
  */
 .card:has(.faction-ally) {
-  border-left-width: 6px;
-  border-left-color: var(--ok);
+border-top: 3px solid var(--ink);
 }
 
 .card:has(.faction-enemy) {
-  border-left-width: 6px;
-  border-left-color: var(--accent);
+border-top: 3px solid var(--accent);
 }
 
 .card-compact {
-  aspect-ratio: auto;
-  width: 76px;
-  min-height: 72px;
+width: 76px;
+  min-height: 84px;
 }
 
 .card-char {
-  background: linear-gradient(180deg, #fff 70%, #f6e3c8 100%);
+background: var(--paper);
 }
 
 .card-dev {
-  background: linear-gradient(180deg, #fff 70%, #d9e4ea 100%);
+background: #fff;
 }
 
 .card-name {
+display: block;
   font-weight: 900;
-  font-size: 13px;
-  line-height: 1.15;
-  text-align: center;
+  font-size: 14px;
+  line-height: 1.4;
+  letter-spacing: -0.04em;
+  overflow-wrap: anywhere;
+  text-align: left;
 }
 
 .card-value {
-  font-size: 11px;
-  font-weight: 700;
-  color: #4a4238;
+font-size: 18px;
+  line-height: 1;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink);
 }
 
 .card-faction {
-  font-size: 9px;
+font-size: 10px;
   font-weight: 700;
-  padding: 0 5px;
-  border-radius: 3px;
+  padding: 1px 3px;
+  border-radius: 0;
 }
 
 .faction-ally {
@@ -591,30 +621,31 @@ button {
   font-weight: 900;
   color: #fff;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 0;
   padding: 0 4px;
 }
 
 .card-target {
   font-size: 9px;
-  color: #2c5f8a;
+  color: var(--ink);
   font-weight: 700;
 }
 
 .card-selected {
-  border-color: var(--accent);
-  border-width: 2.5px;
+border-color: var(--accent);
+  box-shadow: 2px 2px 0 var(--accent);
+  background: #fff5f1;
 }
 
 .card-picked {
-  outline: 3px solid #2c5f8a;
+  outline: 3px solid var(--ink);
   outline-offset: -1px;
   opacity: 0.75;
 }
 
 .card-target-highlight {
   animation: pulse 0.9s infinite alternate;
-  border-color: #2c5f8a;
+  border-color: var(--ink);
   border-width: 3px;
 }
 
@@ -665,178 +696,8 @@ button {
   color: var(--accent);
 }
 
-/*
- * ===== 初回チュートリアル（v7.5 / ハイライトはv7.5b） =====
- *
- * 説明している部位だけをオーバーレイの上に浮かせて光らせる。
- * .overlay が z-index:10 なので、対象には position:relative と
- * それより大きい z-index を与えて前面に出す（祖先が重ね合わせ文脈を
- * 作っていないことが前提。play-screen 直下の section/header なので問題ない）。
- */
-.play-screen[data-tutorial-target] .play-header,
-.play-screen[data-tutorial-target] .cast,
-.play-screen[data-tutorial-target] .hand,
-.play-screen[data-tutorial-target] .preview,
-.play-screen[data-tutorial-target] .codex-btn,
-.play-screen[data-tutorial-target] .status-row {
-  position: relative;
-}
-
-.shop-screen[data-tutorial-target] .play-header,
-.shop-screen[data-tutorial-target] .shop-group {
-  position: relative;
-}
-
-.play-screen[data-tutorial-target='header'] .play-header,
-.play-screen[data-tutorial-target='cast'] .cast,
-.play-screen[data-tutorial-target='hand'] .hand,
-.play-screen[data-tutorial-target='preview'] .preview,
-.play-screen[data-tutorial-target='codex'] .codex-btn,
-.play-screen[data-tutorial-target='status'] .status-row,
-.shop-screen[data-tutorial-target='funds'] .play-header,
-.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
-.shop-screen[data-tutorial-target='service'] .shop-group-service {
-  z-index: 11;
-  background: var(--paper);
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-  border-radius: 4px;
-  /*
-   * 暗幕はオーバーレイ側の一枚板ではなく、この要素から外へ広がる影として描く（v7.15）。
-   * こうすると説明している部位だけが穴になって暗くならず、
-   * 「ここを見て」という指示と実物の見え方が一致する。
-   * spread は画面の対角より大きければよいので 100vmax
-   */
-  box-shadow: 0 0 0 100vmax rgba(26, 22, 19, 0.82);
-  animation: tutorial-glow 1.2s ease-in-out infinite alternate;
-}
-
-@keyframes tutorial-glow {
-  from {
-    outline-color: var(--accent);
-  }
-  to {
-    outline-color: #f0a08f;
-  }
-}
-
-/*
- * ハイライト対象（z-index:11）は「.overlay の暗幕（z-index:10）より前へ」出す目的で
- * 数値を決めていたが、.tutorial-box 側の z-index:12 は .tutorial-overlay 自身が作る
- * 重ね合わせ文脈の中でしか意味を持たない。.tutorial-overlay 自体のルート側の重なり順は
- * 既定の .overlay と同じ10のままだったため、対象(11)が箱ごとオーバーレイを飛び越えて
- * 前面に出てしまい、箱がハイライト部の下に隠れる不具合になっていた。
- * オーバーレイ自体の重なり順を対象より上げて解決する
- */
-.tutorial-overlay {
-  z-index: 15;
-  /*
-   * 暗幕はハイライト対象の box-shadow が描くので、こちらは透明にする（v7.15）。
-   * 一枚板のままだとオーバーレイ(15)が対象(11)より前にあるぶん、
-   * 説明している当の部位まで暗く沈んでしまっていた
-   */
-  background: transparent;
-}
-
-/* ハイライト部を隠さないよう、説明の箱を上下へ寄せる */
-.tutorial-overlay.tutorial-box-top {
-  align-items: flex-start;
-}
-
-.tutorial-overlay.tutorial-box-bottom {
-  align-items: flex-end;
-}
-
-/* 束ねただけの器なので、通常時は見た目に影響させない */
 .shop-group {
   display: contents;
-}
-
-/* ハイライト時だけは器として振る舞う必要がある（display:contents だと枠を描けない） */
-.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
-.shop-screen[data-tutorial-target='service'] .shop-group-service {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/*
- * v7.29: チュートリアル中だけ、ハイライトする範囲を狭く・低く見せる（説明の箱との釣り合い調整）。
- * pack/serviceの手順はカードが縦に並ぶぶん、週プレイ画面の対象（横スクロール1行など）より
- * ずっと背が高く、useTutorialHighlightが実測した高さから箱のmax-heightを逆算する都合で
- * 箱が極端に潰れて見えることがあった。data-tutorial-target属性が付くのはその手順の表示中だけなので、
- * 通常のショップ閲覧には一切影響しない
- */
-.shop-screen[data-tutorial-target='pack'] .shop-group-pack,
-.shop-screen[data-tutorial-target='service'] .shop-group-service {
-  max-width: min(300px, 86vw);
-  margin: 0 auto;
-}
-
-/* 説明文はチュートリアル本文側で語っているので、ハイライト中だけ重複行を畳んで縦を詰める */
-.shop-screen[data-tutorial-target='pack'] .shop-group-pack .shop-item-desc,
-.shop-screen[data-tutorial-target='pack'] .shop-group-pack .shop-item-note,
-.shop-screen[data-tutorial-target='service'] .shop-group-service .shop-item-desc {
-  display: none;
-}
-
-/*
- * 説明の箱はハイライト（z-index:11）よりさらに前面に置く。
- * オーバーレイの暗幕（.overlay の既定）は常に出したままにする——
- * これで対象の部位（不透明な背景を持つ）と説明の箱の両方が暗幕の上に浮いて見え、
- * どちらも「今フォーカスされている」ことが一目で分かる（v7.5c）。
- * 箱にもハイライトと同じ縁取りを与えて、対になる要素だと分かるようにする
- */
-.tutorial-overlay .explain-box {
-  position: relative;
-  z-index: 12;
-  outline: 3px solid var(--accent);
-  outline-offset: 2px;
-}
-
-.tutorial-box {
-  max-height: 78vh;
-  overflow-y: auto;
-  text-align: left;
-}
-
-/*
- * 寄せた先の空きに収まるよう、箱の高さを実測値で抑える（v7.15）。
- * 変数は useTutorialHighlight が出す。24px はオーバーレイの余白20pxに
- * ハイライトとの間隔を少し足したもの。
- * 変数が無いとき（対象なしの手順）は 78vh のまま。
- * v7.29: ハイライト対象が画面をはみ出すほど背が高いと計算結果が負になり、
- * 箱が実質0まで潰れることがあったため、下限200px（タイトル+本文数行+ボタンが収まる高さ）を保証する
- */
-.tutorial-overlay.tutorial-box-bottom .tutorial-box {
-  max-height: min(78vh, max(200px, calc(100vh - var(--tutorial-target-bottom, 0px) - 36px)));
-}
-
-.tutorial-overlay.tutorial-box-top .tutorial-box {
-  max-height: min(78vh, max(200px, calc(var(--tutorial-target-top, 100vh) - 36px)));
-}
-
-.tutorial-box h2 {
-  text-align: center;
-}
-
-.tutorial-step-count {
-  align-self: center;
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: #8a7f70;
-}
-
-.tutorial-actions {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 4px;
-}
-
-.tutorial-actions .primary-btn {
-  flex: 1;
 }
 
 /* ボス週ブリーフィングの「備えておくこと」 */
@@ -917,7 +778,7 @@ button {
   font-weight: 700;
   border: 1.5px solid var(--ink);
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: 0;
   white-space: nowrap;
 }
 
@@ -964,20 +825,19 @@ button {
 }
 
 .card-inspect {
-  position: absolute;
-  top: 2px;
-  right: 3px;
-  width: 14px;
-  height: 14px;
+  width: 100%;
+  min-height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 10px;
-  font-weight: 900;
-  color: #fff;
-  background: #6b6152;
-  border-radius: 50%;
-  z-index: 1;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0;
+  box-shadow: 0 2px 0 var(--rule);
 }
 
 .card-detail {
@@ -1053,13 +913,13 @@ button {
   color: #8a7f70;
   border: 1px dashed #8a7f70;
   padding: 1px 6px;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 .bench-chip {
   background: #eae4d5;
   border: 1.5px dashed #8a7f70;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   color: #5c5347;
@@ -1068,16 +928,16 @@ button {
 
 .bench-chip-highlight {
   animation: pulse 0.9s infinite alternate;
-  border-color: #2c5f8a;
+  border-color: var(--ink);
   border-style: solid;
-  color: #2c5f8a;
+  color: var(--ink);
 }
 
 .bench-chip-targeted {
   background: #fff;
   border-style: solid;
-  border-color: #2c5f8a;
-  color: #2c5f8a;
+  border-color: var(--ink);
+  color: var(--ink);
 }
 
 .dead-label {
@@ -1313,7 +1173,7 @@ button {
   font-weight: 900;
   color: #fff;
   background: var(--ok);
-  border-radius: 3px;
+  border-radius: 0;
   padding: 0 4px;
 }
 
@@ -1366,7 +1226,7 @@ button {
   font-weight: 900;
   color: #fff;
   background: var(--accent);
-  border-radius: 3px;
+  border-radius: 0;
   padding: 1px 5px;
   margin-left: 6px;
   vertical-align: middle;
@@ -1383,7 +1243,7 @@ button {
   font-weight: 700;
   color: #8a7f6d;
   border: 1px solid #cfc4b0;
-  border-radius: 3px;
+  border-radius: 0;
   padding: 0 4px;
   margin-left: 6px;
   vertical-align: middle;
@@ -1406,7 +1266,7 @@ button {
   color: #fff;
   background: var(--accent);
   padding: 2px 10px;
-  border-radius: 3px;
+  border-radius: 0;
 }
 
 .breakdown-details {
@@ -1430,18 +1290,20 @@ button {
 }
 
 .setup-heading {
-  font-size: 22px;
+font-family: var(--display-font);
+  font-size: 32px;
   font-weight: 900;
+  letter-spacing: -0.05em;
   border-bottom: 3px solid var(--ink);
-  padding-bottom: 6px;
+  padding-bottom: 12px;
 }
 
 .setup-label {
-  font-size: 13px;
+font-size: 13px;
   font-weight: 800;
-  border-left: 5px solid var(--accent);
-  padding-left: 6px;
-  margin-top: 8px;
+  border-top: 1px solid var(--rule);
+  padding-top: 12px;
+  margin-top: 12px;
 }
 
 /* v7.33: 導入を軽くする即開始ボタン。末尾のsetup-startと同じ見た目で、最初の主要操作として見せる */
@@ -1472,7 +1334,7 @@ button {
   font-family: inherit;
   padding: 10px 12px;
   border: 2px solid var(--ink);
-  border-radius: 4px;
+  border-radius: 0;
   background: #fff;
   min-width: 0;
 }
@@ -1490,7 +1352,7 @@ button {
   gap: 8px;
   background: #fff;
   border: 2px solid #b3a894;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 10px 12px;
   text-align: left;
 }
@@ -1539,7 +1401,7 @@ button {
   gap: 2px;
   background: #fff;
   border: 2px solid #b3a894;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 8px 10px;
   text-align: left;
 }
@@ -1604,7 +1466,7 @@ button {
   gap: 2px;
   background: #fff;
   border: 2px solid #b3a894;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 8px 10px;
 }
 
@@ -1632,7 +1494,7 @@ button {
   font-family: inherit;
   padding: 5px 6px;
   border: 1.5px solid #b3a894;
-  border-radius: 4px;
+  border-radius: 0;
   background: #fff;
 }
 
@@ -1711,7 +1573,7 @@ button {
   font-size: 11px;
   font-weight: 800;
   padding: 3px 8px;
-  border-radius: 3px;
+  border-radius: 0;
   border: 1.5px solid var(--ink);
   background: #fff3c4;
   box-shadow: 1px 1px 0 var(--ink);
@@ -1749,7 +1611,7 @@ button {
   font-weight: 700;
   color: #fff;
   background: #6b6152;
-  border-radius: 3px;
+  border-radius: 0;
   padding: 0 4px;
 }
 
@@ -2159,30 +2021,29 @@ button {
 }
 
 .combo-banner {
-  display: flex;
+display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 8px;
-  border: 2px solid var(--ink);
-  background: #fff3c4;
-  padding: 6px 10px;
+  gap: 6px;
+  border-bottom: 1px solid var(--rule);
+  background: transparent;
+  padding: 10px 0;
   font-weight: 800;
-  font-size: 13px;
-  transform: skewX(-4deg);
-  box-shadow: 2px 2px 0 var(--ink);
+  font-size: 14px;
 }
 
 .combo-shock {
-  background: #ffd8d2;
+color: var(--accent-dark);
 }
 
 .combo-emotion {
-  background: #fbd8ec;
+color: var(--ink);
 }
 
 .combo-suppressed {
-  background: #ddd6c8;
-  color: #8a7f70;
+background: transparent;
+  color: var(--muted);
   box-shadow: none;
 }
 
@@ -2191,9 +2052,9 @@ button {
 }
 
 .combo-banner-effect {
-  font-size: 11px;
-  font-weight: 700;
-  white-space: nowrap;
+font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
 }
 
 .score-line {
@@ -2210,11 +2071,12 @@ button {
 }
 
 .score-line .final-score {
-  font-size: 52px;
+font-size: clamp(42px, 12vw, 64px);
   font-weight: 900;
-  color: var(--accent);
+  color: var(--ink);
   line-height: 1.1;
-  text-shadow: 2px 2px 0 rgba(26, 22, 19, 0.15);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.06em;
 }
 
 .score-multiplier {
@@ -2267,32 +2129,34 @@ button {
 }
 
 .shop-item {
-  background: #fff;
-  border: 2px solid var(--ink);
-  box-shadow: 2px 2px 0 rgba(26, 22, 19, 0.35);
-  padding: 10px 12px;
+background: #fff;
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--ink);
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .shop-item-char {
-  border-left: 6px solid #b0682a;
+background: var(--paper-dark);
 }
 
 .shop-item-dev {
-  border-left: 6px solid #3a6b8a;
+background: #fff;
 }
 
 .shop-item-head {
-  display: flex;
-  align-items: center;
+display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
   gap: 8px;
 }
 
 .shop-item-name {
-  font-weight: 900;
-  font-size: 15px;
+font-weight: 900;
+  font-size: 18px;
+  line-height: 1.4;
 }
 
 .shop-item-value {
@@ -2303,9 +2167,9 @@ button {
 }
 
 .shop-item-desc {
-  font-size: 11px;
-  color: #6b6152;
-  line-height: 1.5;
+font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .shop-item .small-btn {
@@ -2333,10 +2197,12 @@ button {
 }
 
 .result-week {
-  font-size: 22px;
+width: 100%;
+  font-family: var(--display-font);
+  font-size: 24px;
   font-weight: 900;
   border-bottom: 3px solid var(--ink);
-  padding-bottom: 4px;
+  padding-bottom: 12px;
 }
 
 .breakdown {
@@ -2385,7 +2251,7 @@ button {
   font-weight: 900;
   padding: 8px 26px;
   border: 4px solid;
-  border-radius: 6px;
+  border-radius: 0;
   transform: rotate(-4deg);
   letter-spacing: 0.1em;
 }
@@ -2456,7 +2322,7 @@ button {
   max-width: 340px;
   background: var(--paper-dark);
   border: 2px solid var(--ink);
-  border-radius: 4px;
+  border-radius: 0;
   padding: 8px 10px;
   display: flex;
   flex-direction: column;
@@ -2830,7 +2696,7 @@ button {
   padding: 1px 6px;
   border: 1px solid #b3a894;
   background: var(--paper-dark);
-  border-radius: 3px;
+  border-radius: 0;
   white-space: nowrap;
 }
 
@@ -2849,7 +2715,7 @@ button {
   font-weight: 900;
   padding: 2px 8px;
   border: 2px solid;
-  border-radius: 3px;
+  border-radius: 0;
   white-space: nowrap;
 }
 
@@ -3085,7 +2951,7 @@ button {
   color: #4a3000;
   background: linear-gradient(135deg, #ffe89a, #d9a520);
   border: 1px solid #a87b12;
-  border-radius: 3px;
+  border-radius: 0;
   padding: 0 4px;
   font-size: 8px;
   font-weight: 900;
@@ -3223,7 +3089,7 @@ button {
 .highlight-count {
   margin-left: 6px;
   padding: 0 6px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--ink);
   color: var(--paper);
   font-size: 10px;
@@ -3299,7 +3165,7 @@ button {
   gap: 2px;
   text-align: left;
   border: 2px solid #b3a894;
-  border-radius: 4px;
+  border-radius: 0;
   background: #fff;
   padding: 7px 10px;
 }
@@ -3324,7 +3190,7 @@ button {
 .ending-picked-tag {
   margin-left: 6px;
   padding: 0 5px;
-  border-radius: 3px;
+  border-radius: 0;
   font-size: 9px;
   font-weight: 900;
   font-style: normal;
@@ -3410,7 +3276,7 @@ button {
   background: #222;
   color: #fff;
   border: 1px solid #555;
-  border-radius: 6px;
+  border-radius: 0;
   padding: 6px 10px;
   opacity: 0.75;
 }
@@ -3420,7 +3286,7 @@ button {
   background: #1c1c1c;
   color: #eee;
   border: 1px solid #555;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px;
   width: 240px;
   max-height: 60vh;
@@ -3443,7 +3309,7 @@ button {
   background: #333;
   color: #eee;
   border: 1px solid #666;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 4px 6px;
 }
 
@@ -3451,7 +3317,7 @@ button {
   background: #444;
   color: #eee;
   border: 1px solid #666;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 4px 8px;
 }
 
@@ -3468,6 +3334,66 @@ button {
   background: #333;
   color: #eee;
   border: 1px solid #555;
-  border-radius: 4px;
+  border-radius: 0;
   padding: 4px 6px;
+}
+
+
+/* v1.1：誌面の柱、原稿欄、文脈に応じた担当メモ */
+.cover-masthead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  border-top: 3px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding: 8px 0;
+}
+.cover-masthead strong { font-size: 14px; letter-spacing: 0.02em; }
+.cover-strap { font-size: 11px; line-height: 1.6; color: var(--muted); }
+.manuscript-label {
+  position: absolute; inset: 0 0 auto; padding: 6px 10px;
+  border-bottom: 1px solid var(--rule); font-size: 10px; letter-spacing: 0.08em;
+  display: flex; justify-content: space-between; color: var(--muted);
+}
+.manuscript-label b { font-variant-numeric: tabular-nums; }
+.preview-score { display: grid; grid-template-columns: auto 1fr; align-items: baseline; gap: 2px 8px; }
+.preview-caption { font-size: 11px; font-weight: 400; }
+.preview-score small { grid-column: 1 / -1; margin-left: 0; }
+.preview-margin { font-size: 11px; }
+.editor-note { border-block: 1px solid var(--rule); padding: 10px 0; }
+.editor-note-label { color: var(--accent-dark); font-size: 11px; letter-spacing: 0.08em; font-weight: 800; }
+.editor-note p { font-size: 12px; line-height: 1.7; margin-top: 4px; }
+.issue-guide { padding: 12px; background: var(--paper-dark); border: 1px solid var(--ink); }
+.issue-guide-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; }
+.issue-guide-top > span { font-size: 10px; letter-spacing: 0.04em; color: var(--muted); }
+.issue-guide-top b { color: var(--accent-dark); margin-left: 8px; }
+.issue-guide > strong { display: block; font-size: 15px; line-height: 1.5; margin-top: 4px; }
+.issue-guide p { font-size: 12px; line-height: 1.7; margin-top: 4px; }
+.guide-dismiss { min-height: 40px; border: 0; background: transparent; color: var(--muted); text-decoration: underline; text-underline-offset: 3px; font-size: 11px; }
+.shop-context-hint { font-size: 12px; line-height: 1.6; color: var(--accent-dark); border-top: 1px solid var(--rule); padding-top: 8px; }
+.combo-banner-extra { flex-basis: 100%; font-size: 11px; font-weight: 400; line-height: 1.5; color: var(--muted); }
+.payoff-note { font-family: var(--display-font); font-size: 17px; font-weight: 700; line-height: 1.8; color: var(--accent-dark); text-align: center; max-width: 100%; }
+.cutin-panel .payoff-note { font-size: 14px; color: inherit; }
+.play-screen[data-guide-target='hand'] .hand-label,
+.play-screen[data-guide-target='cast'] .cast .hand-label { color: var(--accent-dark); text-decoration: underline; text-underline-offset: 5px; }
+button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+button:active:not(:disabled) { translate: 0 1px; }
+.card:active { box-shadow: none; }
+.card-frame { position: relative; display: flex; flex-direction: column; min-width: 0; }
+.card-frame > .card { width: 100%; flex: 1; }
+.card-frame-compact { width: 76px; flex: 0 0 76px; }
+@media (max-width: 360px) {
+  .title-screen { padding: 12px 18px 24px; }
+  .play-screen { padding-inline: 8px; }
+  .card { padding-inline: 5px; }
+  .card-name { font-size: 12px; }
+  .redraw-controls { flex-wrap: wrap; }
+  .header-main-row { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
 }

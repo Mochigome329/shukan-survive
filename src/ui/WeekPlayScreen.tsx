@@ -12,7 +12,10 @@ import { ActIntro } from './ActIntro';
 import { EndingPicker } from './EndingPicker';
 import { SoundToggle } from './SoundToggle';
 import { TitleReturnButton } from './TitleReturnButton';
-import { useTutorialHighlight } from './useTutorialHighlight';
+import { firstIssueGuide } from '../core/onboarding';
+import { EditorNote } from './EditorNote';
+import { MangaArt } from './MangaArt';
+import { TargetPickerDialog } from './TargetPickerDialog';
 
 interface Props {
   state: GameState;
@@ -20,149 +23,6 @@ interface Props {
 }
 
 const TAG_LABEL: Record<string, string> = { battle: 'バトル' };
-
-/**
- * 初回チュートリアル（v7.5）。画面の上から順に「どこが何か・何をするか」を追う。
- * 以前は一枚の要約モーダルだけで、どこを触ればいいのかは伝えていなかった。
- * ステップ数は gameReducer の TUTORIAL_STEP_COUNT と揃えること
- */
-const TUTORIAL_STEPS: {
-  title: string;
-  body: ReactNode;
-  /** この手順で光らせる画面の部位（CSSの `[data-tutorial-target]` が拾う） */
-  target?: 'header' | 'cast' | 'hand' | 'preview' | 'codex' | 'status';
-  /** 光らせる部位を隠さないよう、説明の箱を上下どちらへ寄せるか */
-  boxAt?: 'top' | 'bottom';
-}[] = [
-  {
-    title: 'ようこそ、担当です',
-    body: (
-      <>
-        <p className="explain-formula">
-          あなたは週刊連載の漫画家。毎週「今週の話」を作り、読者アンケートで<strong>ノルマ</strong>を超え続ける。
-        </p>
-        <p className="explain-formula">
-          この画面の見かたを、上から順に説明します。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '① 画面いちばん上：話数とノルマ',
-    target: 'header',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          作品タイトルの下に<strong>今が何話か</strong>と<strong>今週のノルマ</strong>が出ます。
-          {/* v7.32: 短期連載（全13話）だと帯の目盛りが25話ぶんではなくなるので、話数を明言しない */}
-          その下の細い帯が連載全体の進み具合と<strong>ボス週の位置</strong>。
-        </p>
-        <p className="explain-formula">
-          ノルマを割ると<strong>打ち切り警告</strong>が1つ増え、<strong>3つで連載終了</strong>。達成すると1つ減ります。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '② キャスト：毎週の得点源',
-    target: 'cast',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          並んでいるキャラが連載のレギュラー。<strong>この人たちの人気度の合計</strong>が得点の土台になります。
-        </p>
-        <p className="explain-formula">
-          出演枠は<strong>{HIGHLIGHT_LIMIT}人まで</strong>。{HIGHLIGHT_LIMIT}人以下なら全員が自動で出演し、
-          増えたらキャラをタップして誰を出すか選びます。控えのキャラは「新キャラ登場」でデビューさせます。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '③ 手札：今週の展開を選ぶ',
-    target: 'hand',
-    boxAt: 'top',
-    body: (
-      <>
-        <p className="explain-formula">
-          下に並ぶのが<strong>展開カード</strong>。ここから<strong>0〜4枚</strong>選んで今週の話を組み立てます。
-        </p>
-        <p className="explain-formula">
-          カードの「<strong>?</strong>」を押すと効果が読めます。対象を選ぶカードは、選んだあとキャラをタップして指定します。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '④ 予想スコアと、やり直す手段',
-    target: 'preview',
-    boxAt: 'top',
-    body: (
-      <>
-        <p className="explain-formula">
-          カードを選ぶと<strong>予想スコア</strong>と<strong>ノルマまであといくつか</strong>が出ます。暗算は不要です。
-        </p>
-        <p className="explain-formula">
-          手札が悪ければ<strong>描き直し</strong>（週2回）で引き直せます。
-          今週使わないカードは<strong>ネーム保管</strong>で最大{MAX_STOCK}枚、来週へ持ち越せます。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '⑤ 役：この遊びの主役',
-    target: 'codex',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          カードの組み合わせが噛み合うと<strong>役</strong>が成立し、カットインが入って大きく加点されます。
-          「バトル＋修行」で〈王道〉など、漫画あるあるが役になっています。
-        </p>
-        <p className="explain-formula">
-          どんな役があるかは、この<strong>役図鑑</strong>ボタンからいつでも確認できます。
-          まだ出したことのない役はぼかして出るので、ヒントを見ながら狙ってみてください。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '⑥ 連載メモと編集部',
-    target: 'status',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          <strong>📋 連載メモ</strong>は、いま仕込んである状態の一覧です。
-          伏線・恋愛や修行のフラグ・再登場待ちのキャラなど、あとで回収できるものが溜まっていきます。
-          再登場できる相手がいるときは、ここから戻せます。
-        </p>
-        <p className="explain-formula">
-          <strong>✉ 編集部</strong>は、期限つきの注文です。
-          「第4話までにライバルを出す」のように、応えると<strong>原稿料がもらえ</strong>、
-          期限を過ぎると<strong>打ち切り警告が1つ増えます</strong>。残り話数はボタンに出ています。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '⑦ スコアの式',
-    body: (
-      <>
-        <p className="explain-formula">
-          <strong>キャスト人気 × 話題性</strong> ＝ 今週のスコア。
-          キャラを育てて人気を上げ、展開と役で話題性を積むほど伸びます。
-        </p>
-        <p className="explain-formula">
-          同じ展開ばかり続けると<strong>鮮度</strong>が落ちて話題性が下がるので、たまには別の手を。
-        </p>
-        <p className="explain-tap">それでは、第1話をどうぞ。</p>
-      </>
-    ),
-  },
-];
 
 /** ボス週ごとの事前ブリーフィング（v7.5）。何が起きるか＋何を準備すべきか */
 const BOSS_BRIEFINGS: Record<string, { what: ReactNode; prepare: ReactNode }> = {
@@ -271,13 +131,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
   const activeDemands = run.demands.filter((d) => d.achievedWeek === null && !d.failed);
   const inspected = state.inspectedCardId ? data.definitions.get(state.inspectedCardId) : null;
   const pendingDef = state.pendingTargetDev ? defOf(state.pendingTargetDev) : null;
-  const pendingDevName = pendingDef?.name ?? null;
   const pendingTargetKind = pendingDef?.kind === 'development' ? pendingDef.target : null;
-  // 陣営を選べるキャラのデビュー待ち（v6.2）: 対象として決まったキャラの名前を表示する
-  const factionPendingTargetId = state.pendingFactionChoice ? state.selection.targets[state.pendingFactionChoice] : null;
-  const factionPendingName = factionPendingTargetId
-    ? displayName(defOf(factionPendingTargetId), byId.get(factionPendingTargetId)!)
-    : null;
   const fieldIds = state.selection.cards;
   const handIds = run.hand.filter((id) => !fieldIds.includes(id));
 
@@ -289,13 +143,13 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
   }
 
   // チュートリアル中は、説明している部位をCSSで浮かび上がらせる（v7.5b）
-  const tutorial = state.tutorialStep !== null ? TUTORIAL_STEPS[state.tutorialStep] : undefined;
-  useTutorialHighlight(tutorial?.target);
+  const tutorial = state.tutorialStep !== null && run.week === 1
+    ? firstIssueGuide(run, state.selection, state.pendingTargetDev) : null;
 
   return (
     <div
       className={`screen play-screen ${quotaEntry.boss ? 'play-screen-boss' : ''}`}
-      data-tutorial-target={tutorial?.target}
+      data-guide-target={tutorial?.target}
     >
       <header className="play-header">
         <div className="header-title-row">
@@ -310,7 +164,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
           </div>
         </div>
         <div className="header-main-row">
-          <span className="week-badge">第{run.week}話</span>
+          <span className="week-badge"><small>第</small>{String(run.week).padStart(2, '0')}<small>話</small></span>
           <span className="quota">
             {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回で、打ち切られない） */}
             {quotaEntry.final ? (
@@ -356,40 +210,16 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
       )}
 
       {state.notice && <div className="notice">{state.notice}</div>}
-      {!state.notice && pendingDevName && (
-        <div className="notice notice-target">
-          {pendingTargetKind === 'oneBench'
-            ? `「${pendingDevName}」でデビューさせる控えキャラをタップしてください`
-            : pendingTargetKind === 'oneBenchEnemy'
-              ? `「${pendingDevName}」でデビューさせる敵キャラをタップしてください`
-              : pendingTargetKind === 'oneEnemy'
-                ? `「${pendingDevName}」の対象となる敵キャラをタップしてください`
-                : pendingTargetKind === 'oneWaiting'
-                  ? `「${pendingDevName}」で呼び戻す再登場待ちのキャラをタップしてください`
-                  : `「${pendingDevName}」の対象キャラをタップしてください`}
-        </div>
-      )}
-      {!state.notice && !pendingDevName && factionPendingName && (
-        <div className="notice notice-target faction-choice-notice">
-          <span>「{factionPendingName}」の陣営を選んでください</span>
-          <div className="faction-choice-buttons">
-            <button
-              type="button"
-              className="small-btn faction-choice-ally"
-              onClick={() => dispatch({ type: 'chooseFaction', devId: state.pendingFactionChoice!, faction: 'ally' })}
-            >
-              仲間として登場
-            </button>
-            <button
-              type="button"
-              className="small-btn faction-choice-enemy"
-              onClick={() => dispatch({ type: 'chooseFaction', devId: state.pendingFactionChoice!, faction: 'enemy' })}
-            >
-              敵として登場
-            </button>
+      {tutorial ? (
+        <aside className="issue-guide" aria-live="polite">
+          <div className="issue-guide-top">
+            <span>第1話の描き方 <b>{tutorial.step} / 4</b></span>
+            <button type="button" className="guide-dismiss" onClick={() => dispatch({ type: 'dismissTutorial' })}>案内を閉じる</button>
           </div>
-        </div>
-      )}
+          <strong>{tutorial.title}</strong>
+          <p>{tutorial.text}</p>
+        </aside>
+      ) : <EditorNote data={data} run={run} />}
 
       <section className="cast">
         <div className="cast-toolbar">
@@ -575,102 +405,10 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
 
       {quotaEntry.final && <EndingPicker state={state} dispatch={dispatch} />}
 
-      {/* v7.28: 最終回は展開カードを出さないので、場と手札は出さない */}
-      {!quotaEntry.final && (
-      <section className="field">
-        {fieldIds.length === 0 ? (
-          <p className="field-empty">手札から展開カードを選んで「今週の話」を作ろう（0〜4枚）</p>
-        ) : (
-          <div className="field-cards">
-            {fieldIds.map((id) => {
-              const def = defOf(id);
-              const targetId = state.selection.targets[id];
-              return (
-                <CardView
-                  key={id}
-                  instance={byId.get(id)!}
-                  def={def}
-                  compact
-                  selected
-                  permanentBuzz={run.permanentBuzzByDef[def.id] ?? 0}
-                  freshness={run.freshnessByDef[def.id] ?? 1}
-
-                  targetName={targetId ? displayName(defOf(targetId), byId.get(targetId)!) : undefined}
-                  onTap={() => {
-                    playFlip();
-                    dispatch({ type: 'tapFieldCard', instanceId: id });
-                  }}
-                />
-              );
-            })}
-          </div>
-        )}
-      </section>
-      )}
-
-      {preview && preview.combos.length > 0 && (
-        <div className="combo-preview">
-          {preview.combos.map((c) => (
-            <span key={c.comboId} className={`combo-chip ${c.status !== 'applied' ? 'combo-chip-suppressed' : `combo-chip-${c.cutInTemplate}`}`}>
-              {c.name}
-              {c.status === 'applied' && (
-                <>
-                  {c.popularityAdd > 0 && ` 人気+${c.popularityAdd}`}
-                  {c.buzzAdd > 0 && ` 話題+${c.buzzAdd}`}
-                  {c.scoreMultiplier > 1 && ` ×${c.scoreMultiplier}`}
-                  {c.charMultiplier > 1 && ` 人気×${c.charMultiplier}`}
-                </>
-              )}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <section className="preview">
-        {preview ? (
-          <div className={`preview-line ${preview.cleared ? 'preview-ok' : 'preview-ng'}`}>
-            <span>
-              予想スコア <strong>{preview.finalScore}</strong>
-              <small>
-                （人気{preview.popularityTotal} × 話題{Number.isInteger(preview.buzzApplied) ? preview.buzzApplied : preview.buzzApplied.toFixed(1)}）
-              </small>
-            </span>
-            {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回なので打ち切られない） */}
-            {!quotaEntry.final && (
-              <span>{preview.cleared ? `ノルマ +${preview.finalScore - preview.quota}` : `あと${preview.quota - preview.finalScore}`}</span>
-            )}
-          </div>
-        ) : (
-          <div className="preview-line preview-hint">
-            {state.pendingTargetDev
-              ? '対象を選ぶとスコアが出ます'
-              : state.pendingFactionChoice
-                ? '陣営を選ぶとスコアが出ます'
-                : validity.ok
-                  ? quotaEntry.final
-                    ? '結末を選ぶとスコアが出ます'
-                    : 'スコア = キャスト人気 × 話題性'
-                  : (validity as { reason: string }).reason}
-          </div>
-        )}
-        <button
-          type="button"
-          className="confirm-btn"
-          data-sfx="skip"
-          disabled={!preview}
-          onClick={() => {
-            playWrite();
-            dispatch({ type: 'confirmPlay' });
-          }}
-        >
-          {quotaEntry.final ? 'この結末で完結させる' : '今週の話を確定'}
-        </button>
-      </section>
-
       {!quotaEntry.final && (
       <section className="hand">
         <div className="hand-toolbar">
-          <span className="hand-label">手札（展開）</span>
+          <span className="hand-label">展開カード</span>
           {state.redrawMode ? (
             <span className="redraw-controls">
               <button type="button" className="small-btn" onClick={() => dispatch({ type: 'executeRedraw' })} disabled={state.redrawPicks.length === 0}>
@@ -700,7 +438,7 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
             </span>
           )}
         </div>
-        {state.redrawMode && <div className="redraw-hint">戻すカードを選んで引き直し（戻したカードをまた引くこともある）</div>}
+        {state.redrawMode && <div className="redraw-hint">戻すカードを選んで引き直し（同じカードを引くこともある）</div>}
         {state.stockMode && (
           <div className="redraw-hint">今週プレイしないカードを最大{MAX_STOCK}枚選ぶと、次の話の手札に必ず入る</div>
         )}
@@ -726,6 +464,102 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
         </div>
       </section>
       )}
+
+      {/* v7.28: 最終回は展開カードを出さないので、場と手札は出さない */}
+      {!quotaEntry.final && (
+      <section className="field" aria-label="今週の原稿">
+        <span className="manuscript-label">今週の原稿 <b>{fieldIds.length} / 4</b></span>
+          <div className="manuscript-panels">
+            {Array.from({ length: 4 }, (_, index) => {
+              const id = fieldIds[index];
+              if (!id) return <div key={`blank-${index}`} className="manuscript-blank" aria-label={`空きコマ ${index + 1}`}><span>{String(index + 1).padStart(2, '0')}</span><small>{index === 0 ? '手札を選んで描きはじめる' : 'まだ描かれていない物語'}</small></div>;
+              const def = defOf(id);
+              const targetId = state.selection.targets[id];
+              const freshness = run.freshnessByDef[def.id] ?? 1;
+              const buzz = def.kind === 'development' ? def.buzz * freshness + (run.permanentBuzzByDef[def.id] ?? 0) : 0;
+              return (
+                <button type="button" id={`play-card-${id}`} className="manuscript-panel" data-sfx="skip"
+                  key={id}
+                  aria-label={`${def.name}${targetId ? `、対象 ${displayName(defOf(targetId), byId.get(targetId)!)}` : ''}を原稿から戻す`}
+                  onClick={() => {
+                    playFlip();
+                    dispatch({ type: 'tapFieldCard', instanceId: id });
+                  }}
+                >
+                  <MangaArt definitionId={def.id} faction={targetId ? byId.get(targetId)?.faction : null} />
+                  <span className="panel-number">{String(index + 1).padStart(2, '0')}</span>
+                  <span className="panel-buzz">話題+{Number.isInteger(buzz) ? buzz : buzz.toFixed(1)}{freshness < 1 ? ` / 鮮度${Math.round(freshness * 100)}%` : ''}</span>
+                  <strong className="panel-title">{def.name}</strong>
+                  {targetId && <span className="panel-target">{displayName(defOf(targetId), byId.get(targetId)!)}</span>}
+                  <span className="panel-remove" aria-hidden="true">戻す ×</span>
+                </button>
+              );
+            })}
+          </div>
+        <span className="manuscript-footer">第{run.week}話 ネーム / タップで原稿から戻す</span>
+      </section>
+      )}
+
+      {preview && preview.combos.length > 0 && (
+        <div className="combo-preview">
+          {preview.combos.map((c) => (
+            <span key={c.comboId} className={`combo-chip ${c.status !== 'applied' ? 'combo-chip-suppressed' : `combo-chip-${c.cutInTemplate}`}`}>
+              {c.name}
+              {c.status === 'applied' && (
+                <>
+                  {c.popularityAdd > 0 && ` 人気+${c.popularityAdd}`}
+                  {c.buzzAdd > 0 && ` 話題+${c.buzzAdd}`}
+                  {c.scoreMultiplier > 1 && ` ×${c.scoreMultiplier}`}
+                  {c.charMultiplier > 1 && ` 人気×${c.charMultiplier}`}
+                </>
+              )}
+            </span>
+          ))}
+        </div>
+      )}
+
+
+      <section className="preview">
+        {preview ? (
+          <div className={`preview-line ${preview.cleared ? 'preview-ok' : 'preview-ng'}`}>
+            <span className="preview-score">
+              <span className="preview-caption">予想スコア</span><strong>{preview.finalScore}</strong>
+              <small>
+                （人気{preview.popularityTotal} × 話題{Number.isInteger(preview.buzzApplied) ? preview.buzzApplied : preview.buzzApplied.toFixed(1)}）
+              </small>
+            </span>
+            {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回なので打ち切られない） */}
+            {!quotaEntry.final && (
+              <span className="preview-margin">{preview.cleared ? `ノルマ +${preview.finalScore - preview.quota}` : `あと${preview.quota - preview.finalScore}`}</span>
+            )}
+          </div>
+        ) : (
+          <div className="preview-line preview-hint">
+            {state.pendingTargetDev
+              ? '対象を選ぶとスコアが出ます'
+              : state.pendingFactionChoice
+                ? '陣営を選ぶとスコアが出ます'
+                : validity.ok
+                  ? quotaEntry.final
+                    ? '結末を選ぶとスコアが出ます'
+                    : 'スコア = キャスト人気 × 話題性'
+                  : (validity as { reason: string }).reason}
+          </div>
+        )}
+        <button
+          type="button"
+          className="confirm-btn"
+          data-sfx="skip"
+          disabled={!preview}
+          onClick={() => {
+            playWrite();
+            dispatch({ type: 'confirmPlay' });
+          }}
+        >
+          {quotaEntry.final ? 'この結末で完結させる' : 'この原稿を入稿する'}
+        </button>
+      </section>
+
 
       {inspected && (
         <div className="overlay" onClick={() => dispatch({ type: 'inspectCard', definitionId: null })}>
@@ -787,6 +621,10 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
             </div>
           );
         })()}
+
+      {(state.pendingTargetDev || state.pendingFactionChoice) && (
+        <TargetPickerDialog key={state.pendingTargetDev ?? state.pendingFactionChoice!} state={state} dispatch={dispatch} />
+      )}
 
       {state.actIntro && (
         <ActIntro acts={campaign.acts} act={state.actIntro} week={run.week} onDismiss={() => dispatch({ type: 'dismissActIntro' })} />
@@ -868,26 +706,6 @@ export function WeekPlayScreen({ state, dispatch }: Props) {
               ボス週の<strong>ノルマ未達は、警告に関係なく即打ち切り</strong>です。
             </p>
             <p className="explain-tap">タップして続ける</p>
-          </div>
-        </div>
-      )}
-
-      {tutorial && (
-        <div className={`overlay tutorial-overlay ${tutorial.boxAt ? `tutorial-box-${tutorial.boxAt}` : ''}`}>
-          <div className="explain-box tutorial-box">
-            <div className="tutorial-step-count">
-              {state.tutorialStep! + 1} / {TUTORIAL_STEPS.length}
-            </div>
-            <h2>{tutorial.title}</h2>
-            {tutorial.body}
-            <div className="tutorial-actions">
-              <button type="button" className="small-btn ghost" onClick={() => dispatch({ type: 'dismissTutorial' })}>
-                スキップ
-              </button>
-              <button type="button" className="primary-btn" onClick={() => dispatch({ type: 'advanceTutorial' })}>
-                {state.tutorialStep! + 1 >= TUTORIAL_STEPS.length ? 'はじめる' : '次へ'}
-              </button>
-            </div>
           </div>
         </div>
       )}

@@ -1,0 +1,134 @@
+/* The magazine and drawing desk share one ink-and-paper visual language. */
+:root { --ink: #181815; --paper: #f5efdf; --paper-dark: #e8dfcb; --accent: #c63826; --accent-dark: #962619; --rule: #c8bea9; --display-font: 'Arial Black', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', sans-serif; }
+body { background: #252520; }
+#root { box-shadow: 0 0 80px #0005; }
+.manga-art { display: block; width: 100%; aspect-ratio: 1; flex-shrink: 0; background-repeat: no-repeat; background-color: var(--paper-dark); }
+.manga-art.manga-art-ally { filter: contrast(.96) brightness(1.04); }
+.manga-art.manga-art-enemy { filter: grayscale(1) contrast(1.5) brightness(.86); }
+.card-frame .card[data-faction="enemy"], .setup-screen .cast-choice[data-faction="enemy"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.card[data-faction="enemy"] .card-value, .card[data-faction="enemy"] .card-name, .cast-choice[data-faction="enemy"] .cast-choice-name, .cast-choice[data-faction="enemy"] .cast-choice-meta { color: var(--paper); }
+.card[data-faction="enemy"] .faction-enemy { color: #ffad92; border-color: #ffad92; }
+.card[data-faction="enemy"] .manga-art { border-bottom: 3px solid var(--accent); }
+.card[data-faction="ally"] .manga-art { border-bottom: 3px solid var(--paper-dark); }
+.section-kicker { font-size: 11px; font-weight: 800; letter-spacing: .18em; color: var(--accent); }
+.title-screen { padding: 16px 18px 24px; gap: 12px; background: var(--paper); }
+.title-screen .cover-masthead { font-size: 10px; border-bottom: 2px solid var(--ink); padding-bottom: 8px; letter-spacing: .08em; }
+.magazine-cover { position: relative; isolation: isolate; border: 3px solid var(--ink); aspect-ratio: .82; overflow: hidden; background: var(--ink); }
+.cover-logo { position: absolute; top: 0; left: 0; width: 100%; z-index: 2; padding: 8px 8px 12px; color: var(--paper); font-size: clamp(48px, 13.2vw, 66px); font-weight: 1000; line-height: .95; letter-spacing: -.095em; background: var(--accent); border-bottom: 4px solid var(--ink); text-shadow: 3px 3px 0 var(--ink); }
+.cover-logo > span:first-child { display: inline-block; font-size: 17px; writing-mode: vertical-rl; letter-spacing: .05em; margin-right: 5px; text-shadow: none; }
+.cover-logo .cover-logo-en { display: block; font: 800 10px/1.5 Arial, sans-serif; letter-spacing: .32em; padding-left: 27px; text-shadow: none; margin-top: 5px; }
+.cover-illustration { position: absolute; width: 112%; left: -6%; top: 16%; aspect-ratio: 1; }
+.cover-vertical { position: absolute; top: 26%; right: 9px; writing-mode: vertical-rl; color: var(--ink); background: var(--paper); border: 2px solid var(--ink); padding: 9px 5px; font-weight: 900; font-size: 20px; line-height: 1.2; letter-spacing: .1em; transform: rotate(3deg); }
+.cover-issue { position: absolute; left: 9px; top: 23%; color: var(--paper); display: flex; flex-direction: column; font-size: 8px; background: var(--ink); padding: 6px; }
+.cover-issue b { font: 900 31px/.9 Arial, sans-serif; }
+.cover-headline { position: absolute; bottom: 12px; left: 9px; font-size: clamp(29px, 9vw, 44px); font-weight: 1000; line-height: 1.08; letter-spacing: -.07em; color: var(--paper); text-shadow: 3px 3px var(--ink), -2px -2px var(--ink), 2px -2px var(--ink), -2px 2px var(--ink); transform: rotate(-4deg); }
+.cover-headline em { color: #ffde61; font-style: normal; font-size: 1.2em; }
+.title-screen .cover-strap { font-size: 11px; font-weight: 700; text-align: center; padding: 0; }
+.title-screen .primary-btn { background: var(--ink); min-height: 58px; font-size: 19px; display: flex; justify-content: space-between; align-items: center; border: 0; box-shadow: 4px 4px 0 var(--accent); padding: 14px 18px; }
+.title-screen .title-resume { align-items: flex-start; }
+.title-screen > .small-btn.ghost { min-height: 42px; border: 1px solid var(--ink); background: transparent; }
+.title-screen .title-note { margin-top: 2px; padding-top: 8px; }
+.title-screen .title-credit, .title-screen .title-access-count { margin-top: 0; }
+.title-screen .title-confirm { max-width: none; border: 2px solid var(--ink); padding: 16px; background: #fffaf0; }
+.title-confirm-buttons .small-btn { min-height: 44px; }
+
+/* Cast portraits: same identity in setup and at the drawing desk. */
+.setup-screen { padding: 24px 18px; }
+.setup-screen .setup-heading { font-size: 35px; line-height: 1.15; border-bottom: 0; letter-spacing: -.06em; }
+.setup-screen .cast-choice { position: relative; overflow: hidden; padding: 0 0 10px; gap: 5px; border: 2px solid var(--ink); background: #fffaf0; }
+.cast-choice .manga-art { aspect-ratio: 1; }
+.cast-choice .cast-choice-name, .cast-choice .cast-choice-meta { padding: 0 10px; }
+.cast-choice .cast-choice-name { font-size: 17px; }
+.cast-choice.cast-choice-selected { box-shadow: 4px 4px 0 var(--accent); border-color: var(--accent); }
+.cast-choice-selected::after { content: '出演'; position: absolute; right: 6px; top: 6px; color: white; background: var(--accent); font-weight: 900; font-size: 11px; padding: 5px 7px; }
+.setup-screen > .cast-choice-wrap .cast-choice-fixed { display: grid; grid-template-columns: 88px 1fr; grid-template-rows: 1fr 1fr; padding: 0; align-items: center; gap: 0; opacity: 1; }
+.cast-choice-fixed .manga-art { grid-row: 1 / 3; }
+.cast-choice-fixed .cast-choice-name { align-self: end; }
+.cast-choice-fixed .cast-choice-meta { align-self: start; padding-top: 5px; }
+.setup-screen .cast-choice-list { gap: 16px 12px; }
+.cast-nickname-input { min-height: 40px; font-size: 16px; }
+.cast-choice-faction .small-btn { min-height: 42px; }
+.setup-screen .setup-start { margin-top: 20px; }
+
+/* A manuscript is a page of panels; the deck stays below it. */
+.play-screen { padding: 12px 12px calc(24px + env(safe-area-inset-bottom)); gap: 14px; }
+.play-screen .play-header { border-bottom: 0; padding: 0; }
+.play-screen .header-title-row { border-bottom: 1px solid var(--ink); padding-bottom: 8px; }
+.play-screen .manga-title { font-size: 15px; font-weight: 900; }
+.play-screen .header-main-row { align-items: center; }
+.play-screen .week-badge { font: 900 40px/1 Arial, sans-serif; color: var(--ink); background: none; padding: 3px 0; letter-spacing: -.06em; }
+.week-badge small { font: 700 12px/1 sans-serif; padding: 0 5px; }
+.play-screen .quota { font-size: 11px; }
+.play-screen .quota strong { font-size: 24px; }
+.play-screen .issue-guide { border: 0; border-left: 4px solid var(--accent); padding: 9px 12px; background: #fffaf0; box-shadow: none; }
+.play-screen .issue-guide p { font-size: 12px; }
+.play-screen .issue-guide-top { margin-bottom: 3px; }
+.play-screen .editor-note { border: 0; border-left: 4px solid var(--accent); background: #fffaf0; padding: 9px 12px; }
+.play-screen .cast { border: 0; background: transparent; padding: 0; }
+.play-screen .cast-toolbar { margin-bottom: 7px; }
+.play-screen .cast-cards { flex-wrap: nowrap; overflow-x: auto; padding: 0 3px 6px; gap: 7px; }
+.card-frame-compact { width: 84px; flex: 0 0 84px; }
+.card-frame > .card { border: 2px solid var(--ink); padding: 0; gap: 0; box-shadow: 2px 2px 0 var(--rule); overflow: hidden; justify-content: flex-start; }
+.card .manga-art { border-bottom: 1px solid var(--ink); }
+.card .card-name { padding: 6px 5px 4px; font-size: 13px; line-height: 1.25; }
+.card .card-meta { margin: auto 5px 0; padding: 4px 0 5px; border: 0; gap: 2px; }
+.card .card-value { font: 900 20px/1 Arial, sans-serif; }
+.card .card-faction { font-size: 9px; padding: 1px 2px; }
+.card .card-target { padding: 3px 5px; background: #ffde61; font-size: 10px; }
+.card-target-required { display: block; padding: 4px 3px; background: var(--paper-dark); color: var(--ink); font-size: 9px; font-weight: 700; text-align: center; }
+.card .card-freshness { position: static; font-size: 9px; padding: 1px 5px 4px; }
+.card.card-offstage { opacity: .5; filter: grayscale(1); }
+.card.card-target-highlight { outline: 3px solid var(--accent); outline-offset: 1px; }
+.card.card-stocked { outline: 3px solid var(--ok); outline-offset: 1px; }
+.card.card-picked { outline: 3px solid var(--accent); opacity: .6; }
+.card-inspect { min-height: 36px; font-size: 10px; background: transparent; border: 0; border-bottom: 1px solid var(--rule); padding: 5px 2px; text-align: center; }
+.play-screen .field { display: block; padding: 33px 8px 7px; background: #fffdf6; min-height: 0; border: 1px solid var(--ink); box-shadow: 4px 4px 0 var(--ink); }
+.play-screen .manuscript-label { left: 8px; right: 8px; top: 8px; font-size: 11px; letter-spacing: .1em; }
+.manuscript-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.manuscript-panel, .manuscript-blank { position: relative; min-width: 0; aspect-ratio: 1.42; border: 2px solid var(--ink); overflow: hidden; }
+.manuscript-panel { background: var(--ink); text-align: left; animation: panel-ink .22s ease-out; }
+.manuscript-panel .manga-art { position: absolute; width: 100%; height: auto; aspect-ratio: 1; top: 50%; left: 0; transform: translateY(-50%); }
+.panel-number { position: absolute; top: 0; left: 0; background: var(--ink); color: var(--paper); padding: 3px 5px; font: 900 10px Arial,sans-serif; }
+.panel-buzz { position: absolute; top: 0; right: 0; background: var(--ink); color: var(--paper); font-size: 9px; padding: 2px 4px; }
+.panel-title { position: absolute; bottom: 20px; left: 5px; max-width: calc(100% - 10px); padding: 2px 5px; background: var(--paper); color: var(--ink); border: 1px solid var(--ink); font-size: 16px; line-height: 1.15; transform: rotate(-3deg); overflow-wrap: anywhere; }
+.panel-target { position: absolute; bottom: 2px; left: 4px; color: #fff; background: var(--ink); font-size: 10px; max-width: calc(100% - 48px); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; padding: 1px 3px; }
+.panel-remove { position: absolute; right: 2px; bottom: 2px; color: #fff; background: var(--ink); font-size: 9px; padding: 1px 4px; }
+.manuscript-blank { display: flex; flex-direction: column; align-items: center; justify-content: center; border: 1px dashed #b6ad99; color: #aaa18f; background: repeating-linear-gradient(-45deg, transparent 0 8px, #ded6c429 8px 9px); gap: 5px; }
+.manuscript-blank > span { font: 900 32px/1 Arial,sans-serif; color: #c1b8a4; }
+.manuscript-blank small { font-size: 9px; }
+.manuscript-footer { display: block; text-align: right; font-size: 8px; color: var(--muted); padding-top: 7px; letter-spacing: .05em; }
+@keyframes panel-ink { from { opacity: .25; transform: scale(.94) rotate(-2deg); } to { opacity: 1; transform: none; } }
+.play-screen .hand { padding-top: 4px; }
+.play-screen .hand-toolbar { flex-wrap: wrap; gap: 8px; }
+.play-screen .hand-label { font-size: 12px; font-weight: 900; }
+.play-screen .hand-cards { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px 6px; }
+.play-screen .hand-cards .card { min-height: 0; height: 100%; }
+.play-screen .hand-cards .card-name { min-height: 38px; }
+.play-screen .preview { position: sticky; bottom: 0; z-index: 8; margin: 0 -12px -24px; padding: 9px 12px calc(10px + env(safe-area-inset-bottom)); background: var(--ink); color: var(--paper); border-top: 3px solid var(--accent); display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 8px; box-shadow: 0 -5px 18px #0002; }
+.play-screen .preview-line, .play-screen .preview-line:not(.preview-hint) { border: 0; padding: 0; box-shadow: none; gap: 2px; background: transparent; min-width: 0; }
+.play-screen .preview-score { display: grid; grid-template-columns: auto 1fr; gap: 0 5px; }
+.play-screen .preview-score strong { font: 900 31px/1 Arial,sans-serif; }
+.play-screen .preview-caption { font-size: 9px; }
+.play-screen .preview-score small { font-size: 9px; color: #c9c4b7; }
+.play-screen .preview-margin { font-size: 9px; padding: 2px 5px; }
+.play-screen .preview-score:last-child { background: transparent; color: var(--paper); padding: 0; }
+.play-screen .preview-hint { color: var(--paper); font-size: 11px; line-height: 1.5; }
+.play-screen .confirm-btn { padding: 12px 6px; border: 0; box-shadow: none; font-size: 13px; min-height: 49px; background: var(--accent); }
+.play-screen .combo-preview { margin: 0; gap: 4px; }
+.play-screen .combo-chip { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); border-radius: 0; font-size: 10px; padding: 4px 7px; }
+.play-screen .combo-chip-suppressed { color: var(--muted); background: transparent; }
+.play-screen .small-btn { min-height: 36px; }
+.shop-screen { padding: 18px 14px 24px; background: var(--paper); }
+.shop-screen .shop-illustrated { display: grid; grid-template-columns: 92px minmax(0,1fr); gap: 7px 12px; padding: 12px; border: 2px solid var(--ink); background: #fffaf0; box-shadow: 3px 3px 0 var(--ink); }
+.shop-illustrated > .manga-art { grid-column: 1; grid-row: 1 / 4; border: 1px solid var(--ink); }
+.shop-illustrated > :not(.manga-art) { grid-column: 2; min-width: 0; }
+.shop-illustrated > .small-btn { grid-column: 1 / -1; min-height: 44px; background: var(--ink); color: var(--paper); }
+.shop-screen .shop-item-head { gap: 4px 7px; flex-wrap: wrap; }
+.shop-screen .shop-item-name { font-size: 17px; font-weight: 900; }
+.shop-screen .shop-item-desc { font-size: 12px; line-height: 1.6; }
+.shop-screen .shop-item-note { font-size: 10px; line-height: 1.5; }
+.shop-screen .shop-item-service { border: 1px solid var(--rule); background: transparent; padding: 14px; box-shadow: none; }
+.shop-screen .shop-item-service .small-btn { min-height: 40px; }
+.shop-screen .shop-leave { position: sticky; bottom: 12px; z-index: 3; margin-top: 18px; }
+@media (max-width: 359px) { .title-screen { padding: 12px; } .cover-logo { font-size: 46px; } .card .card-name { font-size: 11px; } .panel-title { font-size: 13px; } .play-screen .confirm-btn { font-size: 11px; } }
+@media (prefers-reduced-motion: reduce) { .manuscript-panel { animation: none; } }

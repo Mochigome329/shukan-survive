@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import { availableServices, ART_UPGRADE_AMOUNT, ART_UPGRADE_PRICE, PACK_PRICE } from '../core/shop';
 import { displayName } from '../core/types';
 import { campaignOf } from '../core/campaign';
@@ -6,90 +5,13 @@ import { SHOP_REROLL_LIMIT, type GameAction, type GameState } from '../state/gam
 import { playPurchase } from './audio';
 import { SoundToggle } from './SoundToggle';
 import { TitleReturnButton } from './TitleReturnButton';
-import { useTutorialHighlight } from './useTutorialHighlight';
+import { getShopCardHint } from '../core/editorHints';
+import { MangaArt } from './MangaArt';
 
 interface Props {
   state: GameState;
   dispatch: (action: GameAction) => void;
 }
-
-/**
- * 編集会議のチュートリアル（v7.5b）。
- * 一枚に詰め込むと読む気が失せる長さだったので、基本→キャラ→展開→サービスの4つに割った。
- * ステップ数は gameReducer の SHOP_TUTORIAL_STEP_COUNT と揃えること
- */
-const SHOP_TUTORIAL_STEPS: {
-  title: string;
-  body: ReactNode;
-  target?: 'funds' | 'pack' | 'service';
-  boxAt?: 'top' | 'bottom';
-}[] = [
-  {
-    title: '編集会議へようこそ',
-    target: 'funds',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          毎話のあと、稼いだ<strong>原稿料</strong>で連載を強化できます。
-          原稿料は<strong>スコアがノルマを超えるほど多く</strong>もらえます。
-        </p>
-        <p className="explain-formula">
-          今すぐ使い切らず<strong>貯めて次の週に回す</strong>のも手です。ボス週の直前に備えるとよく効きます。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: 'キャラを増やす',
-    target: 'pack',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          提示された3枚から1枚を<strong>原稿料{PACK_PRICE}</strong>で選べます。この中には<strong>キャラ</strong>が混ざります。
-        </p>
-        <p className="explain-formula">
-          買ったキャラは<strong>控え</strong>に入ります。そのままでは出番がないので、
-          展開カード「<strong>新キャラ登場</strong>」でデビューさせて初めてキャストに加わります。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: '展開カードを増やす',
-    target: 'pack',
-    boxAt: 'bottom',
-    body: (
-      <>
-        <p className="explain-formula">
-          同じ枠で<strong>展開カード</strong>も仕入れられます。買うとデッキに加わり、以後は毎週の抽選に混ざります。
-        </p>
-        <p className="explain-formula">
-          仕入れたカードは<strong>次の話の手札に必ず入る</strong>ので、狙った役をすぐ試せます。
-          役の素材を揃えたいときは、ここで買って翌週に決めるのが基本の流れです。
-        </p>
-      </>
-    ),
-  },
-  {
-    title: 'サービスを依頼する',
-    target: 'service',
-    boxAt: 'top',
-    body: (
-      <>
-        <p className="explain-formula">
-          <strong>作画強化</strong>（{ART_UPGRADE_PRICE}）— キャラ1人の人気度を恒久+{ART_UPGRADE_AMOUNT}。
-          得点の土台そのものが上がります。
-        </p>
-        <p className="explain-formula">
-          そのほか、描き直しの回数を増やす<strong>速筆</strong>、話題性を底上げする<strong>熟考</strong>など、
-          連載全体に効く強化を依頼できます。
-        </p>
-      </>
-    ),
-  },
-];
 
 /** 編集会議（ショップ、12節）: カードパックと作画強化 */
 export function ShopScreen({ state, dispatch }: Props) {
@@ -100,8 +22,7 @@ export function ShopScreen({ state, dispatch }: Props) {
     (c) => (c.zone === 'field' || c.zone === 'bench') && data.definitions.get(c.definitionId)?.kind === 'character',
   );
 
-  const shopTutorial = state.shopTutorialStep !== null ? SHOP_TUTORIAL_STEPS[state.shopTutorialStep] : undefined;
-  useTutorialHighlight(shopTutorial?.target);
+  const shopTutorial = state.shopTutorialStep !== null;
 
   /*
    * v7.28: 第24話のあとの編集会議ではカードを仕入れられない。
@@ -112,7 +33,7 @@ export function ShopScreen({ state, dispatch }: Props) {
   const isFinaleNext = campaign.quotas.get(run.week)?.final ?? false;
 
   return (
-    <div className="screen shop-screen" data-tutorial-target={shopTutorial?.target}>
+    <div className="screen shop-screen">
       <header className="play-header">
         <div className="header-title-row">
           <div className="header-actions">
@@ -134,6 +55,14 @@ export function ShopScreen({ state, dispatch }: Props) {
           ? `次はいよいよ最終回（第${run.week}話）。結末を選ぶだけの回なのでカードは仕入れられない。`
           : `次の話（第${run.week}話・ノルマ${campaign.quotas.get(run.week)?.quota ?? '-'}）に向けて補強できる。`}
       </p>
+
+      {shopTutorial && (
+        <aside className="issue-guide shop-guide">
+          <div className="issue-guide-top"><span>担当から、次の1話へ</span><button type="button" className="guide-dismiss" onClick={() => dispatch({ type: 'dismissShopTutorial' })}>閉じる</button></div>
+          <strong>次に描きたい展開を仕入れよう。</strong>
+          <p>展開カードは次の手札に必ず入ります。キャラは控えに加わり、「新キャラ登場」でデビュー。人気を育てるなら作画強化へ。</p>
+        </aside>
+      )}
 
       {state.artUpgradeMode ? (
         <div className="shop-items">
@@ -172,8 +101,10 @@ export function ShopScreen({ state, dispatch }: Props) {
           {pack.map((defId) => {
             const def = data.definitions.get(defId)!;
             const isChar = def.kind === 'character';
+            const contextHint = getShopCardHint(data, run, defId);
             return (
-              <div key={defId} className={`shop-item ${isChar ? 'shop-item-char' : 'shop-item-dev'} ${def.rare ? 'shop-item-rare' : ''}`}>
+              <div key={defId} className={`shop-item shop-illustrated ${isChar ? 'shop-item-char' : 'shop-item-dev'} ${def.rare ? 'shop-item-rare' : ''}`}>
+                <MangaArt definitionId={def.id} faction={def.kind === 'character' ? def.faction : null} />
                 <div className="shop-item-head">
                   <span className="card-kind">{isChar ? 'キャラ' : '展開'}</span>
                   {def.rare && <span className="card-rare">レア</span>}
@@ -181,6 +112,7 @@ export function ShopScreen({ state, dispatch }: Props) {
                   <span className="shop-item-value">{isChar ? `人気 ${def.popularity}` : `話題 +${def.buzz}`}</span>
                 </div>
                 <p className="shop-item-desc">{def.descriptions.revealed}</p>
+                {contextHint && <p className="shop-context-hint">{contextHint}</p>}
                 <p className="shop-item-note">
                   {isChar ? '仕入れると控えに入る。「新キャラ登場」でデビュー' : '仕入れると次の話の手札に必ず入る'}
                 </p>
@@ -261,26 +193,6 @@ export function ShopScreen({ state, dispatch }: Props) {
         第{run.week}話を描く
       </button>
 
-      {/* 初回だけ、この画面で何ができるかを4つに分けて説明する（v7.5b） */}
-      {shopTutorial && (
-        <div className={`overlay tutorial-overlay ${shopTutorial.boxAt ? `tutorial-box-${shopTutorial.boxAt}` : ''}`}>
-          <div className="explain-box tutorial-box">
-            <div className="tutorial-step-count">
-              {state.shopTutorialStep! + 1} / {SHOP_TUTORIAL_STEPS.length}
-            </div>
-            <h2>{shopTutorial.title}</h2>
-            {shopTutorial.body}
-            <div className="tutorial-actions">
-              <button type="button" className="small-btn ghost" onClick={() => dispatch({ type: 'dismissShopTutorial' })}>
-                スキップ
-              </button>
-              <button type="button" className="primary-btn" onClick={() => dispatch({ type: 'advanceShopTutorial' })}>
-                {state.shopTutorialStep! + 1 >= SHOP_TUTORIAL_STEPS.length ? 'はじめる' : '次へ'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

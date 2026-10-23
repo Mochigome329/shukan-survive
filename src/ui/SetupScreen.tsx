@@ -5,6 +5,7 @@ import type { Faction } from '../core/types';
 import type { CampaignMode } from '../core/campaign';
 import type { GameAction, GameState } from '../state/gameReducer';
 import { playPico } from './audio';
+import { MangaArt } from './MangaArt';
 
 interface Props {
   state: GameState;
@@ -62,7 +63,8 @@ export function SetupScreen({ state, dispatch }: Props) {
 
   return (
     <div className="screen setup-screen">
-      <h1 className="setup-heading">新連載 打ち合わせ</h1>
+      <div className="section-kicker">創刊準備 / 01</div>
+      <h1 className="setup-heading">この物語の、<br />最初の3人。</h1>
 
       {/*
        * v7.33: 導入を軽くする。SetupScreenの各項目には既に既定値があるので
@@ -124,7 +126,8 @@ export function SetupScreen({ state, dispatch }: Props) {
       <p className="setup-hint">選ばなかったキャラは控えに回り、「新キャラ登場」でデビューさせられる</p>
       {protagonist?.kind === 'character' && (
         <div className="cast-choice-wrap">
-          <div className="cast-choice cast-choice-fixed">
+          <div className="cast-choice cast-choice-fixed" data-faction={protagonist.faction}>
+            <MangaArt definitionId={PROTAGONIST_ID} faction={protagonist.faction} />
             <span className="cast-choice-name">{protagonist.name}</span>
             <span className="cast-choice-meta">人気 {protagonist.popularity} / 主人公は固定</span>
           </div>
@@ -148,8 +151,11 @@ export function SetupScreen({ state, dispatch }: Props) {
               <button
                 type="button"
                 className={`cast-choice ${selected ? 'cast-choice-selected' : ''}`}
+                data-faction={faction}
                 onClick={() => toggleCast(defId)}
+                aria-pressed={selected}
               >
+                <MangaArt definitionId={defId} faction={faction} />
                 <span className="cast-choice-name">{def.name}</span>
                 <span className="cast-choice-meta">
                   人気 {def.popularity} / {faction === 'ally' ? '仲間' : '敵'}

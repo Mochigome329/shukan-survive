@@ -71,17 +71,13 @@ describe('初回チュートリアルの要否（v7.5）', () => {
     expect(gameReducer(setup, startAction).tutorialStep).toBeNull();
   });
 
-  it('最後のステップまで進めると自動的に閉じる', () => {
+  it('案内を閉じても手札と選択内容を維持する', () => {
     const setup = gameReducer(initialGameState(data), { type: 'openSetup', withTutorial: true });
-    let s = gameReducer(setup, startAction);
-    const seen: number[] = [];
-    for (let i = 0; i < 20 && s.tutorialStep !== null; i++) {
-      seen.push(s.tutorialStep);
-      s = gameReducer(s, { type: 'advanceTutorial' });
-    }
-    expect(s.tutorialStep).toBeNull();
-    expect(seen[0]).toBe(0);
-    expect(seen.length).toBeGreaterThan(1);
+    const playing = gameReducer(setup, startAction);
+    const closed = gameReducer(playing, { type: 'dismissTutorial' });
+    expect(closed.tutorialStep).toBeNull();
+    expect(closed.run).toBe(playing.run);
+    expect(closed.selection).toBe(playing.selection);
   });
 });
 
@@ -134,8 +130,10 @@ describe('陣営を選べるキャラのデビュー選択（v7.18）', () => {
 
   it('陣営を選んだ後に、対象選択が要る別カードを選んでも選び直しを求めない', () => {
     let state = playState();
-    // 運命的な出会い: 対象はmascotで一意なので自動割当、陣営選択待ちになる
+    // 候補が1人でも対象を選んでから、陣営選択へ進む
     state = gameReducer(state, { type: 'tapHandCard', instanceId: 'unmei_deai#1' });
+    expect(state.pendingTargetDev).toBe('unmei_deai#1');
+    state = gameReducer(state, { type: 'tapCastChar', instanceId: 'mascot#1' });
     expect(state.pendingFactionChoice).toBe('unmei_deai#1');
 
     state = gameReducer(state, { type: 'chooseFaction', devId: 'unmei_deai#1', faction: 'ally' });

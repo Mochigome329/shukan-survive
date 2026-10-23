@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { loadGameData } from './data';
 import { App } from './ui/App';
 import './styles.css';
+import './ui/workbench.css';
+import './ui/result-screen.css';
+import './ui/combo-cutin.css';
+import './ui/target-picker.css';
 
 const root = createRoot(document.getElementById('root')!);
 

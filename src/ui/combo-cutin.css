@@ -1,0 +1,233 @@
+/* 役成立を一枚の漫画原稿として見せる。旧カットインの吹き出し枠には依存しない。 */
+.manga-cutin {
+  --cutin-paper: #f5efdf;
+  --cutin-ink: #171613;
+  --cutin-red: #d6402c;
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 18px;
+  padding: max(12px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom));
+  background: var(--cutin-ink);
+  color: var(--cutin-paper);
+  text-align: left;
+}
+.manga-cutin .manga-cutin-toolbar {
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+  border-bottom: 1px solid #68645b;
+}
+.manga-cutin .manga-cutin-running { font-size: 12px; font-weight: 900; letter-spacing: 0.16em; }
+.manga-cutin .manga-cutin-skip {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--cutin-paper);
+  border-radius: 0;
+  margin-bottom: 8px;
+  background: var(--cutin-paper);
+  color: var(--cutin-ink);
+  font-size: 13px;
+  font-weight: 900;
+  cursor: pointer;
+}
+.manga-cutin .manga-cutin-skip:active { transform: translateY(2px); }
+.manga-cutin .manga-cutin-skip:focus-visible { outline: 3px solid var(--cutin-paper); outline-offset: 4px; }
+.manga-cutin-replay .manga-cutin-stage:focus-visible { outline: 3px solid var(--cutin-red); outline-offset: -8px; }
+.manga-cutin.manga-cutin-replay .manga-cutin-stage { animation: none; }
+.result-edition .combo-replay-button {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  margin-top: 5px;
+  padding: 8px 12px;
+  border: 1px solid var(--result-ink);
+  border-radius: 0;
+  background: transparent;
+  color: var(--result-ink);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.result-edition .combo-replay-button:active { transform: translateY(2px); }
+.manga-cutin .manga-cutin-stage {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  align-self: center;
+  width: min(100%, 1120px);
+  max-height: 100%;
+  min-height: 0;
+  margin: 0 auto;
+  overflow: auto;
+  border: 6px solid var(--cutin-paper);
+  background: var(--cutin-paper);
+  color: var(--cutin-ink);
+  animation: manga-panel-enter 200ms ease-out both;
+}
+.manga-cutin .manga-cutin-art-panel {
+  position: relative;
+  min-width: 0;
+  min-height: 430px;
+  overflow: hidden;
+  isolation: isolate;
+  border-right: 5px solid var(--cutin-ink);
+  background: var(--cutin-paper);
+}
+.manga-cutin .manga-cutin-art-panel .manga-art {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 0;
+  opacity: 1;
+  mix-blend-mode: multiply;
+}
+.manga-cutin .manga-cutin-art-panel .manga-art-ally { filter: contrast(.96) brightness(1.04); }
+.manga-cutin .manga-cutin-art-panel .manga-art-enemy { filter: grayscale(1) contrast(1.5) brightness(.86); }
+.manga-cutin .manga-cutin-art-label {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  writing-mode: vertical-rl;
+  border: 2px solid var(--cutin-ink);
+  padding: 12px 8px;
+  background: var(--cutin-paper);
+  font-family: var(--display-font);
+  font-size: clamp(22px, 3vw, 36px);
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: 0.08em;
+}
+.manga-cutin .manga-cutin-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  padding: clamp(18px, 3.5vw, 42px);
+}
+.manga-cutin .manga-cutin-label {
+  display: inline-block;
+  padding: 7px 12px;
+  background: var(--cutin-ink);
+  color: var(--cutin-paper);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+.manga-cutin .manga-cutin-name {
+  margin: 18px 0 24px;
+  width: 100%;
+  font-family: var(--display-font);
+  font-size: clamp(36px, 6.5vw, 80px);
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.05em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.manga-cutin .manga-cutin-name-long { font-size: clamp(30px, 5vw, 58px); }
+.manga-cutin .manga-cutin-effects { width: 100%; border-top: 4px solid currentColor; padding-top: 14px; }
+.manga-cutin .manga-cutin-effect { margin: 0; font-size: clamp(17px, 2.4vw, 24px); line-height: 1.55; font-weight: 900; }
+.manga-cutin .manga-cutin-extra { margin: 10px 0 0; font-size: 15px; line-height: 1.7; font-weight: 700; }
+.manga-cutin .manga-cutin-freshness { margin: 8px 0 0; font-size: 13px; line-height: 1.6; }
+.manga-cutin .manga-cutin-payoff { width: 100%; margin: 18px 0 0; padding: 12px 0 0; border-top: 1px solid currentColor; font-size: 16px; line-height: 1.8; font-weight: 800; }
+.manga-cutin .manga-cutin-discovery { display: inline-block; margin-top: 18px; padding: 7px 10px; border: 2px solid currentColor; font-size: 13px; line-height: 1.5; font-weight: 900; }
+.manga-cutin .manga-cutin-bonus-total { display: block; margin-top: 12px; font-family: Impact, 'Arial Narrow', sans-serif; font-size: clamp(52px, 9vw, 100px); line-height: 1; }
+/* 描き文字を絵の中に留め、役名や効果を隠さない。 */
+.manga-cutin .manga-cutin-art-panel .cutin-sfx {
+  position: absolute;
+  top: auto;
+  bottom: 18px;
+  left: auto;
+  right: 12px;
+  width: 68%;
+  height: 44%;
+  max-width: none;
+  max-height: none;
+  z-index: 1;
+  transform: rotate(-8deg);
+  animation: none;
+  pointer-events: none;
+  opacity: 0.95;
+}
+/* 衝撃: 朱ベタのタイトルコマと大きな絵をぶつける。 */
+.manga-cutin-shock .manga-cutin-stage { border-color: var(--cutin-red); animation: manga-impact-enter 160ms ease-out both; }
+.manga-cutin-shock .manga-cutin-copy { background: var(--cutin-red); color: #000; }
+.manga-cutin-shock .manga-cutin-name { transform: rotate(-3deg); }
+.manga-cutin-shock .manga-cutin-art-panel { border-right-width: 8px; }
+.manga-cutin-shock .manga-cutin-art-panel .cutin-sfx { width: 82%; height: 56%; right: 2px; bottom: 12px; }
+/* 情感: 絵を右へ。白い余白と縦の見出しで、衝撃の次に静けさを作る。 */
+.manga-cutin-emotion .manga-cutin-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); animation: manga-emotion-enter 360ms ease-out both; }
+.manga-cutin-emotion .manga-cutin-art-panel { grid-column: 2; grid-row: 1; border-right: 0; border-left: 2px solid var(--cutin-ink); }
+.manga-cutin-emotion .manga-cutin-copy { grid-column: 1; grid-row: 1; padding-top: 42px; padding-bottom: 42px; }
+.manga-cutin-emotion .manga-cutin-label { background: transparent; color: inherit; border-bottom: 1px solid currentColor; padding: 0 0 8px; }
+.manga-cutin-emotion .manga-cutin-name { line-height: 1.35; letter-spacing: 0.03em; }
+.manga-cutin-emotion .manga-cutin-effects { border-top-width: 1px; }
+.manga-cutin-emotion .manga-cutin-art-panel .cutin-sfx { width: 40%; opacity: 0.7; }
+/* 仕込み回収: 上段の横長原画から、下段の答えへ視線を落とす。 */
+.manga-cutin-setupPayoff .manga-cutin-stage { grid-template-columns: minmax(0, 1fr); }
+.manga-cutin-setupPayoff .manga-cutin-art-panel { min-height: 240px; height: 32vh; max-height: 350px; border-right: 0; border-bottom: 6px solid var(--cutin-ink); }
+.manga-cutin-setupPayoff .manga-cutin-copy { padding: 18px 30px 24px; }
+.manga-cutin-setupPayoff .manga-cutin-name { margin: 12px 0 18px; font-size: clamp(32px, 5.5vw, 60px); }
+.manga-cutin-setupPayoff .manga-cutin-art-label { left: auto; right: 18px; font-size: 20px; }
+.manga-cutin-setupPayoff .manga-cutin-art-panel .cutin-sfx { right: auto; left: 18px; width: 30%; height: 45%; }
+.manga-cutin-setupPayoff .manga-cutin-payoff { border-top: 0; padding: 12px; background: var(--cutin-ink); color: var(--cutin-paper); }
+/* 通常役は誌面の見出し、人物登場は肖像ページ、完結は積み上げた記録。 */
+.manga-cutin-normal .manga-cutin-name { color: #af2d1c; }
+.manga-cutin-normal .manga-cutin-art-label { writing-mode: horizontal-tb; }
+.manga-cutin-debut .manga-cutin-stage { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); }
+.manga-cutin-debut .manga-cutin-art-panel { min-height: 490px; }
+.manga-cutin-debut .manga-cutin-name { border-bottom: 8px solid var(--cutin-red); padding-bottom: 18px; }
+.manga-cutin-bonus .manga-cutin-copy { background: var(--cutin-ink); color: var(--cutin-paper); }
+.manga-cutin-bonus .manga-cutin-label { border: 1px solid var(--cutin-paper); }
+.manga-cutin-bonus .manga-cutin-bonus-total { color: var(--cutin-paper); }
+@keyframes manga-panel-enter { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes manga-impact-enter { from { opacity: 0; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
+@keyframes manga-emotion-enter { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: translateX(0); } }
+@media (max-width: 640px) {
+  .manga-cutin { padding: max(8px, env(safe-area-inset-top)) 10px max(12px, env(safe-area-inset-bottom)); gap: 10px; }
+  .manga-cutin .manga-cutin-stage { grid-template-columns: minmax(0, 1fr); border-width: 4px; }
+  .manga-cutin .manga-cutin-art-panel { grid-column: 1; grid-row: 1; height: 32vh; min-height: 180px; max-height: 280px; border: 0; border-bottom: 4px solid var(--cutin-ink); }
+  .manga-cutin .manga-cutin-copy { grid-column: 1; grid-row: 2; padding: 18px; }
+  .manga-cutin .manga-cutin-name { margin: 12px 0 16px; font-size: 38px; line-height: 1.18; }
+  .manga-cutin .manga-cutin-name-long { font-size: 30px; }
+  .manga-cutin .manga-cutin-label { font-size: 12px; padding: 5px 8px; }
+  .manga-cutin .manga-cutin-extra { font-size: 14px; }
+  .manga-cutin .manga-cutin-payoff { margin-top: 12px; font-size: 14px; }
+  .manga-cutin .manga-cutin-discovery { margin-top: 12px; }
+  .manga-cutin .manga-cutin-art-panel .cutin-sfx { width: 60%; height: 54%; right: 4px; bottom: 10px; }
+  .manga-cutin-shock .manga-cutin-art-panel .cutin-sfx { width: 78%; height: 64%; }
+  .manga-cutin-emotion .manga-cutin-art-panel .cutin-sfx { width: 40%; height: 40%; }
+  .manga-cutin-setupPayoff .manga-cutin-art-panel .cutin-sfx { width: 55%; height: 55%; right: auto; }
+  .manga-cutin-emotion .manga-cutin-copy { padding-top: 24px; padding-bottom: 24px; }
+  .manga-cutin-emotion .manga-cutin-name { letter-spacing: 0.02em; }
+}
+@media (max-height: 520px) and (min-width: 641px) {
+  .manga-cutin .manga-cutin-art-panel { min-height: 300px; }
+  .manga-cutin .manga-cutin-name { font-size: 36px; }
+  .manga-cutin .manga-cutin-copy { padding: 18px; }
+  .manga-cutin-setupPayoff .manga-cutin-stage { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .manga-cutin-setupPayoff .manga-cutin-art-panel { border-bottom: 0; border-right: 4px solid var(--cutin-ink); height: auto; max-height: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .manga-cutin .manga-cutin-stage { animation: none; }
+  .manga-cutin button { transition: none; }
+}

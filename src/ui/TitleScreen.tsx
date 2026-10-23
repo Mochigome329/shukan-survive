@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { SaveData } from '../core/save';
 import type { GameAction } from '../state/gameReducer';
-import titleArt from '../assets/title-art.webp';
+import { MangaArt } from './MangaArt';
 import { AccessCounter } from './AccessCounter';
 import { playPico } from './audio';
 import { hasPlayedBefore } from './playHistory';
@@ -48,9 +48,15 @@ export function TitleScreen({ dispatch, save, onResume, onDiscardSave }: Props) 
 
   return (
     <div className="screen title-screen">
-      <h1 className="sr-only">週刊サバイブ</h1>
-      <img className="title-art" src={titleArt} alt="週刊サバイブ" />
-      <p className="title-sub">きみの連載は、何話まで生き残れるか。</p>
+      <div className="cover-masthead"><strong>少年漫画 × デッキ構築</strong><span>創刊号</span></div>
+      <div className="magazine-cover">
+        <h1 className="cover-logo"><span>週刊</span>サバイブ<span className="cover-logo-en">SHUKAN SURVIVE</span></h1>
+        <MangaArt definitionId="battle" className="cover-illustration" />
+        <p className="cover-vertical">打ち切りを、<br />ぶっ飛ばせ。</p>
+        <span className="cover-issue"><b>01</b>物語は、ここから。</span>
+        <p className="cover-headline">その一手を、<br /><em>神回</em>にしろ。</p>
+      </div>
+      <p className="cover-strap">伏線を仕込み、仲間を育て、最終回をつかめ。</p>
       {save && (
         <button type="button" className="primary-btn title-start title-resume" onClick={onResume}>
           続きから
@@ -73,7 +79,7 @@ export function TitleScreen({ dispatch, save, onResume, onDiscardSave }: Props) 
         </div>
       ) : !save ? (
         <button type="button" className="primary-btn title-start" data-sfx="skip" onClick={startNew}>
-          連載開始
+          新連載をはじめる <span aria-hidden="true">↗</span>
         </button>
       ) : confirmingNew ? (
         <div className="title-confirm">
@@ -98,7 +104,7 @@ export function TitleScreen({ dispatch, save, onResume, onDiscardSave }: Props) 
         役図鑑
       </button>
       {/* v7.32: 短期連載（全13話）を選べるようになったので、タイトル画面の時点では長さを断定しない */}
-      <p className="title-note">短期13話／通常25話・最終回まで収録　v1.0</p>
+      <p className="title-note">短期13話／通常25話・最終回まで収録</p>
       <a className="title-credit" href="https://x.com/oIwaaakIo" target="_blank" rel="noopener noreferrer">
         作者: もちごめ
       </a>

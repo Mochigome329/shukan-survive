@@ -28,6 +28,8 @@ import {
   SHOP_SERVICES,
 } from '../core/shop';
 import { SETUP_COMBO_IDS } from '../core/combos';
+import { prepareFirstIssue } from '../core/onboarding';
+import { getPayoffNote } from '../ui/resultPresentation';
 import type { SavePhase } from '../core/save';
 import type { Act, CardInstance, DemandState, Faction, PlaySelection, RunState, ScoreBreakdown } from '../core/types';
 import { displayName, MAX_PLAY_CARDS, MAX_STOCK } from '../core/types';
@@ -44,10 +46,6 @@ export const MAX_PLAYABLE_WEEK = 25;
 
 /** ボス週のブリーフィングを何話前に出すか（v7.5）。実際の値はキャンペーンごと（v7.30） */
 export const BOSS_BRIEFING_LEAD = 5;
-/** 初回チュートリアルのステップ数（WeekPlayScreenのTUTORIAL_STEPSと揃える） */
-export const TUTORIAL_STEP_COUNT = 8;
-/** 編集会議チュートリアルのステップ数（ShopScreenのSHOP_TUTORIAL_STEPSと揃える） */
-export const SHOP_TUTORIAL_STEP_COUNT = 4;
 /** 1回の編集会議でラインナップを入れ替えられる回数（v7.13） */
 export const SHOP_REROLL_LIMIT = 1;
 
@@ -97,6 +95,7 @@ export interface GameState {
   demandListOpen: boolean;
   lastResult: {
     breakdown: ScoreBreakdown;
+    payoffNote?: string | null;
     outcome: 'continue' | 'cancelled';
     cancelReason?: CancelReason;
     achievedDemands: DemandState[];
@@ -111,11 +110,11 @@ export interface GameState {
    */
   shopRerolls: number;
   /**
-   * 初回チュートリアル（v7.5）。画面の各部を順に説明する。
-   * 数値は現在のステップ（0始まり）、nullなら非表示
+   * 第1話の操作ガイド。0なら表示、nullなら非表示。
+   * 案内の段階はカード選択から導出する（firstIssueGuide）
    */
   tutorialStep: number | null;
-  /** 初回の編集会議で「この画面で何ができるか」を順に説明する（v7.5）。nullなら非表示 */
+  /** 初回の編集会議に担当メモを表示する。0なら表示、nullなら非表示 */
   shopTutorialStep: number | null;
   shopTutorialShown: boolean;
   /** 連載中に重ねて開く役図鑑（v7.5） */
@@ -170,9 +169,7 @@ export type GameAction =
   | { type: 'chooseFaction'; devId: string; faction: Faction }
   | { type: 'dismissHighlightTutorial' }
   | { type: 'dismissBossBriefing' }
-  | { type: 'advanceTutorial' }
   | { type: 'dismissTutorial' }
-  | { type: 'advanceShopTutorial' }
   | { type: 'dismissShopTutorial' }
   | { type: 'toggleCodexOverlay' }
   | { type: 'dismissVoteTutorial' }
@@ -228,12 +225,13 @@ function defOf(state: GameState, instanceId: string) {
 
 /**
  * 対象割当の整理（13.2節）。
- * 対象候補が一意なら自動割当し、複数候補のときだけタップを求める。
+ * 既存の割当を整理する。新しく選んだカードは候補が1人でも明示選択する。
  * onePlayedの候補は場のキャスト、oneDeadの候補は死亡済みキャラ。
  */
 function refreshTargets(
   state: GameState,
   selection: PlaySelection,
+  requireChoiceFor: string | null = null,
 ): { selection: PlaySelection; pending: string | null; factionPending: string | null } {
   const run = state.run!;
   const cast = castOf(state.data, run);
@@ -285,7 +283,7 @@ function refreshTargets(
     const current = selection.targets[id];
     if (current && options.includes(current)) {
       targets[id] = current;
-    } else if (options.length === 1) {
+    } else if (options.length === 1 && id !== requireChoiceFor) {
       targets[id] = options[0]!;
     } else if (pending === null) {
       pending = id;
@@ -327,6 +325,20 @@ function refreshTargets(
   return { selection: { cards: selection.cards, targets, factionChoices }, pending, factionPending };
 }
 
+/** The picker uses the same target rules as assignment, including this issue's debuts. */
+export function pendingTargetCandidates(state: GameState): RunState['cards'] {
+  const id = state.pendingTargetDev;
+  if (!state.run || !id) return [];
+  return state.run.cards.filter((card) => {
+    if (state.data.definitions.get(card.definitionId)?.kind !== 'character') return false;
+    const { selection } = refreshTargets(state, {
+      ...state.selection,
+      targets: { ...state.selection.targets, [id]: card.instanceId },
+    }, id);
+    return selection.targets[id] === card.instanceId;
+  });
+}
+
 function withNotice(state: GameState, notice: string): GameState {
   return { ...state, notice };
 }
@@ -356,7 +368,7 @@ function tryAddCard(state: GameState, instanceId: string): GameState {
   }
 
   const next = { cards: [...selection.cards, instanceId], targets: selection.targets, factionChoices: selection.factionChoices };
-  const { selection: refreshed, pending, factionPending } = refreshTargets(state, next);
+  const { selection: refreshed, pending, factionPending } = refreshTargets(state, next, instanceId);
   return { ...state, selection: refreshed, pendingTargetDev: pending, pendingFactionChoice: factionPending, notice: null };
 }
 
@@ -424,21 +436,22 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, screen: 'codex', notice: null };
 
     case 'startRun': {
+      const initialRun = createRun(state.data, action.seed, {
+        mangaTitle: action.mangaTitle,
+        startingCast: action.startingCast,
+        startingFactions: action.startingFactions,
+        startingNicknames: action.startingNicknames,
+        mode: action.mode,
+      });
       const run = startWeek(
         state.data,
-        createRun(state.data, action.seed, {
-          mangaTitle: action.mangaTitle,
-          startingCast: action.startingCast,
-          startingFactions: action.startingFactions,
-          startingNicknames: action.startingNicknames,
-          mode: action.mode,
-        }),
+        state.tutorialEnabled ? prepareFirstIssue(initialRun) : initialRun,
       );
       return {
         ...initialGameState(state.data),
         screen: 'play',
         run,
-        // v7.5: 一枚の要約だけだったのをやめ、画面の各部を順に説明する形にした。
+        // v1.1: 第1話は実際の選択に応じた操作ガイドを出す。
         // 2回目以降はタイトルで「不要」を選べる
         tutorialStep: state.tutorialEnabled ? 0 : null,
         /*
@@ -614,6 +627,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         run: result.state,
         lastResult: {
           breakdown: result.breakdown,
+          payoffNote: getPayoffNote(state.run, result.breakdown),
           outcome: result.outcome,
           cancelReason: result.cancelReason,
           achievedDemands: result.achievedDemands,
@@ -627,6 +641,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         stockMode: false,
         stockPicks: [],
         screen: 'result',
+        tutorialStep: null,
         notice: null,
       };
     }
@@ -766,20 +781,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case 'dismissBossBriefing':
       return { ...state, bossBriefingWeek: null };
 
-    case 'advanceTutorial': {
-      if (state.tutorialStep === null) return state;
-      const next = state.tutorialStep + 1;
-      return { ...state, tutorialStep: next >= TUTORIAL_STEP_COUNT ? null : next };
-    }
-
     case 'dismissTutorial':
       return { ...state, tutorialStep: null };
-
-    case 'advanceShopTutorial': {
-      if (state.shopTutorialStep === null) return state;
-      const next = state.shopTutorialStep + 1;
-      return { ...state, shopTutorialStep: next >= SHOP_TUTORIAL_STEP_COUNT ? null : next };
-    }
 
     case 'dismissShopTutorial':
       return { ...state, shopTutorialStep: null };

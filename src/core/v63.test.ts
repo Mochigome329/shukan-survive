@@ -79,7 +79,9 @@ describe('悪役会議（v6.3）', () => {
     let state: GS = { ...initialGameState(data), screen: 'play', run };
 
     state = gameReducer(state, { type: 'tapHandCard', instanceId: 'akuyaku_kaigi#1' });
-    // 控え候補が1人だけなら自動割当され、対象待ちにならない
+    // 候補が1人でも対象は明示的に選ぶ。悪役会議は敵固定なので陣営選択は不要。
+    expect(state.pendingTargetDev).toBe('akuyaku_kaigi#1');
+    state = gameReducer(state, { type: 'tapCastChar', instanceId: 'heroine#1' });
     expect(state.pendingTargetDev).toBeNull();
     expect(state.pendingFactionChoice).toBeNull();
 

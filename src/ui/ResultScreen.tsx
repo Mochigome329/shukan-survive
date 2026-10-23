@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { COMBO_REGISTRY } from '../core/combos';
 import { COMPLETION_BONUS_CAP } from '../core/finale';
 import type { ComboScoreDetail } from '../core/types';
@@ -8,9 +8,12 @@ import { type GameAction, type GameState } from '../state/gameReducer';
 import { playCheer, playCutinNote } from './audio';
 import { addDiscovered, getDiscovered } from './discovery';
 import { duckMusic, unduckMusic } from './music';
-import { SfxMark } from './SfxMark';
-import { JaggedBalloon, UniFlash } from './CutInShapes';
+import { ComboCutIn, IllustratedCutIn } from './ComboCutIn';
 import { pickVoices } from './voices';
+import { selectFeaturedCombos } from './resultPresentation';
+import { MangaArt } from './MangaArt';
+import { ReaderVoices } from './ReaderVoices';
+import './result-screen.css';
 
 interface Props {
   state: GameState;
@@ -66,14 +69,35 @@ function comboFreshnessNote(combo: ComboScoreDetail): string | null {
   return `見飽きられ ×${combo.freshness.toFixed(1)}`;
 }
 
+export function ResultComboBanner({ combo, isNew, onReplay }: {
+  combo: ComboScoreDetail;
+  isNew: boolean;
+  onReplay?: (trigger: HTMLButtonElement) => void;
+}) {
+  return (
+    <div className={`combo-banner combo-${combo.cutInTemplate}`}>
+      <span className="combo-banner-name">
+        {combo.name}
+        {isNew && <em className="new-discovery">図鑑登録!</em>}
+        {comboFreshnessNote(combo) && <em className="combo-stale">{comboFreshnessNote(combo)}</em>}
+      </span>
+      <span className="combo-banner-effect">{comboEffectText(combo)}</span>
+      {combo.extraText && <span className="combo-banner-extra">{combo.extraText}</span>}
+      {onReplay && <button type="button" className="combo-replay-button" aria-haspopup="dialog"
+        aria-label={`${combo.name}の見開きを見る`} onClick={(event) => {
+          event.stopPropagation();
+          onReplay(event.currentTarget);
+        }}>見開きを見る <span aria-hidden="true">↗</span></button>}
+    </div>
+  );
+}
+
 /**
- * 演出のテンポ（v7.3でスピードアップ）。
- * カットインのスラム演出自体は0.28秒（styles.cssの`cutin-slam`）なので、
- * CUTIN_MSからその分を引いた時間が実際に静止して読める時間になる。
- * 役が5つ6つ並ぶ週は以前の1100msだと待たされる感が強かった
+ * 個別演出は初発見と仕込み回収に絞り、絵・役名・効果を読む時間を確保する。
+ * 既知の通常役は一覧にまとめるので、一律に全役を待つ必要はない。
  */
 const INTRO_MS = 350;
-const CUTIN_MS = 700;
+const CUTIN_MS = 1050;
 const COUNTUP_MS = 800;
 
 /**
@@ -103,16 +127,6 @@ function pickOnomatopoeia(kind: string, seed: string, sfxId?: string): string | 
   return pool[h % pool.length]!;
 }
 
-/*
- * 長い役名は一段小さく組む。
- * カットインの枠（ギザギザ吹き出し・ウニフラッシュの中央の丸）は丸みのある形なので、
- * 34pxのまま折り返すと「ジャイアントキリング」「ボーイミーツガール」のような
- * 8字以上の役名が枠の外へ出てしまう。全100役を実際に流し込んで決めたしきい値
- */
-function nameClass(name: string): string {
-  return name.length >= 8 ? 'cutin-name cutin-name-long' : 'cutin-name';
-}
-
 /**
  * リザルト画面 =「今週の読者アンケート」（13.3節、v5.2）。
  * 役カットイン→スコアカウントアップ→アンケート判定の順に再生する。タップで早送り。
@@ -138,6 +152,7 @@ export function ResultScreen({ state, dispatch }: Props) {
     addDiscovered(all);
     return fresh;
   });
+  const featured = selectFeaturedCombos(applied, newDiscoveries);
 
   // 連載が終わる週（最終回の掲載／打ち切り決定）は、続きを匂わせる声を出さない
   const voices = pickVoices(b, run.runSeed, playedWeek, cancelled || isLastImplemented);
@@ -149,10 +164,10 @@ export function ResultScreen({ state, dispatch }: Props) {
       const instance = run.cards.find((x) => x.instanceId === c.instanceId);
       const def = instance ? state.data.definitions.get(instance.definitionId) : undefined;
       return def?.kind === 'character' && instance
-        ? { instanceId: c.instanceId, name: displayName(def, instance), popularity: def.popularity }
+        ? { instanceId: c.instanceId, definitionId: def.id, name: displayName(def, instance), popularity: def.popularity }
         : null;
     })
-    .filter((x): x is { instanceId: string; name: string; popularity: number } => x !== null)
+    .filter((x): x is { instanceId: string; definitionId: string; name: string; popularity: number } => x !== null)
     // 同じキャラが複数の効果で戻る場合があるので重複を落とす
     .filter((x, i, arr) => arr.findIndex((y) => y.instanceId === x.instanceId) === i);
 
@@ -164,10 +179,12 @@ export function ResultScreen({ state, dispatch }: Props) {
     : [];
 
   // step: 0=導入 → 1..d=登場カットイン → d+1..d+n=役カットイン → +1..+m=完結ボーナス積み上げ → +1=カウントアップ → +2=完了
-  const cutInSteps = debuts.length + applied.length;
+  const cutInSteps = debuts.length + featured.length;
   const bonusCutInSteps = cutInSteps + bonusCombos.length;
   const totalSteps = bonusCutInSteps + 2;
   const [step, setStep] = useState(0);
+  const [replay, setReplay] = useState<{ combo: ComboScoreDetail; trigger: HTMLButtonElement } | null>(null);
+  const closeReplay = useCallback(() => setReplay(null), []);
   const skipped = useRef(false);
 
   useEffect(() => {
@@ -187,7 +204,7 @@ export function ResultScreen({ state, dispatch }: Props) {
 
   const done = step >= totalSteps;
   const debutCutIn = step >= 1 && step <= debuts.length ? debuts[step - 1]! : null;
-  const cutIn = step > debuts.length && step <= cutInSteps ? applied[step - debuts.length - 1]! : null;
+  const cutIn = step > debuts.length && step <= cutInSteps ? featured[step - debuts.length - 1]! : null;
   const bonusStep = step > cutInSteps && step <= bonusCutInSteps ? step - cutInSteps : null;
   const bonusCutIn = bonusStep ? bonusCombos[bonusStep - 1]! : null;
   const bonusRunningTotal = bonusStep
@@ -197,6 +214,13 @@ export function ResultScreen({ state, dispatch }: Props) {
       )
     : null;
   const showScore = step >= bonusCutInSteps + 1;
+  // 通常役は導入直後にまとめて表示。個別の役はカットインが終わったら一覧に加える。
+  const pendingFeaturedIds = new Set(
+    featured.slice(Math.max(0, step - debuts.length - 1)).map((c) => c.comboId),
+  );
+  const visibleApplied = done ? applied : step > 0
+    ? applied.filter((c) => !pendingFeaturedIds.has(c.comboId))
+    : [];
 
   /*
    * v7.34: カットインの連打中（debut〜役〜完結ボーナスの演出）はBGMを下げ、
@@ -234,21 +258,55 @@ export function ResultScreen({ state, dispatch }: Props) {
   const stampClass = isFinaleWeek ? 'stamp-ok' : cancelled ? 'stamp-ng' : cleared || b.quotaBypassed ? 'stamp-ok' : 'stamp-warn';
 
   return (
-    <div className="screen result-screen" onClick={skip}>
-      <h1 className="result-week">第{playedWeek}話 読者アンケート</h1>
+    <div className={`screen result-screen result-edition ${done ? 'result-settled' : 'result-printing'}`} onClick={skip}>
+      <header className="result-masthead">
+        <div className="result-issue"><span>第</span><strong>{playedWeek}</strong><span>話</span></div>
+        <div className="result-heading">
+          <p className="result-kicker">週刊サバイブ ／ 掲載結果</p>
+          <h1 className="result-week">読者アンケート</h1>
+          <p className="result-series">{run.mangaTitle}</p>
+        </div>
+      </header>
+
+      <section className="result-splash" aria-label="今週の得点と掲載判定">
+        <div className="result-score-panel">
+          <span className="result-panel-caption">今週のスコア</span>
+          {showScore ? (
+            <div className="score-line">
+              <ScoreCounter target={b.finalScore} instant={done && skipped.current} />
+              <span className="score-quota">{b.quota > 0 ? `掲載ノルマ ${b.quota}` : '最終回'}</span>
+              <span className="score-formula">
+                人気 {b.popularityTotal} × 話題 {Number.isInteger(b.buzzApplied) ? b.buzzApplied : b.buzzApplied.toFixed(1)}
+                {b.weekMultiplier > 1 && <strong className="score-multiplier"> × {b.weekMultiplier}</strong>}
+                {b.endingMultiplier > 1 && <strong className="score-multiplier"> × {b.endingMultiplier}</strong>}
+                {b.completionBonus > 1 && <strong className="score-multiplier"> × {b.completionBonus}</strong>}
+              </span>
+            </div>
+          ) : (
+            <div className="result-score-pending"><strong>集計中</strong><span>今週の物語を振り返る</span></div>
+          )}
+        </div>
+        <div className="result-verdict-panel">
+          <MangaArt definitionId={cancelled ? 'shibou' : cleared || isFinaleWeek ? 'battle' : 'shugyou'} />
+          <span className="result-verdict-heading">{isFinaleWeek ? '物語の、その先へ。' : 'この一話に、すべてを。'}</span>
+          {done && <div className={`stamp ${stampClass}`}>{stampText}</div>}
+        </div>
+      </section>
+      {showScore && result.payoffNote && <p className="payoff-note result-payoff">{result.payoffNote}</p>}
+      {!done && <button type="button" className="result-skip" onClick={(e) => { e.stopPropagation(); skip(); }}>演出を飛ばして結果を見る →</button>}
+
+      {done && <ReaderVoices voices={voices} week={playedWeek} />}
+
+      <div className="result-columns">
+      <section className="result-combos" aria-label="今週成立した役">
+      <h2 className="result-section-heading">今週の見せ場</h2>
 
       <div className="combo-banner-list">
-        {applied.slice(0, done ? applied.length : Math.max(0, step - debuts.length - 1)).map((c) => (
-          <div key={c.comboId} className={`combo-banner combo-${c.cutInTemplate}`}>
-            <span className="combo-banner-name">
-              {c.name}
-              {newDiscoveries.has(c.comboId) && <em className="new-discovery">図鑑登録!</em>}
-              {comboFreshnessNote(c) && <em className="combo-stale">{comboFreshnessNote(c)}</em>}
-            </span>
-            <span className="combo-banner-effect">{comboEffectText(c)}</span>
-          </div>
+        {visibleApplied.map((c) => (
+          <ResultComboBanner key={c.comboId} combo={c} isNew={newDiscoveries.has(c.comboId)}
+            onReplay={done ? (trigger) => setReplay({ combo: c, trigger }) : undefined} />
         ))}
-        {(done || step > applied.length) &&
+        {(done || step > 0) &&
           suppressed.map((c) => (
             <div key={c.comboId} className="combo-banner combo-suppressed">
               <span className="combo-banner-name">
@@ -260,32 +318,15 @@ export function ResultScreen({ state, dispatch }: Props) {
               </span>
             </div>
           ))}
+        {done && b.combos.length === 0 && <p className="result-empty">今週は役の成立なし。キャラと展開の得点を集計しました。</p>}
       </div>
-
-      {showScore && (
-        <div className="score-line">
-          <span className="score-formula">
-            人気 {b.popularityTotal} × 話題 {Number.isInteger(b.buzzApplied) ? b.buzzApplied : b.buzzApplied.toFixed(1)}
-            {b.weekMultiplier > 1 && <strong className="score-multiplier"> × {b.weekMultiplier}</strong>}
-            {b.endingMultiplier > 1 && <strong className="score-multiplier"> × {b.endingMultiplier}</strong>}
-            {b.completionBonus > 1 && <strong className="score-multiplier"> × {b.completionBonus}</strong>}
-          </span>
-          <ScoreCounter target={b.finalScore} instant={done && skipped.current} />
-          {/* v7.28: 最終回にノルマは無い（結末を選ぶだけの回で、打ち切られない） */}
-          <span className="score-quota">{b.quota > 0 ? `ノルマ ${b.quota}` : '完結'}</span>
-        </div>
-      )}
+      </section>
 
       {done && (
         <>
-          <div className="voices">
-            {voices.map((v) => (
-              <span key={v} className="voice-bubble">{v}</span>
-            ))}
-          </div>
-
           {(result.achievedDemands.length > 0 || result.failedDemands.length > 0) && (
             <div className="demand-result">
+              <h2 className="result-section-heading">編集部の記録</h2>
               {result.achievedDemands.map((d) => (
                 <div key={d.id} className="demand-achieved">
                   編集部の要求を達成: {d.text}（原稿料+2）
@@ -299,7 +340,6 @@ export function ResultScreen({ state, dispatch }: Props) {
             </div>
           )}
 
-          <div className={`stamp ${stampClass}`}>{stampText}</div>
           {!cancelled && !cleared && !b.quotaBypassed && (
             <p className="warning-note">
               打ち切り警告 {run.warnings}/{MAX_WARNINGS}（ノルマ達成で1つ回復）
@@ -308,7 +348,7 @@ export function ResultScreen({ state, dispatch }: Props) {
           {cancelled && result.cancelReason === 'boss' && <p className="warning-note">ボス週のノルマ未達は一発打ち切り……</p>}
 
           <details className="breakdown-details" onClick={(e) => e.stopPropagation()}>
-            <summary>スコア明細</summary>
+            <summary>採点台帳 <span>スコアの内訳を開く</span></summary>
             <div className="breakdown">
               {b.characters.map((c) => (
                 <div key={c.instanceId} className="breakdown-row">
@@ -366,6 +406,8 @@ export function ResultScreen({ state, dispatch }: Props) {
             </div>
           </details>
 
+          <footer className="result-next">
+          <span className="result-next-copy">{cancelled || isLastImplemented ? 'この連載の記録へ' : '原稿を閉じて、次の一話へ。'}</span>
           <button
             type="button"
             className="primary-btn"
@@ -374,58 +416,41 @@ export function ResultScreen({ state, dispatch }: Props) {
               dispatch({ type: 'proceedFromResult' });
             }}
           >
-            {cancelled ? '結果へ' : isLastImplemented ? '結果へ' : '編集会議へ'}
+            {cancelled || isLastImplemented ? '連載結果へ' : '編集会議へ'} <span aria-hidden="true">→</span>
           </button>
+          </footer>
         </>
       )}
+      </div>
 
       {debutCutIn && (
-        <div className="cutin-overlay cutin-debut">
-          <SfxMark key={debutCutIn.instanceId} id={pickOnomatopoeia('debut', debutCutIn.instanceId) ?? ''} />
-          <div className="cutin-panel">
-            <span className="cutin-label">登場</span>
-            <span className="cutin-name">{debutCutIn.name}</span>
-            <span className="cutin-effect">人気度 {debutCutIn.popularity}</span>
-            <span className="cutin-extra">キャストに加わった</span>
-          </div>
-        </div>
+        <IllustratedCutIn key={debutCutIn.instanceId} kind="debut" artId={debutCutIn.definitionId}
+          faction={run.cards.find(c => c.instanceId === debutCutIn.instanceId)?.faction}
+          name={debutCutIn.name} label="登場" effectText={`人気度 ${debutCutIn.popularity}`}
+          extraText="キャストに加わった" sfxId={pickOnomatopoeia('debut', debutCutIn.instanceId)} onSkip={skip} />
       )}
 
       {cutIn && (
-        <div className={`cutin-overlay cutin-${cutIn.cutInTemplate}`}>
-          {cutIn.cutInTemplate === 'emotion' && <UniFlash />}
-          <SfxMark
-            key={cutIn.comboId}
-            id={
-              pickOnomatopoeia(
-                cutIn.cutInTemplate,
-                cutIn.comboId,
-                COMBO_REGISTRY.find((c) => c.id === cutIn.comboId)?.sfxId,
-              ) ?? ''
-            }
-          />
-          <div className="cutin-panel">
-            {cutIn.cutInTemplate === 'shock' && <JaggedBalloon />}
-            <span className="cutin-label">{newDiscoveries.has(cutIn.comboId) ? '役 初成立' : '成立'}</span>
-            <span className={nameClass(cutIn.name)}>{cutIn.name}</span>
-            <span className="cutin-effect">{comboEffectText(cutIn)}</span>
-            {comboFreshnessNote(cutIn) && <span className="cutin-stale">{comboFreshnessNote(cutIn)}</span>}
-            {cutIn.extraText && <span className="cutin-extra">{cutIn.extraText}</span>}
-            {newDiscoveries.has(cutIn.comboId) && <span className="cutin-codex">役図鑑に登録</span>}
-          </div>
-        </div>
+        <ComboCutIn key={cutIn.comboId} combo={cutIn} effectText={comboEffectText(cutIn)}
+          freshnessNote={comboFreshnessNote(cutIn)} payoffNote={result.payoffNote}
+          isNew={newDiscoveries.has(cutIn.comboId)}
+          sfxId={pickOnomatopoeia(cutIn.cutInTemplate, cutIn.comboId, COMBO_REGISTRY.find(c => c.id === cutIn.comboId)?.sfxId)}
+          onSkip={skip} />
       )}
 
       {bonusCutIn && bonusRunningTotal !== null && (
-        <div className="cutin-overlay cutin-bonus">
-          <SfxMark key={bonusCutIn.id} id={pickOnomatopoeia('bonus', bonusCutIn.id, bonusCutIn.sfxId) ?? ''} />
-          <div className="cutin-panel">
-            <span className="cutin-label">完結ボーナス {bonusStep}/{bonusCombos.length}</span>
-            <span className={nameClass(bonusCutIn.name)}>{bonusCutIn.name}</span>
-            <span className="cutin-effect">積み上げてきた仕込み</span>
-            <span className="cutin-bonus-total">× {bonusRunningTotal.toFixed(1)}</span>
-          </div>
-        </div>
+        <IllustratedCutIn key={bonusCutIn.id} kind="bonus" artId={bonusCutIn.id} name={bonusCutIn.name}
+          label={`完結ボーナス ${bonusStep}/${bonusCombos.length}`} effectText="積み上げてきた仕込み"
+          bonusTotal={`× ${bonusRunningTotal.toFixed(1)}`}
+          sfxId={pickOnomatopoeia('bonus', bonusCutIn.id, bonusCutIn.sfxId)} onSkip={skip} />
+      )}
+      {done && replay && (
+        <ComboCutIn key={`replay-${replay.combo.comboId}`} combo={replay.combo}
+          effectText={comboEffectText(replay.combo)} freshnessNote={comboFreshnessNote(replay.combo)}
+          payoffNote={result.payoffNote} isNew={newDiscoveries.has(replay.combo.comboId)}
+          sfxId={pickOnomatopoeia(replay.combo.cutInTemplate, replay.combo.comboId,
+            COMBO_REGISTRY.find(c => c.id === replay.combo.comboId)?.sfxId)}
+          isReplay skipLabel="結果に戻る" returnFocusTo={replay.trigger} onSkip={closeReplay} />
       )}
     </div>
   );

@@ -1,4 +1,5 @@
 import { displayName, type CardDefinition, type CardInstance, type CardTag } from '../core/types';
+import { MangaArt } from './MangaArt';
 
 interface CardViewProps {
   instance: CardInstance;
@@ -19,7 +20,7 @@ interface CardViewProps {
   compact?: boolean;
   /** 今週の話に出ていない在籍キャラ（v6.0）。得点にも役にも関わらない */
   offStage?: boolean;
-  /** 効果説明を開く（指定時はカード右上に「?」を出す） */
+  /** 効果説明を開く（カード選択と別のボタンで表示） */
   onInspect?: () => void;
 }
 
@@ -49,20 +50,9 @@ export function CardView({ instance, def, onTap, permanentBuzz = 0, freshness = 
   const stale = !isChar && freshness < 1;
 
   return (
-    <button type="button" className={classes} data-sfx="skip" onClick={onTap}>
-      {onInspect && (
-        <span
-          className="card-inspect"
-          role="button"
-          tabIndex={-1}
-          onClick={(e) => {
-            e.stopPropagation();
-            onInspect();
-          }}
-        >
-          ?
-        </span>
-      )}
+    <div className={`card-frame ${compact ? 'card-frame-compact' : ''}`}>
+    <button type="button" id={`play-card-${instance.instanceId}`} className={classes} data-faction={isChar ? instance.faction ?? undefined : undefined} data-sfx="skip" onClick={onTap}>
+      <MangaArt definitionId={def.id} faction={isChar ? instance.faction : null} />
       {def.rare && <span className="card-rare">レア</span>}
       <span className="card-name">{displayName(def, instance)}</span>
       {/* v7.6b: 数値・陣営・修行フラグを1行にまとめ、カードの縦を1段ぶん詰める */}
@@ -75,9 +65,12 @@ export function CardView({ instance, def, onTap, permanentBuzz = 0, freshness = 
           <span className="card-flags">{'修'.repeat(instance.flags.training)}</span>
         )}
       </span>
+      {!isChar && def.target.startsWith('one') && !targetName && <span className="card-target-required">対象を選ぶ ↗</span>}
       {stocked && <span className="card-stock-badge">保管</span>}
       {stale && <span className="card-freshness">鮮度{Math.round(freshness * 100)}%</span>}
       {targetName && <span className="card-target">{isChar ? `◀${targetName}` : `→${targetName}`}</span>}
     </button>
+    {onInspect && <button type="button" className="card-inspect" aria-label={`${def.name}の効果を読む`} onClick={onInspect}>効果を読む</button>}
+    </div>
   );
 }
